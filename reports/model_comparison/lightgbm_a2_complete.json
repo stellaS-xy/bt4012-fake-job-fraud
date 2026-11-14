@@ -1,0 +1,5 @@
+{
+  "model": "lightgbm_a2",
+  "folds": 25,
+  "elapsed_seconds": 63696.9
+}

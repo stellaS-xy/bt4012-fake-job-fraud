@@ -1,0 +1,6 @@
+{
+  "model": "logreg_tfidf",
+  "completed_folds": 25,
+  "total_folds": 25,
+  "elapsed_seconds": 2076.9
+}
