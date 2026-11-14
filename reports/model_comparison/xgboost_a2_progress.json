@@ -1,0 +1,6 @@
+{
+  "model": "xgboost_a2",
+  "completed_folds": 25,
+  "total_folds": 25,
+  "elapsed_seconds": 64380.6
+}

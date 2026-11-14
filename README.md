@@ -52,6 +52,71 @@ python src/check_setup.py
 2. Place it at `~/.kaggle/kaggle.json` (macOS/Linux) or `C:\Users\<you>\.kaggle\kaggle.json` (Windows).
 3. Or skip the API: download both datasets manually from Kaggle and unzip the CSVs into `data/raw/d1/` and `data/raw/d2/`.
 
+## Model evaluation
+
+Use `notebooks/02_d1_modelling_setup.ipynb` after notebook 00 has produced the
+frozen training and test files. It uses `src/evaluation.py` to keep the testing
+process separate from choosing model settings:
+
+1. Set aside a group of training ads for scoring, keeping related ads together.
+2. Use smaller grouped splits of the remaining ads to compare settings and
+   choose the flagging cutoff from predictions on ads unseen by each fitted model.
+3. Fit the chosen pipeline on the remaining ads, then score the ads set aside
+   in step 1 with the cutoff already fixed.
+
+Every model uses the same scoring rounds. The notebook saves per-round scores,
+chosen settings and cutoffs, and an approximate paired uncertainty interval.
+Settings are selected by mean inner PR-AUC; the cutoff maximises F1 on the
+selected setting's inner out-of-fold predictions. Text vocabularies and other
+learned features are fitted again in every split. Supply the complete unfitted
+feature-and-model pipeline, not features fitted on all the data in advance.
+
+The default is five repeats of five scoring folds, three inner folds and three
+candidate logistic-regression settings. For a quick development check, reduce
+the repeats and candidate grid; use the full, shared plan for reported results.
+The reserved test file is opened only when the final-test switch is enabled,
+after the chosen model's settings and cutoff have been fixed from training data.
+
+Run the checks from the repository root:
+
+```powershell
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+```
+
+### Compare logistic regression, LightGBM and XGBoost
+
+Run the complete comparison, then open `notebooks/03_d1_model_comparison.ipynb`
+to read the results:
+
+```powershell
+.\.venv\Scripts\python.exe -u -m src.model_comparison
+```
+
+All four pipelines use the same five repeats of five grouped scoring folds.
+Three inner grouped folds select between two settings and choose the flagging
+cutoff. The text-only logistic reference retains its 30,000-term vocabulary
+limit. A2 logistic regression, LightGBM and XGBoost share identical A2 features
+with a 2,000-term limit, so the tree models have a reference with matching inputs.
+Class-balancing weights use only the rows in each individual fit. The grids and
+tree counts are fixed in advance, and outer validation is not used for early stopping.
+
+`reports/model_comparison/report.html` presents the average number of fake ads
+caught, genuine ads wrongly flagged, and fake ads found when only 5% of each
+scoring batch is reviewed. It also shows each repeat and approximate paired
+uncertainty intervals. Counts are averaged across repeats; the same ads are
+reused, so repeats are not additional independent datasets.
+
+The output folder also contains per-fold scores, settings tried, the saved run
+plan, package versions and data/code fingerprints. Exact row assignments and
+predictions are saved under `data/processed/model_comparison/` and ignored by Git.
+The final test set is not read. Completed models can be reused if the run plan
+matches; an interrupted partial model starts again. To rebuild the report from
+completed results without training, run:
+
+```powershell
+.\.venv\Scripts\python.exe -m src.model_comparison --report-only
+```
+
 ## Repo structure
 
 ```
