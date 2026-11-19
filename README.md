@@ -1,142 +1,229 @@
-# Fake Job Posting Fraud Detection (BT4012 Group Project)
+﻿# Fake Job Posting Fraud Detection — BT4012
 
-A three-phase fraud analytics pipeline for online job postings:
+This project detects potentially fraudulent job advertisements and helps a human
+reviewer understand suspicious wording. One dataset row represents one posting.
+The classifier scores an ad; the LLM agent investigates its text and explains
+returned evidence. A reviewer makes the final decision.
 
-1. **Phase 1 - Exploratory characterization** of scam patterns (fraud-only dataset) -> red-flag lexicon
-2. **Phase 2 - Feature engineering + supervised detection** on the labeled EMSCAD dataset (class imbalance, SHAP, PR-AUC)
-3. **Phase 3 - Agentic layer** that wraps the classifier and lexicon as tools for an LLM agent
+## Current status
 
-## Team
+| Component | Implemented | Remaining work |
+|---|---|---|
+| D1 data exploration | Missingness, duplicate grouping, frozen train/test split, training-only statistical analysis and phrase discovery | Further error analysis and sensitivity to grouping |
+| Feature engineering | Raw fields, missingness/contact/salary features, text style, TF-IDF and a learned phrase-score option | Validate which signals generalize to new employers and job types |
+| Fair model evaluation | Shared grouped folds; inner unseen-row predictions select settings and the flagging cutoff | Choose and freeze a final model and cutoff |
+| Model comparison | Text-only logistic regression, A2 logistic regression, LightGBM and XGBoost; saved reports | Final held-out test evaluation after selection |
+| Agent backend | Real LangChain tool calling with local or cloud Ollama; evidence validation, human confirmation and local audit records | Connect the saved trained classifier; its current tool score is a placeholder |
+| Risk lexicon | Real payment/secret-credential patterns, LLM context checks, exact quotes and conservative warning/negation checks | Evaluate on representative human-annotated development ads |
+| Frontend | Separate Streamlit application in `frontend/` | Further usability evaluation |
+| D2 / explanations | D2 is a planned supplementary fraud-only source; the agent explains quoted evidence | D2 analysis if required; classifier-specific explanations such as SHAP |
 
-| Name | Role |
-|------|------|
-| [Name 1] | EDA and feature engineering |
-| [Name 2] | Modeling |
-| [Name 3] | Agent layer |
-| [Name 4] | Report / evaluation |
+The reserved D1 test set has not been used for the saved model-comparison run.
+Agent development results use invented examples and must not be presented as
+fraud-detection accuracy. Model scoring is implemented in the ML pipeline, but
+that trained pipeline is **not yet connected to the agent**.
 
-## Datasets
+## Start the agent and frontend locally
 
-| Dataset | Kaggle slug | Use |
-|---------|-------------|-----|
-| D1 (labeled, ~17.9k rows, ~4.8% fraud) | `shivamb/real-or-fake-fake-jobposting-prediction` | Training / evaluation |
-| D2 (fraud-only, ~10k rows) | `srisaisuhassanisetty/fake-job-postings` | Phase 1 pattern discovery only |
+Run these PowerShell commands from the repository root. Use Python 3.10+ and
+keep the agent environment separate from the modelling `.venv`. If `python` is
+not recognized, use the full path to your installed Python executable.
 
-Raw data is **not committed** (see `.gitignore`). Download it with the steps below.
+```powershell
+python -m venv agent/.venv
+.\agent\.venv\Scripts\python.exe -m pip install -r frontend/requirements.txt
+```
 
-## Setup (reproduce locally)
+Install the [Ollama Windows application](https://ollama.com/download/windows),
+keep it running, and download the local model:
 
-```bash
-# 1. Clone
-git clone <REPO_URL>
-cd bt4012-fake-job-fraud
+```powershell
+ollama pull qwen3:4b-instruct
+```
 
-# 2. Create a virtual environment
+Create `agent/.env` with:
+
+```dotenv
+AGENT_BACKEND=ollama_local
+OLLAMA_MODEL=qwen3:4b-instruct
+```
+
+No real API key is needed in local mode. Start the interface:
+
+```powershell
+.\agent\.venv\Scripts\python.exe -m streamlit run frontend/app.py
+```
+
+Open the local address printed by Streamlit. Enter a posting's title,
+description and any supplied company profile, salary, requirements and benefits.
+Click **Review posting**. Opening the interface alone does not call the model.
+The current input form is manual; it does not automatically import dataset rows.
+Never include the known `fraudulent` label in the LLM input.
+
+The demo-scenario selector controls only the **placeholder classifier score**.
+The live model and risk checks analyse the submitted text. Results include a
+written rationale, quoted findings, context interpretations, limitations and a
+recommendation to propose rejection or escalate. A named reviewer may confirm a
+local decision and download a JSON report; no ad is removed from another system.
+
+Local mode uses `http://localhost:11434/v1` without Ollama cloud API charges.
+Optional `AGENT_BACKEND=ollama` uses Ollama cloud and requires an Ollama key and
+account credits. Direct DeepSeek API integration is **not implemented**; changing
+an API key alone does not switch providers. See [agent setup](agent/README.md)
+and [frontend instructions](frontend/README.md) for details.
+
+## Which lexicon is used?
+
+| Item | Location | Role |
+|---|---|---|
+| Historical phrase discovery | Notebook 00 → `reports/tables/lexicon_confirmed.csv` | Finds dataset associations using separate training-group discovery and confirmation samples |
+| Agent background vocabulary | `agent/resources/dataset_terms.csv` | Frozen copy of 33 historical terms, displayed as background only |
+| Risk candidates | `agent/risk_rules.py` | Versioned English payment and secret-credential patterns |
+| Context interpretation | `agent/context_review.py` | LLM distinguishes requests, negations, warnings and uncertainty, and can find additional quoted wording |
+| Registered agent tool | `agent/tools/lexicon.py`, registered in `agent/tools/__init__.py` | Combines candidates, validated context and background vocabulary |
+
+Notebook 00's discovery code was not replaced by the agent changes. Its exported
+terms, such as `data entry` and `oil`, are not proof of fraud and cannot support
+rejection. The agent reads a **snapshot**, not the report CSV directly; rerunning
+Notebook 00 does not automatically refresh `agent/resources/dataset_terms.csv`.
+See the [resource notes](agent/resources/README.md) before refreshing that copy.
+
+Only a cited payment/secret-credential request with completed LLM context review
+can support a rejection proposal. If explicit warning or negation wording
+contradicts a model verdict, the finding becomes uncertain. Failed checks leave
+candidates unconfirmed and require escalation. These controls do not establish
+employer legitimacy, market salaries or real-world accuracy.
+
+`agent/dummy_model.py` remains as an explicit **offline test model**. It is used
+only with `AGENT_BACKEND=dummy`; normal local/cloud use calls a real model, and
+failures never silently switch to the dummy model. This test model is separate
+from the still-placeholder classifier tool in `agent/tools/classifier.py`.
+
+## Reproduce the ML work
+
+D1 is the labelled EMSCAD dataset from Kaggle:
+`shivamb/real-or-fake-fake-jobposting-prediction` (about 17.9k ads, 4.8% fraud).
+Download and extract `fake_job_postings.csv` directly into `data/raw/`.
+Notebook 00 currently reads CSV files at that level, not inside `data/raw/d1/`.
+Raw and processed data are ignored by Git.
+
+D2, `srisaisuhassanisetty/fake-job-postings`, is a supplementary fraud-only
+source. Its analysis is not part of the completed D1 pipeline. Keep any D2 files
+separate from the top-level D1 CSV so Notebook 00 does not load the wrong file.
+
+```powershell
 python -m venv .venv
-source .venv/bin/activate        # macOS/Linux
-.venv\Scripts\activate           # Windows (PowerShell/cmd)
-
-# 3. Install dependencies
-pip install -r requirements.txt
-
-# 4. Get the data (needs a Kaggle API token, see below)
-python src/download_data.py
-
-# 5. Sanity check
-python src/check_setup.py
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pip install statsmodels
+.\.venv\Scripts\python.exe -m jupyterlab
 ```
 
-### Kaggle API token
+Select the modelling environment as the notebook kernel and follow this order:
 
-1. Kaggle -> Settings -> API -> **Create New Token** (downloads `kaggle.json`).
-2. Place it at `~/.kaggle/kaggle.json` (macOS/Linux) or `C:\Users\<you>\.kaggle\kaggle.json` (Windows).
-3. Or skip the API: download both datasets manually from Kaggle and unzip the CSVs into `data/raw/d1/` and `data/raw/d2/`.
+| Notebook | Work completed |
+|---|---|
+| [00: data understanding](notebooks/00_d1_data_understanding_clean.ipynb) | Data checks, related-posting groups, frozen split, training-only exploration and lexicon discovery |
+| [01: feature engineering](notebooks/01_d1_feature_engineering_v2.ipynb) | Feature blocks, grouped comparisons and ablations; reusable code in `src/features.py` |
+| [02: evaluation setup](notebooks/02_d1_modelling_setup.ipynb) | Shared grouped tests; model settings and cutoffs chosen from inner unseen-row predictions |
+| [03: model comparison](notebooks/03_d1_model_comparison.ipynb) | Reads and explains the completed four-model comparison |
 
-## Model evaluation
+Every model uses the same scoring examples across five repeats of five grouped
+folds. Three inner grouped folds select settings and a cutoff, using only the
+training portion of each outer round. Related ads stay together. Features are
+refitted inside each split. The cutoff maximizes F1 on the selected setting's
+inner out-of-fold predictions; the scoring rows do not choose it.
 
-Use `notebooks/02_d1_modelling_setup.ipynb` after notebook 00 has produced the
-frozen training and test files. It uses `src/evaluation.py` to keep the testing
-process separate from choosing model settings:
+The text-only logistic reference uses up to 30,000 TF-IDF terms. A2 logistic
+regression, LightGBM and XGBoost share A2 inputs with a 2,000-term limit. Balancing
+weights use each fit's training rows. Outer scoring data is not used for early
+stopping. The saved comparison reads no reserved test data.
 
-1. Set aside a group of training ads for scoring, keeping related ads together.
-2. Use smaller grouped splits of the remaining ads to compare settings and
-   choose the flagging cutoff from predictions on ads unseen by each fitted model.
-3. Fit the chosen pipeline on the remaining ads, then score the ads set aside
-   in step 1 with the cutoff already fixed.
+Read the [model report](reports/model_comparison/report.html) without retraining.
+Its counts, averaged over repeats, include:
 
-Every model uses the same scoring rounds. The notebook saves per-round scores,
-chosen settings and cutoffs, and an approximate paired uncertainty interval.
-Settings are selected by mean inner PR-AUC; the cutoff maximises F1 on the
-selected setting's inner out-of-fold predictions. Text vocabularies and other
-learned features are fitted again in every split. Supply the complete unfitted
-feature-and-model pipeline, not features fitted on all the data in advance.
+| Model | Fake ads caught / 693 | Genuine ads wrongly flagged / 13,746 | Fake ads found in the 5% review budget | Mean PR-AUC |
+|---|---:|---:|---:|---:|
+| Text-only logistic regression | 352.0 | 308.4 | 377.6 | 0.595 |
+| A2 logistic regression | 376.8 | 443.2 | 370.8 | 0.555 |
+| LightGBM A2 | 383.6 | 414.4 | 389.0 | 0.631 |
+| XGBoost A2 | 336.6 | 398.0 | 344.8 | 0.566 |
 
-The default is five repeats of five scoring folds, three inner folds and three
-candidate logistic-regression settings. For a quick development check, reduce
-the repeats and candidate grid; use the full, shared plan for reported results.
-The reserved test file is opened only when the final-test switch is enabled,
-after the chosen model's settings and cutoff have been fixed from training data.
-
-Run the checks from the repository root:
-
-```powershell
-.\.venv\Scripts\python.exe -m unittest discover -s tests -v
-```
-
-### Compare logistic regression, LightGBM and XGBoost
-
-Run the complete comparison, then open `notebooks/03_d1_model_comparison.ipynb`
-to read the results:
+The 5% budget ranks ads by score separately from the learned flagging cutoff.
+The report includes per-round results and approximate paired uncertainty
+intervals. Higher averages alone do not establish a reliable improvement.
+Repeats reuse the same ads and are not independent new datasets.
 
 ```powershell
+# Rebuild the report from saved completed results; no model training.
+.\.venv\Scripts\python.exe -m src.model_comparison --report-only
+
+# Full comparison; can take substantial time.
 .\.venv\Scripts\python.exe -u -m src.model_comparison
 ```
 
-All four pipelines use the same five repeats of five grouped scoring folds.
-Three inner grouped folds select between two settings and choose the flagging
-cutoff. The text-only logistic reference retains its 30,000-term vocabulary
-limit. A2 logistic regression, LightGBM and XGBoost share identical A2 features
-with a 2,000-term limit, so the tree models have a reference with matching inputs.
-Class-balancing weights use only the rows in each individual fit. The grids and
-tree counts are fixed in advance, and outer validation is not used for early stopping.
+Run plans, settings, scores and fingerprints are in `reports/model_comparison/`.
+Row assignments and predictions are under ignored
+`data/processed/model_comparison/`. Choose and freeze the final model and cutoff
+before enabling the reserved-test section in Notebook 02.
 
-`reports/model_comparison/report.html` presents the average number of fake ads
-caught, genuine ads wrongly flagged, and fake ads found when only 5% of each
-scoring batch is reviewed. It also shows each repeat and approximate paired
-uncertainty intervals. Counts are averaged across repeats; the same ads are
-reused, so repeats are not additional independent datasets.
+## Agent comparison and checks
 
-The output folder also contains per-fold scores, settings tried, the saved run
-plan, package versions and data/code fingerprints. Exact row assignments and
-predictions are saved under `data/processed/model_comparison/` and ignored by Git.
-The final test set is not read. Completed models can be reused if the run plan
-matches; an interrupted partial model starts again. To rebuild the report from
-completed results without training, run:
+The [saved evidence comparison](reports/agent_evaluation/development_comparison.json)
+uses 12 synthetic development examples, evaluated twice with local
+`qwen3:4b-instruct`. Across each method's 24 evaluations, there were 12 actual
+risky-request occurrences and 12 negatives:
+
+| Method | Requests found / 12 | False alarms | Findings with wrong field/category |
+|---|---:|---:|---:|
+| Rules | 10 | 0 | 0 |
+| LLM without rule candidates | 12 | 0 | 4 |
+| Rules + LLM | 12 | 0 | 0 |
+
+These examples were used during development, so they are regression checks,
+not unseen validation data. The paired improvement interval includes zero.
+Both LLM methods use exact-quote validation and the same contradiction guard.
+More human-annotated development ads are needed before claiming an improvement.
 
 ```powershell
-.\.venv\Scripts\python.exe -m src.model_comparison --report-only
+# Software checks; no live model calls or API credits.
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+.\agent\.venv\Scripts\python.exe -m unittest discover -s agent/tests -v
+.\agent\.venv\Scripts\python.exe -m unittest discover -s frontend/tests -v
+
+# Evidence baseline without an LLM.
+.\agent\.venv\Scripts\python.exe -m agent.evaluate_lexicon --mode rules
+
+# Live comparison using the configured model; may take several minutes locally.
+.\agent\.venv\Scripts\python.exe -m agent.evaluate_lexicon --mode all --repeats 2
 ```
 
-## Repo structure
+The last verified agent/frontend suites contained 43 passing tests. That count
+excludes the separate ML tests and is not a measure of fraud-detection accuracy.
+Evaluation options, custom JSONL annotations and result locations are documented
+in [agent/README.md](agent/README.md).
 
+## Repository layout
+
+```text
+notebooks/                    D1 exploration, features, evaluation and comparison
+src/                          Reusable ML features and evaluation code
+tests/                        ML evaluation and comparison checks
+agent/                        LangChain backend, tools, config and agent checks
+frontend/                     Streamlit UI, UI dependencies and interface checks
+reports/tables/               Saved statistical and feature-analysis tables
+reports/model_comparison/     Completed ML comparison reports and scores
+reports/agent_evaluation/     Synthetic evidence-extraction comparison
+agent/runtime/                Local decisions and ad-hoc reports (ignored)
+data/raw/, data/processed/    Original and derived data (ignored)
 ```
-data/raw/          original downloads (git-ignored)
-data/processed/    cleaned / feature tables (git-ignored)
-notebooks/         exploratory notebooks (prefix with your initials, e.g. ab_01_eda.ipynb)
-src/               reusable code (download, features, models, agent)
-reports/figures/   exported figures for the report and slides
-```
 
-## Team workflow
+## Team workflow and acknowledgement
 
-- `main` is always runnable. Work on a branch: `eda/<topic>`, `model/<topic>`, `agent/<topic>`.
-- Open a pull request and get one teammate to review before merging.
-- Commit small and often, with clear messages. Contribution history is part of the peer evaluation.
-- Do not commit data, API keys or `.env` files.
-- Set a global random seed (`SEED = 42` in `src/config.py`) so results are reproducible.
+Work on a branch, commit small changes and have a teammate review before merging
+into `main`. Keep data, API keys, `.env`, virtual environments and large model
+artifacts out of Git. The ML seed is 42; model-provider responses need not be
+identical between runs, even with temperature zero.
 
-## AI / external code acknowledgement
-
-List any generative AI tools, external code or public notebooks used here (required by the course):
-
-- [ ] ...
+OpenAI Codex assisted with evaluation code, agent/frontend implementation,
+tests and documentation. The team should review this work and complete the
+course's AI/external-code declaration with any additional tools and sources used.

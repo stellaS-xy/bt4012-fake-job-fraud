@@ -1,0 +1,1298 @@
+{
+  "created_at": "2026-11-19T08:31:35.021665+00:00",
+  "purpose": "Development evidence extraction; not fraud detection accuracy or held-out test performance.",
+  "warning": "Included examples are synthetic regression cases, not a representative dataset. Small-sample intervals do not establish deployment quality.",
+  "rules_version": "risk-patterns-v2",
+  "backend": "ollama_local",
+  "model": "qwen3:4b-instruct",
+  "input_sha256": "e536d47806ac82531278dc7f8afcb2f43d50a366883fb67f8a6d219deedb7326",
+  "independent_cases": 12,
+  "repeats": 2,
+  "metrics": {
+    "rules": {
+      "examples": 24,
+      "positives": 12,
+      "negatives": 12,
+      "requests_caught": 10,
+      "requests_missed_or_unavailable": 2,
+      "false_alarms": 0,
+      "failed_reviews": 0,
+      "precision": 1.0,
+      "recall": 0.8333333333333334,
+      "false_alarm_rate": 0.0,
+      "emitted_findings": 10,
+      "unsupported_findings": 0,
+      "findings_without_gold_span_match": 0,
+      "accuracy_counting_failures_as_wrong": 0.9166666666666666
+    },
+    "llm": {
+      "examples": 24,
+      "positives": 12,
+      "negatives": 12,
+      "requests_caught": 12,
+      "requests_missed_or_unavailable": 0,
+      "false_alarms": 0,
+      "failed_reviews": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "false_alarm_rate": 0.0,
+      "emitted_findings": 12,
+      "unsupported_findings": 4,
+      "findings_without_gold_span_match": 4,
+      "accuracy_counting_failures_as_wrong": 1.0
+    },
+    "combined": {
+      "examples": 24,
+      "positives": 12,
+      "negatives": 12,
+      "requests_caught": 12,
+      "requests_missed_or_unavailable": 0,
+      "false_alarms": 0,
+      "failed_reviews": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "false_alarm_rate": 0.0,
+      "emitted_findings": 12,
+      "unsupported_findings": 0,
+      "findings_without_gold_span_match": 0,
+      "accuracy_counting_failures_as_wrong": 1.0
+    }
+  },
+  "paired_comparisons": [
+    {
+      "comparison": "llm minus rules",
+      "independent_cases": 12,
+      "mean_accuracy_difference": 0.08333333333333333,
+      "bootstrap_95_low": 0.0,
+      "bootstrap_95_high": 0.25
+    },
+    {
+      "comparison": "combined minus rules",
+      "independent_cases": 12,
+      "mean_accuracy_difference": 0.08333333333333333,
+      "bootstrap_95_low": 0.0,
+      "bootstrap_95_high": 0.25
+    },
+    {
+      "comparison": "combined minus llm",
+      "independent_cases": 12,
+      "mean_accuracy_difference": 0.0,
+      "bootstrap_95_low": 0.0,
+      "bootstrap_95_high": 0.0
+    }
+  ],
+  "rows": [
+    {
+      "case_id": "ordinary_data_entry",
+      "repeat": 0,
+      "method": "rules",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "ordinary_data_entry",
+      "repeat": 0,
+      "method": "llm",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "ordinary_data_entry",
+      "repeat": 0,
+      "method": "combined",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "interview_deposit",
+      "repeat": 0,
+      "method": "rules",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "description",
+          "category": "payment_request",
+          "quote": "Transfer a refundable registration deposit of $80 to our recruiter to secure your interview."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "description",
+          "quote": "Transfer a refundable registration deposit of $80 to our recruiter to secure your interview.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "interview_deposit",
+      "repeat": 0,
+      "method": "llm",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "description",
+          "category": "payment_request",
+          "quote": "Transfer a refundable registration deposit of $80 to our recruiter to secure your interview."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "description",
+          "quote": "Transfer a refundable registration deposit of $80 to our recruiter to secure your interview.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "interview_deposit",
+      "repeat": 0,
+      "method": "combined",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "description",
+          "category": "payment_request",
+          "quote": "Transfer a refundable registration deposit of $80 to our recruiter to secure your interview."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "description",
+          "quote": "Transfer a refundable registration deposit of $80 to our recruiter to secure your interview.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "negated_fee",
+      "repeat": 0,
+      "method": "rules",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "negated_fee",
+      "repeat": 0,
+      "method": "llm",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "negated_fee",
+      "repeat": 0,
+      "method": "combined",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "bank_login_code",
+      "repeat": 0,
+      "method": "rules",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "description",
+          "category": "credential_request",
+          "quote": "Send the one-time login code from your banking app to the hiring manager to verify your identity."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "description",
+          "quote": "Send the one-time login code from your banking app to the hiring manager to verify your identity.",
+          "category": "credential_request"
+        }
+      ]
+    },
+    {
+      "case_id": "bank_login_code",
+      "repeat": 0,
+      "method": "llm",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "description",
+          "category": "credential_request",
+          "quote": "Send the one-time login code from your banking app to the hiring manager to verify your identity."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "description",
+          "quote": "Send the one-time login code from your banking app to the hiring manager to verify your identity.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "bank_login_code",
+      "repeat": 0,
+      "method": "combined",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "description",
+          "category": "credential_request",
+          "quote": "Send the one-time login code from your banking app to the hiring manager to verify your identity."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "description",
+          "quote": "Send the one-time login code from your banking app to the hiring manager to verify your identity.",
+          "category": "credential_request"
+        }
+      ]
+    },
+    {
+      "case_id": "quoted_scam_warning",
+      "repeat": 0,
+      "method": "rules",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "quoted_scam_warning",
+      "repeat": 0,
+      "method": "llm",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "quoted_scam_warning",
+      "repeat": 0,
+      "method": "combined",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "novel_payment_wording",
+      "repeat": 0,
+      "method": "rules",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "description",
+          "category": "payment_request",
+          "quote": "Before an interview, a refundable eighty-dollar remittance is required."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "novel_payment_wording",
+      "repeat": 0,
+      "method": "llm",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "description",
+          "category": "payment_request",
+          "quote": "Before an interview, a refundable eighty-dollar remittance is required."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "description",
+          "quote": "Before an interview, a refundable eighty-dollar remittance is required.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "novel_payment_wording",
+      "repeat": 0,
+      "method": "combined",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "description",
+          "category": "payment_request",
+          "quote": "Before an interview, a refundable eighty-dollar remittance is required."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "description",
+          "quote": "Before an interview, a refundable eighty-dollar remittance is required.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "ordinary_industry",
+      "repeat": 0,
+      "method": "rules",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "ordinary_industry",
+      "repeat": 0,
+      "method": "llm",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "ordinary_industry",
+      "repeat": 0,
+      "method": "combined",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "requirements_password",
+      "repeat": 0,
+      "method": "rules",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "requirements",
+          "category": "credential_request",
+          "quote": "You must share your banking password to continue."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "requirements",
+          "quote": "You must share your banking password to continue.",
+          "category": "credential_request"
+        }
+      ]
+    },
+    {
+      "case_id": "requirements_password",
+      "repeat": 0,
+      "method": "llm",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "requirements",
+          "category": "credential_request",
+          "quote": "You must share your banking password to continue."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "requirements",
+          "quote": "You must share your banking password to continue.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "requirements_password",
+      "repeat": 0,
+      "method": "combined",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "requirements",
+          "category": "credential_request",
+          "quote": "You must share your banking password to continue."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "requirements",
+          "quote": "You must share your banking password to continue.",
+          "category": "credential_request"
+        }
+      ]
+    },
+    {
+      "case_id": "legitimate_payroll",
+      "repeat": 0,
+      "method": "rules",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "legitimate_payroll",
+      "repeat": 0,
+      "method": "llm",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "legitimate_payroll",
+      "repeat": 0,
+      "method": "combined",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "benefits_fee",
+      "repeat": 0,
+      "method": "rules",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "benefits",
+          "category": "payment_request",
+          "quote": "You must pay an application fee before the interview."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "benefits",
+          "quote": "You must pay an application fee before the interview.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "benefits_fee",
+      "repeat": 0,
+      "method": "llm",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "benefits",
+          "category": "payment_request",
+          "quote": "You must pay an application fee before the interview."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "benefits",
+          "quote": "You must pay an application fee before the interview.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "benefits_fee",
+      "repeat": 0,
+      "method": "combined",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "benefits",
+          "category": "payment_request",
+          "quote": "You must pay an application fee before the interview."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "benefits",
+          "quote": "You must pay an application fee before the interview.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "prompt_injection",
+      "repeat": 0,
+      "method": "rules",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "description",
+          "category": "payment_request",
+          "quote": "You must pay an application fee before starting."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "description",
+          "quote": "You must pay an application fee before starting.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "prompt_injection",
+      "repeat": 0,
+      "method": "llm",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "description",
+          "category": "payment_request",
+          "quote": "You must pay an application fee before starting."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "description",
+          "quote": "You must pay an application fee before starting.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "prompt_injection",
+      "repeat": 0,
+      "method": "combined",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "description",
+          "category": "payment_request",
+          "quote": "You must pay an application fee before starting."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "description",
+          "quote": "You must pay an application fee before starting.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "urgency_without_payment",
+      "repeat": 0,
+      "method": "rules",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "urgency_without_payment",
+      "repeat": 0,
+      "method": "llm",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "urgency_without_payment",
+      "repeat": 0,
+      "method": "combined",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "ordinary_data_entry",
+      "repeat": 1,
+      "method": "rules",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "ordinary_data_entry",
+      "repeat": 1,
+      "method": "llm",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "ordinary_data_entry",
+      "repeat": 1,
+      "method": "combined",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "interview_deposit",
+      "repeat": 1,
+      "method": "rules",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "description",
+          "category": "payment_request",
+          "quote": "Transfer a refundable registration deposit of $80 to our recruiter to secure your interview."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "description",
+          "quote": "Transfer a refundable registration deposit of $80 to our recruiter to secure your interview.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "interview_deposit",
+      "repeat": 1,
+      "method": "llm",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "description",
+          "category": "payment_request",
+          "quote": "Transfer a refundable registration deposit of $80 to our recruiter to secure your interview."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "description",
+          "quote": "Transfer a refundable registration deposit of $80 to our recruiter to secure your interview.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "interview_deposit",
+      "repeat": 1,
+      "method": "combined",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "description",
+          "category": "payment_request",
+          "quote": "Transfer a refundable registration deposit of $80 to our recruiter to secure your interview."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "description",
+          "quote": "Transfer a refundable registration deposit of $80 to our recruiter to secure your interview.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "negated_fee",
+      "repeat": 1,
+      "method": "rules",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "negated_fee",
+      "repeat": 1,
+      "method": "llm",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "negated_fee",
+      "repeat": 1,
+      "method": "combined",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "bank_login_code",
+      "repeat": 1,
+      "method": "rules",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "description",
+          "category": "credential_request",
+          "quote": "Send the one-time login code from your banking app to the hiring manager to verify your identity."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "description",
+          "quote": "Send the one-time login code from your banking app to the hiring manager to verify your identity.",
+          "category": "credential_request"
+        }
+      ]
+    },
+    {
+      "case_id": "bank_login_code",
+      "repeat": 1,
+      "method": "llm",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "description",
+          "category": "credential_request",
+          "quote": "Send the one-time login code from your banking app to the hiring manager to verify your identity."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "description",
+          "quote": "Send the one-time login code from your banking app to the hiring manager to verify your identity.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "bank_login_code",
+      "repeat": 1,
+      "method": "combined",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "description",
+          "category": "credential_request",
+          "quote": "Send the one-time login code from your banking app to the hiring manager to verify your identity."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "description",
+          "quote": "Send the one-time login code from your banking app to the hiring manager to verify your identity.",
+          "category": "credential_request"
+        }
+      ]
+    },
+    {
+      "case_id": "quoted_scam_warning",
+      "repeat": 1,
+      "method": "rules",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "quoted_scam_warning",
+      "repeat": 1,
+      "method": "llm",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "quoted_scam_warning",
+      "repeat": 1,
+      "method": "combined",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "novel_payment_wording",
+      "repeat": 1,
+      "method": "rules",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "description",
+          "category": "payment_request",
+          "quote": "Before an interview, a refundable eighty-dollar remittance is required."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "novel_payment_wording",
+      "repeat": 1,
+      "method": "llm",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "description",
+          "category": "payment_request",
+          "quote": "Before an interview, a refundable eighty-dollar remittance is required."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "description",
+          "quote": "Before an interview, a refundable eighty-dollar remittance is required.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "novel_payment_wording",
+      "repeat": 1,
+      "method": "combined",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "description",
+          "category": "payment_request",
+          "quote": "Before an interview, a refundable eighty-dollar remittance is required."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "description",
+          "quote": "Before an interview, a refundable eighty-dollar remittance is required.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "ordinary_industry",
+      "repeat": 1,
+      "method": "rules",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "ordinary_industry",
+      "repeat": 1,
+      "method": "llm",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "ordinary_industry",
+      "repeat": 1,
+      "method": "combined",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "requirements_password",
+      "repeat": 1,
+      "method": "rules",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "requirements",
+          "category": "credential_request",
+          "quote": "You must share your banking password to continue."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "requirements",
+          "quote": "You must share your banking password to continue.",
+          "category": "credential_request"
+        }
+      ]
+    },
+    {
+      "case_id": "requirements_password",
+      "repeat": 1,
+      "method": "llm",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "requirements",
+          "category": "credential_request",
+          "quote": "You must share your banking password to continue."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "requirements",
+          "quote": "You must share your banking password to continue.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "requirements_password",
+      "repeat": 1,
+      "method": "combined",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "requirements",
+          "category": "credential_request",
+          "quote": "You must share your banking password to continue."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "requirements",
+          "quote": "You must share your banking password to continue.",
+          "category": "credential_request"
+        }
+      ]
+    },
+    {
+      "case_id": "legitimate_payroll",
+      "repeat": 1,
+      "method": "rules",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "legitimate_payroll",
+      "repeat": 1,
+      "method": "llm",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "legitimate_payroll",
+      "repeat": 1,
+      "method": "combined",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "benefits_fee",
+      "repeat": 1,
+      "method": "rules",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "benefits",
+          "category": "payment_request",
+          "quote": "You must pay an application fee before the interview."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "benefits",
+          "quote": "You must pay an application fee before the interview.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "benefits_fee",
+      "repeat": 1,
+      "method": "llm",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "benefits",
+          "category": "payment_request",
+          "quote": "You must pay an application fee before the interview."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "benefits",
+          "quote": "You must pay an application fee before the interview.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "benefits_fee",
+      "repeat": 1,
+      "method": "combined",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "benefits",
+          "category": "payment_request",
+          "quote": "You must pay an application fee before the interview."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "benefits",
+          "quote": "You must pay an application fee before the interview.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "prompt_injection",
+      "repeat": 1,
+      "method": "rules",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "description",
+          "category": "payment_request",
+          "quote": "You must pay an application fee before starting."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "description",
+          "quote": "You must pay an application fee before starting.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "prompt_injection",
+      "repeat": 1,
+      "method": "llm",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "description",
+          "category": "payment_request",
+          "quote": "You must pay an application fee before starting."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "description",
+          "quote": "You must pay an application fee before starting.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "prompt_injection",
+      "repeat": 1,
+      "method": "combined",
+      "expected_request": true,
+      "gold_requests": [
+        {
+          "field": "description",
+          "category": "payment_request",
+          "quote": "You must pay an application fee before starting."
+        }
+      ],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": true,
+      "findings": [
+        {
+          "field": "description",
+          "quote": "You must pay an application fee before starting.",
+          "category": "payment_request"
+        }
+      ]
+    },
+    {
+      "case_id": "urgency_without_payment",
+      "repeat": 1,
+      "method": "rules",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "urgency_without_payment",
+      "repeat": 1,
+      "method": "llm",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    },
+    {
+      "case_id": "urgency_without_payment",
+      "repeat": 1,
+      "method": "combined",
+      "expected_request": false,
+      "gold_requests": [],
+      "status": "completed",
+      "error_code": null,
+      "predicted_request": false,
+      "findings": []
+    }
+  ]
+}
