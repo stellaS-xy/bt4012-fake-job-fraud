@@ -1,9 +1,10 @@
-﻿# Fake Job Posting Fraud Detection — BT4012
+# Fake Job Posting Fraud Detection — BT4012
 
 This project detects potentially fraudulent job advertisements and helps a human
 reviewer understand suspicious wording. One dataset row represents one posting.
 The classifier scores an ad; the LLM agent investigates its text and explains
-returned evidence. A reviewer makes the final decision.
+returned evidence. It recommends pass - no review needed when both checks pass,
+or review needed with reasons when either does not. It takes no business action.
 
 ## Current status
 
@@ -13,15 +14,17 @@ returned evidence. A reviewer makes the final decision.
 | Feature engineering | Raw fields, missingness/contact/salary features, text style, TF-IDF and a learned phrase-score option | Validate which signals generalize to new employers and job types |
 | Fair model evaluation | Shared grouped folds; inner unseen-row predictions select settings and the flagging cutoff | Choose and freeze a final model and cutoff |
 | Model comparison | Text-only logistic regression, A2 logistic regression, LightGBM and XGBoost; saved reports | Final held-out test evaluation after selection |
-| Agent backend | Real LangChain tool calling with local or cloud Ollama; evidence validation, human confirmation and local audit records | Connect the saved trained classifier; its current tool score is a placeholder |
+| Agent backend | Real LightGBM classifier + lexicon/context tools, local/cloud Ollama, evidence validation and local review records | Validate classifier calibration and robustness on representative postings |
 | Risk lexicon | Real payment/secret-credential patterns, LLM context checks, exact quotes and conservative warning/negation checks | Evaluate on representative human-annotated development ads |
 | Frontend | Separate Streamlit application in `frontend/` | Further usability evaluation |
+| Agent evaluator | Separate `evaluator/` package with code checks, configurable LLM judge, dataset-row input, saved-case replay and local reports | Representative development evaluation and calibration |
 | D2 / explanations | D2 is a planned supplementary fraud-only source; the agent explains quoted evidence | D2 analysis if required; classifier-specific explanations such as SHAP |
 
 The reserved D1 test set has not been used for the saved model-comparison run.
 Agent development results use invented examples and must not be presented as
-fraud-detection accuracy. Model scoring is implemented in the ML pipeline, but
-that trained pipeline is **not yet connected to the agent**.
+fraud-detection accuracy. The agent now loads a real LightGBM A2 training-only
+refit. Its integration cutoff is the median of saved inner-selected cutoffs,
+not a newly optimized final deployment policy.
 
 ## Start the agent and frontend locally
 
@@ -48,7 +51,17 @@ AGENT_BACKEND=ollama_local
 OLLAMA_MODEL=qwen3:4b-instruct
 ```
 
-No real API key is needed in local mode. Start the interface:
+No real API key is needed in local mode. Before the first real classifier run,
+prepare the modelling environment (see the ML setup below), then fit its local
+artifact using training data only:
+
+```powershell
+.\.venv\Scripts\python.exe -m src.classifier_inference --fit
+```
+
+The artifact is stored under ignored `models/agent_lightgbm/`. The agent calls
+that environment for inference; missing artifacts produce an error, never a
+synthetic replacement score. Start the interface:
 
 ```powershell
 .\agent\.venv\Scripts\python.exe -m streamlit run frontend/app.py
@@ -60,11 +73,12 @@ Click **Review posting**. Opening the interface alone does not call the model.
 The current input form is manual; it does not automatically import dataset rows.
 Never include the known `fraudulent` label in the LLM input.
 
-The demo-scenario selector controls only the **placeholder classifier score**.
-The live model and risk checks analyse the submitted text. Results include a
+In real mode, the example selector fills a posting; LightGBM computes its score
+from the submitted fields. Example selection never fixes the classifier score. The live model and risk checks analyse the submitted text. Results include a
 written rationale, quoted findings, context interpretations, limitations and a
-recommendation to propose rejection or escalate. A named reviewer may confirm a
-local decision and download a JSON report; no ad is removed from another system.
+recommendation: **pass - no review needed** when both tools pass, or **review
+needed** with reasons otherwise. Download a JSON report from the interface; there
+are no rejection, human-escalation or confirmation controls.
 
 Local mode uses `http://localhost:11434/v1` without Ollama cloud API charges.
 Optional `AGENT_BACKEND=ollama` uses Ollama cloud and requires an Ollama key and
@@ -78,26 +92,31 @@ and [frontend instructions](frontend/README.md) for details.
 |---|---|---|
 | Historical phrase discovery | Notebook 00 → `reports/tables/lexicon_confirmed.csv` | Finds dataset associations using separate training-group discovery and confirmation samples |
 | Agent background vocabulary | `agent/resources/dataset_terms.csv` | Frozen copy of 33 historical terms, displayed as background only |
-| Risk candidates | `agent/risk_rules.py` | Versioned English payment and secret-credential patterns |
-| Context interpretation | `agent/context_review.py` | LLM distinguishes requests, negations, warnings and uncertainty, and can find additional quoted wording |
+| Risk candidates | `agent/tools/risk_rules.py` | Versioned English payment and secret-credential patterns |
+| Context interpretation | `agent/tools/context_review.py` | LLM distinguishes requests, negations, warnings and uncertainty, and can find additional quoted wording |
 | Registered agent tool | `agent/tools/lexicon.py`, registered in `agent/tools/__init__.py` | Combines candidates, validated context and background vocabulary |
 
 Notebook 00's discovery code was not replaced by the agent changes. Its exported
-terms, such as `data entry` and `oil`, are not proof of fraud and cannot support
-rejection. The agent reads a **snapshot**, not the report CSV directly; rerunning
+terms, such as `data entry` and `oil`, are background and do not fail the check
+on their own. The agent reads a **snapshot**, not the report CSV directly; rerunning
 Notebook 00 does not automatically refresh `agent/resources/dataset_terms.csv`.
 See the [resource notes](agent/resources/README.md) before refreshing that copy.
 
-Only a cited payment/secret-credential request with completed LLM context review
-can support a rejection proposal. If explicit warning or negation wording
-contradicts a model verdict, the finding becomes uncertain. Failed checks leave
-candidates unconfirmed and require escalation. These controls do not establish
-employer legitimacy, market salaries or real-world accuracy.
+The classifier passes when its real, valid score is below the cutoff. The
+lexicon passes when its context review completes without risky requests or
+unresolved findings. Both must pass for `pass_no_review_needed`; otherwise the
+recommendation is `review_needed`, with reasons. Missing optional fields and
+background terms alone do not fail the checks. Conflicting warning/negation
+interpretations remain uncertain and require review. These checks do not verify
+employer legitimacy or market salaries. `agent/core/policy.py` enforces this rule.
 
-`agent/dummy_model.py` remains as an explicit **offline test model**. It is used
-only with `AGENT_BACKEND=dummy`; normal local/cloud use calls a real model, and
-failures never silently switch to the dummy model. This test model is separate
-from the still-placeholder classifier tool in `agent/tools/classifier.py`.
+Automated tests use `agent/tests/chat_model_fixture.py` and
+`agent/tests/runtime_fixtures.py` to mock external calls. These files are imported
+only by tests. Normal use supports real local/cloud Ollama models and the real
+LightGBM classifier; no simulated backend or fixed classifier score is offered.
+Saved cases require actual backend/model metadata. Earlier reports remain
+unchanged historical snapshots; current schema 5 uses explicit test-fixture
+provenance names instead of the former ambiguous fields.
 
 ## Reproduce the ML work
 
@@ -168,6 +187,29 @@ before enabling the reserved-test section in Notebook 02.
 
 ## Agent comparison and checks
 
+For full recommendation/explanation evaluation, use the separate
+[`evaluator/`](evaluator/README.md) package. It combines exact quote/citation and
+decision-policy checks with a real local LLM judge. No manual reviewer step is
+required. It accepts dataset CSV/JSONL rows or saved frontend JSON cases; labels
+stay outside agent/judge inputs. The judge rates grounding, context,
+recommendation consistency and clarity. Failures are reported with null scores. Safe fallback handling is reported
+separately from completed-answer quality; incomplete reviews cannot earn full
+explanation scores merely because a fallback recommended review.
+
+```powershell
+# Evaluate a saved agent review without rerunning the agent.
+.\agent\.venv\Scripts\python.exe -m evaluator --cases path/to/review.json
+
+# Run the agent and judge on a small development subset.
+.\agent\.venv\Scripts\python.exe -m evaluator --data path/to/development.csv --limit 10
+```
+
+The judge defaults to local `qwen3:4b-instruct`; configure it independently in
+`evaluator/.env` or choose `--judge-model`. Reports flag matching agent/judge
+model identifiers. Automatic judgments are not verified truth. Fraud-label metrics use valid real classifier tool predictions independently
+of final-answer success. Recommendations are not treated as fraud predictions. See the evaluator guide
+for code-only mode, repeats, output files and frozen held-out runs.
+
 The [saved evidence comparison](reports/agent_evaluation/development_comparison.json)
 uses 12 synthetic development examples, evaluated twice with local
 `qwen3:4b-instruct`. Across each method's 24 evaluations, there were 12 actual
@@ -189,16 +231,18 @@ More human-annotated development ads are needed before claiming an improvement.
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
 .\agent\.venv\Scripts\python.exe -m unittest discover -s agent/tests -v
 .\agent\.venv\Scripts\python.exe -m unittest discover -s frontend/tests -v
+.\agent\.venv\Scripts\python.exe -m unittest discover -s evaluator/tests -v
 
 # Evidence baseline without an LLM.
-.\agent\.venv\Scripts\python.exe -m agent.evaluate_lexicon --mode rules
+.\agent\.venv\Scripts\python.exe -m agent.tests.evaluate_lexicon --mode rules
 
 # Live comparison using the configured model; may take several minutes locally.
-.\agent\.venv\Scripts\python.exe -m agent.evaluate_lexicon --mode all --repeats 2
+.\agent\.venv\Scripts\python.exe -m agent.tests.evaluate_lexicon --mode all --repeats 2
 ```
 
-The last verified agent/frontend suites contained 43 passing tests. That count
-excludes the separate ML tests and is not a measure of fraud-detection accuracy.
+The last verified agent/frontend suites contained 49 passing tests. That count
+excludes the separate ML and evaluator tests. The evaluator has 17 additional
+no-network tests. Neither count is a measure of fraud-detection accuracy.
 Evaluation options, custom JSONL annotations and result locations are documented
 in [agent/README.md](agent/README.md).
 
@@ -208,8 +252,13 @@ in [agent/README.md](agent/README.md).
 notebooks/                    D1 exploration, features, evaluation and comparison
 src/                          Reusable ML features and evaluation code
 tests/                        ML evaluation and comparison checks
-agent/                        LangChain backend, tools, config and agent checks
+agent/core/                   Workflow, model setup, config, schemas and validation
+agent/tools/                  Classifier, lexicon, posting checks, rules and context
+agent/resources/              Historical vocabulary and synthetic demo examples
+agent/tests/                  Agent tests, test-only fixtures and evidence comparison CLI
 frontend/                     Streamlit UI, UI dependencies and interface checks
+evaluator/                    Code checks, LLM judging, dataset/replay CLI and tests
+evaluator/outputs/            Local per-case reports and saved cases (ignored)
 reports/tables/               Saved statistical and feature-analysis tables
 reports/model_comparison/     Completed ML comparison reports and scores
 reports/agent_evaluation/     Synthetic evidence-extraction comparison

@@ -1,6 +1,6 @@
 """Compare evidence extraction on shared, annotated development examples.
 
-Run from the repository root: python -m agent.evaluate_lexicon --mode all
+Run from the repository root: python -m agent.tests.evaluate_lexicon --mode all
 This measures risky-request extraction, NOT job-fraud classification.
 """
 import argparse
@@ -11,13 +11,13 @@ import json
 from pathlib import Path
 import random
 
-from agent.config import load_settings
-from agent.context_review import review_context, validate_context, interpreted_findings
-from agent.errors import error_code_for
-from agent.risk_rules import VERSION, candidate_matches, rule_requests
-from agent.schemas import Posting
+from agent.core.config import load_settings
+from agent.tools.context_review import review_context, validate_context, interpreted_findings
+from agent.core.errors import error_code_for
+from agent.tools.risk_rules import VERSION, candidate_matches, rule_requests
+from agent.core.schemas import Posting
 
-DEFAULT_CASES = Path(__file__).parent / "resources" / "risk_examples.jsonl"
+DEFAULT_CASES = Path(__file__).resolve().parents[1] / "resources" / "risk_examples.jsonl"
 
 
 def load_cases(path):
@@ -94,8 +94,6 @@ def paired_intervals(rows, draws=2000):
 def evaluate(cases, settings, repeats=1, mode='all', reviewer=review_context, progress=None):
     if repeats < 1 or mode not in ('rules', 'all'):
         raise ValueError("Choose a valid mode and a positive repeat count.")
-    if mode == 'all' and settings.backend == 'dummy':
-        raise ValueError("LLM comparisons require a real local/cloud model.")
     methods = ('rules',) if mode == 'rules' else ('rules', 'llm', 'combined')
     rows = []
     for repeat in range(repeats):
@@ -140,8 +138,8 @@ def main():
     parser.add_argument('--max-cases', type=int, help='Limit a smoke run; never interpret a subset as full evaluation.')
     parser.add_argument('--output', type=Path, default=Path('agent/runtime/lexicon_evaluation.json'))
     args = parser.parse_args()
-    from agent.config import Settings
-    settings = Settings(backend='dummy') if args.mode == 'rules' else load_settings()
+    from agent.core.config import Settings
+    settings = Settings(backend='ollama_local') if args.mode == 'rules' else load_settings()
     cases = load_cases(args.cases)
     if args.max_cases is not None:
         if args.max_cases < 1:

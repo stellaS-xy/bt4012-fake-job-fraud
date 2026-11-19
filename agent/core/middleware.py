@@ -3,7 +3,7 @@ from langchain.agents.middleware import wrap_model_call
 from langchain.agents.structured_output import ProviderStrategy
 from langchain_core.messages import ToolMessage
 
-REQUIRED_TOOLS = ("score_posting", "match_lexicon", "inspect_posting")
+REQUIRED_TOOLS = ("score_posting", "match_lexicon")
 
 
 @wrap_model_call

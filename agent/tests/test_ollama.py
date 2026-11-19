@@ -8,14 +8,15 @@ from unittest.mock import patch
 import httpx
 from langchain_openai import ChatOpenAI
 
-from agent.config import Settings, load_settings
-from agent.fixtures import SCENARIOS
-from agent.middleware import REQUIRED_TOOLS
-from agent.models import create_review_model
-from agent.runner import run_review
-from agent.schemas import Assessment, Posting
-from agent.context_review import ContextReport, review_context
-from agent.risk_rules import TEXT_FIELDS
+from agent.tests.runtime_fixtures import classifier_fixture
+from agent.core.config import Settings, load_settings
+from agent.resources.fixtures import SCENARIOS
+from agent.core.middleware import REQUIRED_TOOLS
+from agent.core.models import create_review_model
+from agent.core.runner import run_review
+from agent.core.schemas import Assessment, Posting
+from agent.tools.context_review import ContextReport, review_context
+from agent.tools.risk_rules import TEXT_FIELDS
 
 
 def completion(calls):
@@ -81,17 +82,27 @@ class OllamaTests(unittest.TestCase):
                 return httpx.Response(200, json=completion([
                     tool_call(name, {'posting_id': self.posting.posting_id}) for name in names]))
             self.assertEqual(names, [] if local else ['Assessment'])
+            if getattr(self, 'omit_first_assessment', False) and len(requests) == 2:
+                response = completion([])
+                response['choices'][0]['message'] = {'role': 'assistant', 'content': 'I reviewed the tools.'}
+                response['choices'][0]['finish_reason'] = 'stop'
+                return httpx.Response(200, json=response)
             messages = [m for m in body['messages'] if m['role'] == 'tool']
-            self.assertGreaterEqual(len(messages), 3)
-            outputs = [json.loads(m['content']) for m in messages[:3]]
+            if not messages and getattr(self, 'omit_first_assessment', False):
+                snapshot = next(json.loads(m['content']) for m in body['messages']
+                                if m['role'] == 'user' and m['content'].startswith('{'))
+                outputs = list(snapshot['tool_results'].values())
+            else:
+                self.assertGreaterEqual(len(messages), len(REQUIRED_TOOLS))
+                outputs = [json.loads(m['content']) for m in messages[:len(REQUIRED_TOOLS)]]
             score = next(o for o in outputs if 'model_score' in o)
             evidence = [e for o in outputs for e in o.get('evidence', [])]
             assessment = Assessment(posting_id=self.posting.posting_id,
                 model_score=score['model_score'], cutoff=score['cutoff'], flagged=score['flagged'],
-                recommendation='propose_rejection', rationale='Provider-generated review based on the quoted payment request; business-tool results remain placeholders.',
+                uses_test_fixtures=True, recommendation='review_needed', rationale='Provider-generated review based on the quoted payment request; business-tool results remain placeholders.',
                 evidence_ids=[e['evidence_id'] for e in evidence],
                 limitations=['Market salary and employer legitimacy were not checked.'],
-                next_steps=['A reviewer must confirm the recommendation.'])
+                next_steps=['Resolve the failed checks before relying on the recommendation.'])
             if getattr(self, 'miscopy_first_score', False) and len(requests) == 2:
                 assessment.model_score = 0.11
             if local:
@@ -108,16 +119,19 @@ class OllamaTests(unittest.TestCase):
                 candidate_reviews=[dict(evidence_id=c['evidence_id'], interpretation='request',
                                         reason='Mocked interpretation of explicit payment request.') for c in candidates],
                 additional_findings=[])
-        with patch('agent.runner.create_review_model', return_value=self.client(respond)), \
+        with patch('agent.tools.score_real', side_effect=lambda p,s: classifier_fixture(p, 'suspicious')), \
+             patch('agent.core.runner.create_review_model', return_value=self.client(respond)), \
              patch('agent.tools.lexicon.review_context', side_effect=context):
             case = run_review(self.posting, 'suspicious', self.settings)
         self.assertEqual(case.status, 'completed')
         self.assertEqual(case.model_backend, self.settings.backend)
         self.assertEqual(case.model_name, self.settings.model)
         self.assertTrue(case.assessment.rationale.startswith('Provider-generated'))
-        self.assertEqual(len(requests), 3 if getattr(self, 'miscopy_first_score', False) else 2)
+        repaired = getattr(self, 'miscopy_first_score', False) or getattr(self, 'omit_first_assessment', False)
+        self.assertEqual(len(requests), 3 if repaired else 2)
+        self.assertEqual(case.recovery_attempted, bool(repaired))
         self.assertEqual(case.assessment.model_score, 0.92)
-        self.assertEqual(len(case.llm_tool_calls), 3)
+        self.assertEqual(len(case.llm_tool_calls), len(REQUIRED_TOOLS))
         self.assertTrue(all(t.call_id.startswith('provider_') for t in case.tool_trace))
         self.assertNotIn('TEST_PROVIDER_KEY', case.model_dump_json())
 
@@ -149,11 +163,16 @@ class OllamaTests(unittest.TestCase):
         self.settings = Settings(backend='ollama_local')
         self.test_ollama_protocol_calls_tools_and_formats_a_valid_assessment()
 
-    def test_authentication_failure_is_visible_without_switching_to_dummy(self):
+    def test_missing_structured_assessment_is_recovered_without_rerunning_tools(self):
+        self.settings = Settings(backend='ollama_local')
+        self.omit_first_assessment = True
+        self.test_ollama_protocol_calls_tools_and_formats_a_valid_assessment()
+
+    def test_authentication_failure_is_visible_without_using_a_test_model(self):
         def unauthorized(request):
             return httpx.Response(401, json={'error': {'message': 'SECRET_FROM_PROVIDER', 'type': 'authentication_error'}})
-        with patch('agent.runner.create_review_model', return_value=self.client(unauthorized)), \
-             patch('agent.dummy_model.DummyReviewModel', side_effect=AssertionError('No silent simulation')):
+        with patch('agent.core.runner.create_review_model', return_value=self.client(unauthorized)), \
+             patch('agent.tests.chat_model_fixture.ScriptedChatModel', side_effect=AssertionError('No silent simulation')):
             case = run_review(self.posting, 'suspicious', self.settings)
         self.assertEqual(case.status, 'fallback')
         self.assertEqual(case.error_code, 'authentication_failed')
@@ -168,7 +187,7 @@ class OllamaTests(unittest.TestCase):
             (root/'agent').mkdir()
             (root/'.env').write_text('OLLAMA_API_KEY=ROOT_TEST_KEY\n')
             (root/'agent'/'.env').write_text('AGENT_BACKEND=ollama\nOLLAMA_MODEL=deepseek-v4.1-flash\n')
-            with patch('agent.config.AGENT_DIR', root/'agent'), patch.dict('os.environ', {}, clear=True):
+            with patch('agent.core.config.AGENT_DIR', root/'agent'), patch.dict('os.environ', {}, clear=True):
                 settings = load_settings()
                 self.assertEqual(settings.backend, 'ollama')
                 self.assertEqual(settings.api_key, 'ROOT_TEST_KEY')
@@ -180,7 +199,7 @@ class OllamaTests(unittest.TestCase):
     def test_credits_required_is_reported_without_exposing_provider_text(self):
         def payment_required(request):
             return httpx.Response(402, json={'error': {'message': 'PRIVATE_PROVIDER_TEXT'}})
-        with patch('agent.runner.create_review_model', return_value=self.client(payment_required)):
+        with patch('agent.core.runner.create_review_model', return_value=self.client(payment_required)):
             case = run_review(self.posting, 'suspicious', self.settings)
         self.assertEqual(case.status, 'fallback')
         self.assertEqual(case.error_code, 'credits_required')

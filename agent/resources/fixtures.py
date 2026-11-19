@@ -1,8 +1,7 @@
-"""Small, invented examples and explicitly synthetic classifier scores."""
+"""Example job postings for CLI and frontend input forms."""
 SCENARIOS = {
     "suspicious": {
         "label": "Payment request example",
-        "score": 0.92,
         "posting": {
             "title": "Data Entry Assistant",
             "description": "Immediate start. To secure this position, you must pay an application fee of $300 before an interview. Apply now.",
@@ -12,7 +11,6 @@ SCENARIOS = {
     },
     "ordinary": {
         "label": "Ordinary wording / possible false alarm",
-        "score": 0.25,
         "posting": {
             "title": "Data Entry Assistant",
             "description": "Maintain customer records and check data accuracy. Interviews take place at our office. There is no application fee.",
@@ -22,7 +20,6 @@ SCENARIOS = {
     },
     "missing_info": {
         "label": "Limited information example",
-        "score": 0.65,
         "posting": {
             "title": "Office Assistant",
             "description": "Assist the team with routine office tasks. Contact the recruiter for details.",

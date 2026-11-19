@@ -1,0 +1,737 @@
+{
+  "schema_version": 2,
+  "created_at": "2026-11-19T12:00:43.997420+00:00",
+  "input_sha256": "cf5500fc501e184b5c5c5a449359050d464fbfeab86db4eacaabe1c3114f0169",
+  "rubric_version": "job-review-judge-v3",
+  "rubric_sha256": "83539096db16bbdbbd854a78d65ff845312534d75b66d8d6f48875f2e72f8ba1",
+  "judge": {
+    "backend": "ollama_local",
+    "model": "qwen3:4b-instruct",
+    "same_model_as_agent": true
+  },
+  "limitations": [
+    "The judge can make mistakes; no human validation is implied.",
+    "Using the same model for acting and judging can reproduce the same mistakes.",
+    "Exact output schemas and evidence references are checked; semantic correctness is judged heuristically."
+  ],
+  "summary": {
+    "evaluations": 2,
+    "independent_cases": 2,
+    "input_failures": 0,
+    "agent_failures": 0,
+    "agent_completed": 2,
+    "safe_fallbacks": 0,
+    "context_review_failures": 0,
+    "code_checks_passed": 2,
+    "code_checks_failed": 0,
+    "code_checks_unavailable": 0,
+    "judge_completed": 2,
+    "judge_failed": 0,
+    "judge_skipped": 0,
+    "quality_scored_cases": 2,
+    "scored_count_by_dimension": {
+      "evidence_grounding": 2,
+      "context_understanding": 2,
+      "recommendation_consistency": 2,
+      "explanation_clarity": 2
+    },
+    "mean_judge_scores": {
+      "evidence_grounding": 4.0,
+      "context_understanding": 4.0,
+      "recommendation_consistency": 4.0,
+      "explanation_clarity": 4.0
+    },
+    "judge_recommendation_acceptable": 2,
+    "judge_reported_unsupported_claims": 0,
+    "expected_action_matches": 0,
+    "expected_action_annotations": 0,
+    "recommendations_by_fraud_label": {
+      "0": {
+        "propose_rejection": 0,
+        "escalate_to_review": 1
+      },
+      "1": {
+        "propose_rejection": 0,
+        "escalate_to_review": 1
+      }
+    },
+    "classifier_metrics": {
+      "status": "available",
+      "evaluated": 2,
+      "true_positive": 1,
+      "false_positive": 1,
+      "false_negative": 0,
+      "true_negative": 0,
+      "precision": 0.5,
+      "recall": 1.0,
+      "false_positive_rate": 1.0
+    },
+    "notes": [
+      "Judge means use effective scores with explicit per-dimension denominators; incomplete reviews have no completed-answer quality scores.",
+      "Recommendations by fraud label are descriptive, not action accuracy. Escalation can be valid for either label.",
+      "Judge ratings are automated opinions, not verified truth or fraud predictions.",
+      "Repeated cases are not new independent examples."
+    ]
+  },
+  "rows": [
+    {
+      "case_id": "synthetic_fee",
+      "repeat": 0,
+      "fraudulent": 1,
+      "expected_action": null,
+      "input_error": null,
+      "agent_status": "completed",
+      "agent_error": null,
+      "code": {
+        "checks": {
+          "review_completed": true,
+          "context_review_completed": true,
+          "input_preserved": true,
+          "posting_id_consistent": true,
+          "evidence_ids_unique": true,
+          "quotes_exact": true,
+          "citations_exist": true,
+          "evidence_matches_tool_trace": true,
+          "assessment_valid": true,
+          "recommendation_policy": true,
+          "confirmation_required": true
+        },
+        "all_passed": true,
+        "safety_checks_passed": true,
+        "failed_checks": [],
+        "quoted_evidence_count": 2,
+        "cited_evidence_count": 1,
+        "expected_action_match": null
+      },
+      "judge_status": "completed",
+      "judge_error": null,
+      "judgment": {
+        "posting_id": "eval_fee",
+        "evidence_grounding": {
+          "score": 4,
+          "reason": "The claim is directly supported by the evidence_id 'risk_1', which confirms the exact substring 'You must pay an application fee before your interview' and links it to the 'recruitment_fee' rule. The agent does not invent external validation or fraud indicators; the grounding is precise and traceable to the provided text.",
+          "evidence_ids": [
+            "risk_1"
+          ],
+          "answer_quotes": [
+            "This matches the 'recruitment_fee' rule and was reviewed by an LLM, providing sufficient evidence for concern."
+          ]
+        },
+        "context_understanding": {
+          "score": 4,
+          "reason": "The agent correctly identifies the explicit payment request in the description and attributes it to the 'recruitment_fee' rule, with proper context and negation of background terms like 'assistant'. It correctly distinguishes between missing fields and fraud, and acknowledges the LLM review of the request. No unsupported claims are made about employer legitimacy or market salary, and the context is accurately interpreted as a direct payment request, not a general fee or hidden step.",
+          "evidence_ids": [
+            "risk_1"
+          ],
+          "answer_quotes": [
+            "The description explicitly states 'You must pay an application fee before your interview,' which is a direct payment request."
+          ]
+        },
+        "recommendation_consistency": {
+          "score": 4,
+          "reason": "The agent correctly applies the policy: the rule is only triggered when a payment request is explicitly stated and reviewed by an LLM, which is exactly what occurred. The recommendation to escalate is justified and consistent with the policy, which allows escalation only when a direct payment request is present and reviewed. No unsupported or aggressive action is taken.",
+          "evidence_ids": [
+            "risk_1"
+          ],
+          "answer_quotes": [
+            "The 'recruitment fee' rule is only actionable if a payment request is explicitly stated and reviewed by an LLM, which it is."
+          ]
+        },
+        "explanation_clarity": {
+          "score": 4,
+          "reason": "The explanation clearly states the absence of external validation, which is consistent with the policy and the provided evidence. It avoids overreaching claims about fraud or legitimacy and correctly frames missing fields as incomplete data, not proof of fraud. The language is simple and transparent.",
+          "evidence_ids": [],
+          "answer_quotes": [
+            "However, no external validation of employer legitimacy or market salary is available."
+          ]
+        },
+        "recommendation_acceptable": true,
+        "unsupported_claims": [],
+        "uncertainties": []
+      },
+      "recommendation": "escalate_to_review",
+      "scoring": {
+        "effective_scores": {
+          "evidence_grounding": 4,
+          "context_understanding": 4,
+          "recommendation_consistency": 4,
+          "explanation_clarity": 4
+        },
+        "adjustments": [],
+        "answer_quality_eligible": true,
+        "recommendation_acceptable": true
+      },
+      "classifier_prediction": true,
+      "case": {
+        "schema_version": 3,
+        "posting": {
+          "posting_id": "eval_fee",
+          "title": "Office Assistant",
+          "description": "You must pay an application fee before your interview.",
+          "company_profile": null,
+          "salary_range": null,
+          "requirements": null,
+          "benefits": null,
+          "location": null,
+          "department": null,
+          "employment_type": null,
+          "required_experience": null,
+          "required_education": null,
+          "industry": null,
+          "function": null,
+          "telecommuting": null,
+          "has_company_logo": null,
+          "has_questions": null
+        },
+        "scenario": "ordinary",
+        "assessment": {
+          "posting_id": "eval_fee",
+          "model_score": 0.9671440403445395,
+          "cutoff": 0.2694423946939246,
+          "flagged": true,
+          "recommendation": "escalate_to_review",
+          "rationale": "The description explicitly states 'You must pay an application fee before your interview,' which is a direct payment request. This matches the 'recruitment_fee' rule and was reviewed by an LLM, providing sufficient evidence for concern. However, no external validation of employer legitimacy or market salary is available. Missing fields do not imply fraud but reflect incomplete data.",
+          "evidence_ids": [
+            "risk_1"
+          ],
+          "limitations": [
+            "The model score is not a calibrated probability and does not establish fraud.",
+            "Missing fields (e.g., salary, location, company profile) are not verified as fraudulent but indicate incomplete information.",
+            "The 'recruitment fee' rule is only actionable if a payment request is explicitly stated and reviewed by an LLM, which it is."
+          ],
+          "next_steps": [
+            "Verify that the application fee is disclosed upfront and not hidden in a later step.",
+            "Confirm whether the fee is refundable or if it is a standard practice for the company.",
+            "Contact the employer directly to confirm the fee is legitimate and not a scam."
+          ],
+          "requires_confirmation": true,
+          "tool_results_are_placeholders": false
+        },
+        "evidence": [
+          {
+            "evidence_id": "risk_1",
+            "source": "risk_lexicon",
+            "field": "description",
+            "kind": "payment_request",
+            "observation": "The field 'description' contains the exact substring 'You must pay an application fee before your interview.' This is a direct request for payment by the employer, as it explicitly states that an application fee must be paid prior to an interview. This constitutes a payment request, consistent with the rule_id 'recruitment_fee'.",
+            "quote": "You must pay an application fee before your interview.",
+            "context": "request",
+            "reviewed_by": "llm",
+            "rule_id": "recruitment_fee",
+            "model_interpretation": "request",
+            "context_guard": null
+          },
+          {
+            "evidence_id": "background_2",
+            "source": "dataset_lexicon",
+            "field": "title",
+            "kind": "dataset_association",
+            "observation": "'assistant' was associated with labels in the historical training analysis. Background only; not evidence of a risky request.",
+            "quote": "Assistant",
+            "context": "background",
+            "reviewed_by": "not_checked",
+            "rule_id": null,
+            "model_interpretation": null,
+            "context_guard": null
+          },
+          {
+            "evidence_id": "posting_1",
+            "source": "posting",
+            "field": "company_profile",
+            "kind": "missing_information",
+            "observation": "Company profile was not supplied; this does not verify that the employer lacks it.",
+            "quote": null,
+            "context": "background",
+            "reviewed_by": "not_checked",
+            "rule_id": null,
+            "model_interpretation": null,
+            "context_guard": null
+          },
+          {
+            "evidence_id": "posting_2",
+            "source": "posting",
+            "field": "salary_range",
+            "kind": "missing_information",
+            "observation": "Salary range was not supplied; this does not verify that the employer lacks it.",
+            "quote": null,
+            "context": "background",
+            "reviewed_by": "not_checked",
+            "rule_id": null,
+            "model_interpretation": null,
+            "context_guard": null
+          }
+        ],
+        "tool_trace": [
+          {
+            "call_id": "J1X6wRMQ6RHcJSR5rGc9zDKs57r2kCZa",
+            "name": "score_posting",
+            "arguments": {
+              "posting_id": "eval_fee"
+            },
+            "status": "success",
+            "output": {
+              "posting_id": "eval_fee",
+              "model_score": 0.9671440403445395,
+              "cutoff": 0.2694423946939246,
+              "flagged": true,
+              "is_dummy": false,
+              "model_version": "lightgbm-a2-agent-v1",
+              "model_family": "LightGBM",
+              "calibrated_probability": false,
+              "artifact_sha256": "5c0f63396aa0c3f56e7af740edec914780c4b3920279a6157eecefc42f5e9857",
+              "missing_input_fields": [
+                "company_profile",
+                "requirements",
+                "benefits",
+                "telecommuting",
+                "has_company_logo",
+                "has_questions",
+                "employment_type",
+                "required_experience",
+                "required_education",
+                "industry",
+                "function",
+                "location",
+                "department",
+                "salary_range"
+              ],
+              "threshold_policy": "Median of the 25 saved inner-OOF-selected cutoffs; integration default, not a newly optimized final cutoff.",
+              "note": "Real model score, not a calibrated fraud probability. Missing fields stay missing; categorical preprocessing uses the fitted missing category and LightGBM handles absent binary inputs as missing. Short incomplete examples may differ substantially from training ads."
+            }
+          },
+          {
+            "call_id": "tn4URRgtMRcFD3ddB6UrN6vuFGRTV1mM",
+            "name": "match_lexicon",
+            "arguments": {
+              "posting_id": "eval_fee"
+            },
+            "status": "success",
+            "output": {
+              "is_dummy": false,
+              "lexicon_version": "risk-patterns-v2",
+              "context_status": "completed",
+              "external_checks": {
+                "market_salary": "not_checked",
+                "employer_legitimacy": "not_checked"
+              },
+              "context_error": null,
+              "context_model": "qwen3:4b-instruct",
+              "evidence": [
+                {
+                  "evidence_id": "risk_1",
+                  "source": "risk_lexicon",
+                  "field": "description",
+                  "kind": "payment_request",
+                  "observation": "The field 'description' contains the exact substring 'You must pay an application fee before your interview.' This is a direct request for payment by the employer, as it explicitly states that an application fee must be paid prior to an interview. This constitutes a payment request, consistent with the rule_id 'recruitment_fee'.",
+                  "quote": "You must pay an application fee before your interview.",
+                  "context": "request",
+                  "reviewed_by": "llm",
+                  "rule_id": "recruitment_fee",
+                  "model_interpretation": "request",
+                  "context_guard": null
+                },
+                {
+                  "evidence_id": "background_2",
+                  "source": "dataset_lexicon",
+                  "field": "title",
+                  "kind": "dataset_association",
+                  "observation": "'assistant' was associated with labels in the historical training analysis. Background only; not evidence of a risky request.",
+                  "quote": "Assistant",
+                  "context": "background",
+                  "reviewed_by": "not_checked",
+                  "rule_id": null,
+                  "model_interpretation": null,
+                  "context_guard": null
+                },
+                {
+                  "evidence_id": "posting_1",
+                  "source": "posting",
+                  "field": "company_profile",
+                  "kind": "missing_information",
+                  "observation": "Company profile was not supplied; this does not verify that the employer lacks it.",
+                  "quote": null,
+                  "context": "background",
+                  "reviewed_by": "not_checked",
+                  "rule_id": null,
+                  "model_interpretation": null,
+                  "context_guard": null
+                },
+                {
+                  "evidence_id": "posting_2",
+                  "source": "posting",
+                  "field": "salary_range",
+                  "kind": "missing_information",
+                  "observation": "Salary range was not supplied; this does not verify that the employer lacks it.",
+                  "quote": null,
+                  "context": "background",
+                  "reviewed_by": "not_checked",
+                  "rule_id": null,
+                  "model_interpretation": null,
+                  "context_guard": null
+                }
+              ],
+              "note": "Only LLM-reviewed request findings can support a rejection proposal. Background terms and unmatched wording do not establish fraud or safety."
+            }
+          }
+        ],
+        "model_backend": "ollama_local",
+        "model_name": "qwen3:4b-instruct",
+        "status": "completed",
+        "error_code": null,
+        "llm_tool_calls": [
+          {
+            "name": "score_posting",
+            "args": {
+              "posting_id": "eval_fee"
+            },
+            "id": "J1X6wRMQ6RHcJSR5rGc9zDKs57r2kCZa"
+          },
+          {
+            "name": "match_lexicon",
+            "args": {
+              "posting_id": "eval_fee"
+            },
+            "id": "tn4URRgtMRcFD3ddB6UrN6vuFGRTV1mM"
+          }
+        ],
+        "recovery_attempted": false,
+        "failure_stage": null
+      }
+    },
+    {
+      "case_id": "synthetic_warning",
+      "repeat": 0,
+      "fraudulent": 0,
+      "expected_action": null,
+      "input_error": null,
+      "agent_status": "completed",
+      "agent_error": null,
+      "code": {
+        "checks": {
+          "review_completed": true,
+          "context_review_completed": true,
+          "input_preserved": true,
+          "posting_id_consistent": true,
+          "evidence_ids_unique": true,
+          "quotes_exact": true,
+          "citations_exist": true,
+          "evidence_matches_tool_trace": true,
+          "assessment_valid": true,
+          "recommendation_policy": true,
+          "confirmation_required": true
+        },
+        "all_passed": true,
+        "safety_checks_passed": true,
+        "failed_checks": [],
+        "quoted_evidence_count": 2,
+        "cited_evidence_count": 2,
+        "expected_action_match": null
+      },
+      "judge_status": "completed",
+      "judge_error": null,
+      "judgment": {
+        "posting_id": "eval_warning",
+        "evidence_grounding": {
+          "score": 4,
+          "reason": "The agent directly supports its claim with the evidence that the phrase is an educational instruction, not a request. The quotation from the evidence matches exactly and is fully grounded in the provided text. No invented or external claims are made.",
+          "evidence_ids": [
+            "risk_1"
+          ],
+          "answer_quotes": [
+            "The first is a warning to applicants about identifying scams, not a request for payment."
+          ]
+        },
+        "context_understanding": {
+          "score": 4,
+          "reason": "The agent correctly identifies the two key phrases in the posting and accurately interprets them as educational warnings and negations, not requests for payment or credentials. It correctly distinguishes between instructions to applicants and actual requests from the employer. The context of 'warning' and 'negation' is properly understood and applied without misreading the content as a request for money or credentials.",
+          "evidence_ids": [
+            "risk_1",
+            "risk_2"
+          ],
+          "answer_quotes": [
+            "The posting includes two key phrases: 'Teach applicants that messages saying \"you must pay an application fee\" are scams' and 'Never share your banking password'."
+          ]
+        },
+        "recommendation_consistency": {
+          "score": 4,
+          "reason": "The agent correctly concludes that there is no actual request for payment or credentials, which aligns with the evidence and policy. The claim is directly supported by the risk lexicon observations and is consistent with the context of warnings and negations.",
+          "evidence_ids": [
+            "risk_1",
+            "risk_2"
+          ],
+          "answer_quotes": [
+            "No actual payment or credential request is present."
+          ]
+        },
+        "explanation_clarity": {
+          "score": 4,
+          "reason": "The agent clearly explains that the content is standard security practice, which is consistent with the evidence and policy. The explanation is concise, accurate, and avoids overreach or unsupported generalizations. It correctly frames the content as educational, not transactional.",
+          "evidence_ids": [],
+          "answer_quotes": [
+            "Both are standard security instructions."
+          ]
+        },
+        "recommendation_acceptable": true,
+        "unsupported_claims": [],
+        "uncertainties": []
+      },
+      "recommendation": "escalate_to_review",
+      "scoring": {
+        "effective_scores": {
+          "evidence_grounding": 4,
+          "context_understanding": 4,
+          "recommendation_consistency": 4,
+          "explanation_clarity": 4
+        },
+        "adjustments": [],
+        "answer_quality_eligible": true,
+        "recommendation_acceptable": true
+      },
+      "classifier_prediction": true,
+      "case": {
+        "schema_version": 3,
+        "posting": {
+          "posting_id": "eval_warning",
+          "title": "Security Trainer",
+          "description": "Teach applicants that messages saying \"you must pay an application fee\" are scams. Never share your banking password.",
+          "company_profile": null,
+          "salary_range": null,
+          "requirements": null,
+          "benefits": null,
+          "location": null,
+          "department": null,
+          "employment_type": null,
+          "required_experience": null,
+          "required_education": null,
+          "industry": null,
+          "function": null,
+          "telecommuting": null,
+          "has_company_logo": null,
+          "has_questions": null
+        },
+        "scenario": "ordinary",
+        "assessment": {
+          "posting_id": "eval_warning",
+          "model_score": 0.9295217017945614,
+          "cutoff": 0.2694423946939246,
+          "flagged": true,
+          "recommendation": "escalate_to_review",
+          "rationale": "The posting includes two key phrases: 'Teach applicants that messages saying \"you must pay an application fee\" are scams' and 'Never share your banking password'. The first is a warning to applicants about identifying scams, not a request for payment. The second is a negation of sharing credentials, not a request for a password. Both are standard security instructions. The LLM reviewed these as non-requests and correctly classified as a warning and negation. No actual payment or credential request is present. The high model score and missing fields are not evidence of fraud but reflect incomplete data and model confidence in flagging.",
+          "evidence_ids": [
+            "risk_1",
+            "risk_2"
+          ],
+          "limitations": [
+            "Missing input fields (e.g., company profile, salary range) do not confirm fraud or lack of legitimacy; they are only noted as absent.",
+            "The model score (0.929) is not a calibrated probability and does not indicate fraud risk; it reflects model confidence in flagging, not actual risk.",
+            "No external verification of employer legitimacy, market salary, or job authenticity was performed."
+          ],
+          "next_steps": [
+            "Verify the company's official website and reputation independently to confirm legitimacy.",
+            "Contact the employer directly to confirm the job details and whether a fee or credential request is actually required.",
+            "Ensure the job posting does not contain any actual requests for payment or sensitive credentials beyond the educational warnings provided."
+          ],
+          "requires_confirmation": true,
+          "tool_results_are_placeholders": false
+        },
+        "evidence": [
+          {
+            "evidence_id": "risk_1",
+            "source": "risk_lexicon",
+            "field": "description",
+            "kind": "payment_request",
+            "observation": "The candidate quote 'Teach applicants that messages saying \"you must pay an application fee\" are scams' is an educational instruction to applicants about identifying scams. It does not constitute a request from the employer for payment or credentials. This is a standard anti-scam message, not a direct request for money or sensitive information. The context hint 'warning' is appropriate as it indicates a caution to applicants, not an employer request.",
+            "quote": "Teach applicants that messages saying \"you must pay an application fee\" are scams.",
+            "context": "warning",
+            "reviewed_by": "llm",
+            "rule_id": "recruitment_fee",
+            "model_interpretation": "warning",
+            "context_guard": "warning"
+          },
+          {
+            "evidence_id": "risk_2",
+            "source": "risk_lexicon",
+            "field": "description",
+            "kind": "credential_request",
+            "observation": "The candidate quote 'Never share your banking password' is a prohibition against sharing credentials. It does not constitute a request for a banking password or any one-time login code. The context hint 'negation' correctly identifies this as a negative instruction, not a request. The employer is instructing applicants not to share credentials, which is a standard security practice and not an actual request for such information.",
+            "quote": "Never share your banking password.",
+            "context": "negated",
+            "reviewed_by": "llm",
+            "rule_id": "bank_password",
+            "model_interpretation": "negated",
+            "context_guard": "negation"
+          },
+          {
+            "evidence_id": "posting_1",
+            "source": "posting",
+            "field": "company_profile",
+            "kind": "missing_information",
+            "observation": "Company profile was not supplied; this does not verify that the employer lacks it.",
+            "quote": null,
+            "context": "background",
+            "reviewed_by": "not_checked",
+            "rule_id": null,
+            "model_interpretation": null,
+            "context_guard": null
+          },
+          {
+            "evidence_id": "posting_2",
+            "source": "posting",
+            "field": "salary_range",
+            "kind": "missing_information",
+            "observation": "Salary range was not supplied; this does not verify that the employer lacks it.",
+            "quote": null,
+            "context": "background",
+            "reviewed_by": "not_checked",
+            "rule_id": null,
+            "model_interpretation": null,
+            "context_guard": null
+          }
+        ],
+        "tool_trace": [
+          {
+            "call_id": "SZpXKWO65dtgdbapNV7Ry3Jn6zl4Ug84",
+            "name": "score_posting",
+            "arguments": {
+              "posting_id": "eval_warning"
+            },
+            "status": "success",
+            "output": {
+              "posting_id": "eval_warning",
+              "model_score": 0.9295217017945614,
+              "cutoff": 0.2694423946939246,
+              "flagged": true,
+              "is_dummy": false,
+              "model_version": "lightgbm-a2-agent-v1",
+              "model_family": "LightGBM",
+              "calibrated_probability": false,
+              "artifact_sha256": "5c0f63396aa0c3f56e7af740edec914780c4b3920279a6157eecefc42f5e9857",
+              "missing_input_fields": [
+                "company_profile",
+                "requirements",
+                "benefits",
+                "telecommuting",
+                "has_company_logo",
+                "has_questions",
+                "employment_type",
+                "required_experience",
+                "required_education",
+                "industry",
+                "function",
+                "location",
+                "department",
+                "salary_range"
+              ],
+              "threshold_policy": "Median of the 25 saved inner-OOF-selected cutoffs; integration default, not a newly optimized final cutoff.",
+              "note": "Real model score, not a calibrated fraud probability. Missing fields stay missing; categorical preprocessing uses the fitted missing category and LightGBM handles absent binary inputs as missing. Short incomplete examples may differ substantially from training ads."
+            }
+          },
+          {
+            "call_id": "Izz34aDseA65ee54oTcXNmb4JsnTHIPb",
+            "name": "match_lexicon",
+            "arguments": {
+              "posting_id": "eval_warning"
+            },
+            "status": "success",
+            "output": {
+              "is_dummy": false,
+              "lexicon_version": "risk-patterns-v2",
+              "context_status": "completed",
+              "external_checks": {
+                "market_salary": "not_checked",
+                "employer_legitimacy": "not_checked"
+              },
+              "context_error": null,
+              "context_model": "qwen3:4b-instruct",
+              "evidence": [
+                {
+                  "evidence_id": "risk_1",
+                  "source": "risk_lexicon",
+                  "field": "description",
+                  "kind": "payment_request",
+                  "observation": "The candidate quote 'Teach applicants that messages saying \"you must pay an application fee\" are scams' is an educational instruction to applicants about identifying scams. It does not constitute a request from the employer for payment or credentials. This is a standard anti-scam message, not a direct request for money or sensitive information. The context hint 'warning' is appropriate as it indicates a caution to applicants, not an employer request.",
+                  "quote": "Teach applicants that messages saying \"you must pay an application fee\" are scams.",
+                  "context": "warning",
+                  "reviewed_by": "llm",
+                  "rule_id": "recruitment_fee",
+                  "model_interpretation": "warning",
+                  "context_guard": "warning"
+                },
+                {
+                  "evidence_id": "risk_2",
+                  "source": "risk_lexicon",
+                  "field": "description",
+                  "kind": "credential_request",
+                  "observation": "The candidate quote 'Never share your banking password' is a prohibition against sharing credentials. It does not constitute a request for a banking password or any one-time login code. The context hint 'negation' correctly identifies this as a negative instruction, not a request. The employer is instructing applicants not to share credentials, which is a standard security practice and not an actual request for such information.",
+                  "quote": "Never share your banking password.",
+                  "context": "negated",
+                  "reviewed_by": "llm",
+                  "rule_id": "bank_password",
+                  "model_interpretation": "negated",
+                  "context_guard": "negation"
+                },
+                {
+                  "evidence_id": "posting_1",
+                  "source": "posting",
+                  "field": "company_profile",
+                  "kind": "missing_information",
+                  "observation": "Company profile was not supplied; this does not verify that the employer lacks it.",
+                  "quote": null,
+                  "context": "background",
+                  "reviewed_by": "not_checked",
+                  "rule_id": null,
+                  "model_interpretation": null,
+                  "context_guard": null
+                },
+                {
+                  "evidence_id": "posting_2",
+                  "source": "posting",
+                  "field": "salary_range",
+                  "kind": "missing_information",
+                  "observation": "Salary range was not supplied; this does not verify that the employer lacks it.",
+                  "quote": null,
+                  "context": "background",
+                  "reviewed_by": "not_checked",
+                  "rule_id": null,
+                  "model_interpretation": null,
+                  "context_guard": null
+                }
+              ],
+              "note": "Only LLM-reviewed request findings can support a rejection proposal. Background terms and unmatched wording do not establish fraud or safety."
+            }
+          }
+        ],
+        "model_backend": "ollama_local",
+        "model_name": "qwen3:4b-instruct",
+        "status": "completed",
+        "error_code": null,
+        "llm_tool_calls": [
+          {
+            "name": "score_posting",
+            "args": {
+              "posting_id": "eval_warning"
+            },
+            "id": "SZpXKWO65dtgdbapNV7Ry3Jn6zl4Ug84"
+          },
+          {
+            "name": "match_lexicon",
+            "args": {
+              "posting_id": "eval_warning"
+            },
+            "id": "Izz34aDseA65ee54oTcXNmb4JsnTHIPb"
+          }
+        ],
+        "recovery_attempted": true,
+        "failure_stage": null
+      }
+    }
+  ],
+  "source": "D:\\Desktop\\2627\\grppjt\\evaluator\\examples\\postings.jsonl",
+  "split": "development",
+  "frozen_version": null,
+  "available_cases": 2,
+  "selected_cases": 2,
+  "repeats": 1,
+  "replay": false,
+  "offline_agent": false
+}

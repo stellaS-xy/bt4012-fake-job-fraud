@@ -1,19 +1,29 @@
 import unittest
 from unittest.mock import Mock
 
-from agent.config import Settings
-from agent.context_review import ContextReport, review_context, validate_context
-from agent.risk_rules import TEXT_FIELDS, candidate_matches
-from agent.schemas import Posting, Evidence
-from agent.fixtures import SCENARIOS
-from agent.runner import run_review
-from agent.validation import validate_assessment
+from agent.tests.runtime_fixtures import offline_runtime
+from agent.core.config import Settings
+from agent.tools.context_review import ContextReport, review_context, validate_context, validate_interpretations
+from agent.tools.risk_rules import TEXT_FIELDS, candidate_matches
+from agent.core.schemas import Posting, Evidence
+from agent.resources.fixtures import SCENARIOS
+from agent.core.runner import run_review
+from agent.core.validation import validate_assessment
 from agent.tools.lexicon import match_lexicon
-from agent.validation import supports_rejection
+from agent.core.validation import is_risky_request
 
 
 class RiskChecksTests(unittest.TestCase):
+    def test_request_label_cannot_contradict_its_own_reason(self):
+        report = self.report()
+        report.candidate_reviews[0].reason = 'This is not a direct payment request from the employer.'
+        with self.assertRaisesRegex(ValueError, 'contradicts'):
+            validate_interpretations(report, self.posting, self.candidates)
+
     def setUp(self):
+        runtime = offline_runtime()
+        runtime.__enter__()
+        self.addCleanup(runtime.__exit__, None, None, None)
         self.posting = Posting(title='Assistant', description='You must pay an application fee.')
         self.candidates = candidate_matches(self.posting)
         self.settings = Settings(backend='ollama_local')
@@ -44,8 +54,8 @@ class RiskChecksTests(unittest.TestCase):
         p = Posting(title='Data entry administrative assistant', description='Apply now in the oil and gas industry.')
         result = match_lexicon(p)
         self.assertTrue(result['evidence'])
-        self.assertTrue(all(e['source'] == 'dataset_lexicon' for e in result['evidence']))
-        self.assertFalse(any(supports_rejection(Evidence.model_validate(e)) for e in result['evidence']))
+        self.assertTrue(all(e['source'] in ('dataset_lexicon', 'posting') for e in result['evidence']))
+        self.assertFalse(any(is_risky_request(Evidence.model_validate(e)) for e in result['evidence']))
 
     def test_every_candidate_must_be_reviewed_once(self):
         review = self.report().candidate_reviews[0]
@@ -70,14 +80,14 @@ class RiskChecksTests(unittest.TestCase):
                                    lambda *args: self.report(interpretation))
             self.assertEqual(result['context_status'], 'completed')
             risk = next(e for e in result['evidence'] if e['source'] == 'risk_lexicon')
-            self.assertEqual(supports_rejection(Evidence.model_validate(risk)), interpretation == 'request')
+            self.assertEqual(is_risky_request(Evidence.model_validate(risk)), interpretation == 'request')
 
     def test_failed_or_incomplete_context_keeps_unconfirmed_candidates(self):
         for reviewer in (Mock(side_effect=RuntimeError('PRIVATE_ERROR')),
                          Mock(return_value=self.report(candidate_reviews=[]))):
             result = match_lexicon(self.posting, self.settings, reviewer)
             self.assertEqual(result['context_status'], 'failed')
-            self.assertFalse(any(supports_rejection(Evidence.model_validate(e)) for e in result['evidence']))
+            self.assertFalse(any(is_risky_request(Evidence.model_validate(e)) for e in result['evidence']))
             self.assertNotIn('PRIVATE_ERROR', str(result))
 
     def test_llm_can_supply_a_new_exact_quote_missed_by_rules(self):
@@ -86,7 +96,7 @@ class RiskChecksTests(unittest.TestCase):
             candidate_reviews=[], additional_findings=[dict(field='description', quote=p.description,
                 category='payment_request', interpretation='request', reason='Payment required for interview.')])
         result = match_lexicon(p, self.settings, lambda *args: report)
-        self.assertTrue(any(e['source'] == 'llm_context' and supports_rejection(Evidence.model_validate(e))
+        self.assertTrue(any(e['source'] == 'llm_context' and is_risky_request(Evidence.model_validate(e))
                             for e in result['evidence']))
 
     def test_context_retry_is_bounded_and_returns_only_a_valid_report(self):
@@ -103,10 +113,10 @@ class RiskChecksTests(unittest.TestCase):
         self.assertEqual(structured.invoke.call_count, 2)
 
     def test_final_decision_cannot_bypass_context_review_with_a_rule_candidate(self):
-        case = run_review(Posting(**SCENARIOS['suspicious']['posting']), 'suspicious', Settings(backend='dummy'))
+        case = run_review(Posting(**SCENARIOS['suspicious']['posting']), 'suspicious', Settings(backend='ollama_local'))
         self.assertEqual(case.status, 'completed')
-        proposal = case.assessment.model_copy(update={'recommendation': 'propose_rejection'})
-        with self.assertRaisesRegex(ValueError, 'LLM-reviewed'):
+        proposal = case.assessment.model_copy(update={'recommendation': 'pass_no_review_needed'})
+        with self.assertRaisesRegex(ValueError, 'both tool checks'):
             validate_assessment(proposal, case.posting, case.tool_trace)
 
     def test_model_request_verdict_cannot_override_negation_or_warning(self):
@@ -122,7 +132,7 @@ class RiskChecksTests(unittest.TestCase):
             risk = next(e for e in result['evidence'] if e['source'] == 'risk_lexicon')
             self.assertEqual(risk['model_interpretation'], 'request')
             self.assertEqual(risk['context'], 'uncertain')
-            self.assertFalse(supports_rejection(Evidence.model_validate(risk)))
+            self.assertFalse(is_risky_request(Evidence.model_validate(risk)))
 
     def test_short_llm_quote_cannot_hide_the_surrounding_warning(self):
         p = Posting(title='Trainer', description='Teach applicants that "you must pay an application fee" is a scam.')
@@ -130,7 +140,7 @@ class RiskChecksTests(unittest.TestCase):
             candidate_reviews=[], additional_findings=[dict(field='description',
                 quote='you must pay an application fee', category='payment_request',
                 interpretation='request', reason='Incorrect claim from an incomplete quote.')])
-        from agent.context_review import interpreted_findings
+        from agent.tools.context_review import interpreted_findings
         found = interpreted_findings(report, p, [])
         self.assertEqual(found[0]['interpretation'], 'uncertain')
         self.assertEqual(found[0]['context_guard'], 'warning')
