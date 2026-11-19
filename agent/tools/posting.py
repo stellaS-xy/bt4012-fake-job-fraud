@@ -1,9 +1,9 @@
 """Transparent local observations behind the simulated inspection tool."""
 import re
-from agent.schemas import Evidence, Posting
+from agent.core.schemas import Evidence, Posting
 
 
-def inspect_posting_stub(posting: Posting):
+def posting_observations(posting: Posting):
     evidence = []
 
     def add(field, kind, observation, quote=None):
@@ -21,6 +21,6 @@ def inspect_posting_stub(posting: Posting):
     for kind, pattern in patterns.items():
         for match in re.finditer(pattern, posting.description, flags=re.IGNORECASE):
             add("description", kind, f"Demo rule matched {kind.replace('_', ' ')}; confirm its context manually.", match.group())
-    return {"is_dummy": True, "evidence": evidence,
+    return {"is_test_fixture": False, "evidence": evidence,
             "external_checks": {"market_salary": "not_checked", "employer_legitimacy": "not_checked"},
             "note": "Only narrow local demo patterns are checked. Unmatched wording does not establish safety."}

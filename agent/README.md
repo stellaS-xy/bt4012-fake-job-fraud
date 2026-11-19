@@ -1,4 +1,4 @@
-﻿# Job-ad review agent
+# Job-ad review agent
 
 A real Ollama model, running locally or in the cloud, uses LangChain to call
 tools and write a review. This folder sits beside `notebooks/` and has its own
@@ -9,11 +9,38 @@ The Streamlit frontend is in the sibling `frontend/` folder. See the
 [project README](../README.md) for the completed ML work. This folder contains
 the agent logic; it can run without starting the interface.
 
-The language model and tool-calling loop are live. The classifier still returns
-a scenario-selected placeholder score. The lexicon tool now performs real
-versioned risk-pattern matching and LLM context review, with exact quote and
-coverage validation. The posting inspector checks missing fields and urgency.
-These checks are not validated fraud predictions.
+The language model and tool-calling loop are live. Exactly two tools are exposed:
+`score_posting` runs a real saved LightGBM A2 pipeline, and `match_lexicon` runs
+risk patterns plus LLM context review. Missing-field and urgency observations
+are internal parts of the lexicon result, not a third agent tool. The classifier
+score is not a calibrated fraud probability; explanation quality still needs
+representative development evaluation.
+
+## Folder organization
+
+The maintained code and resources are grouped into four folders:
+
+```text
+agent/
+  core/                 Workflow, model setup, schemas, validation and recommendation policy
+    config.py           Reads agent/.env; keeps runtime paths at the agent root
+    models.py           Constructs the real local/cloud model
+    runner.py           Runs the LangChain agent
+  tools/                Classifier, lexicon, posting checks, risk rules and LLM context
+  resources/            Historical terms, synthetic examples and demo fixtures
+  tests/                Unit tests, test-only chat fixtures and development comparison CLI
+  __main__.py           Entry point for python -m agent
+  __init__.py
+  README.md
+  requirements.txt
+  requirements-lock.txt
+  .env                  Local settings and keys; ignored by Git
+```
+
+`.venv/`, `runtime/` and `__pycache__/` contain the local Python environment,
+legacy generated records and interpreter caches. They remain ignored by Git.
+Configuration stays in `agent/.env`, and the frontend launch command is unchanged.
+The comparison CLI is now `python -m agent.tests.evaluate_lexicon`.
 
 ## First-time setup
 
@@ -49,7 +76,7 @@ the local service. Requests go to `http://localhost:11434/v1` and use your
 computer's resources with no Ollama cloud API charges. Do not select a cloud
 model. Start the interface with the command below and click **Review posting**.
 Restart Streamlit after changing settings. Local inference speed depends on your
-computer. The classifier still returns a placeholder score.
+computer. The classifier uses the locally saved LightGBM artifact.
 
 ```powershell
 .\agent\.venv\Scripts\python.exe -m streamlit run frontend/app.py --browser.gatherUsageStats false
@@ -68,10 +95,9 @@ The explicit local override selects the default local model. To use a custom
 |---|---|---|
 | `ollama_local` | Downloaded model at `localhost:11434` | No |
 | `ollama` | Real model hosted by Ollama cloud | Ollama API key and sufficient account credits |
-| `dummy` | Scripted offline test model | No; context LLM is not run |
 
 The example configuration uses local mode. Without configuration, the code's
-fallback default is cloud `ollama` and it requires a key. Choose a backend
+fallback default is free local `ollama_local`. Choose a backend
 explicitly in `.env`. Direct DeepSeek API support has only been discussed; it
 has not been implemented. The cloud example below uses a DeepSeek model hosted
 by **Ollama**, not the direct DeepSeek service.
@@ -107,7 +133,7 @@ Or run a synthetic example in the terminal:
 The CLI prints a JSON case report and exits with code 1 if the review fails.
 An API failure is shown as an incomplete review; it never silently switches to
 the scripted model. In particular, HTTP 402 means Ollama requires credits or a
-subscription, not that you should change to dummy mode.
+subscription. Real-model failures remain visible; no simulated model is substituted.
 
 To install on another computer, create a separate environment with Python 3.10+
 and install the dependencies. Replace `python` with your installed interpreter
@@ -129,11 +155,11 @@ versions from `requirements.txt`.
 1. Submit a posting and select a demo scenario. One submission corresponds to
    one dataset row, using title, description, company profile, salary,
    requirements and benefits. The known `fraudulent` label is never an input.
-   The form is manual; dataset-row import is not implemented. The scenario controls only the
-   placeholder classifier score; editing the posting does not retrain a model.
+   The form is manual; dataset-row import is available through the evaluator CLI.
+   The scenario only fills an example; the real classifier computes its score.
 2. LangChain sends the posting to the configured local or cloud Ollama model.
-3. The model chooses tool calls to `score_posting`, `match_lexicon`, and
-   `inspect_posting`. The application requires all three checks before completion.
+3. The model calls `score_posting` and `match_lexicon`. Both must complete.
+   Basic missing-field/urgency observations are folded into the lexicon output.
    `match_lexicon` first finds payment/secret-credential candidates, then makes
    a separate structured LLM call to interpret each one and inspect all supplied
    text fields for wording missed by the rules. Each field and candidate must
@@ -141,28 +167,44 @@ versions from `requirements.txt`.
 4. The model reads the tool results and returns a structured assessment. Local
    mode uses Ollama's JSON schema output; cloud mode uses an `Assessment`
    function call because cloud JSON schema output is not supported.
-5. Validation checks scores, evidence IDs, quoted text, and rejection boundaries.
-6. A human can confirm and save a local reviewer decision.
+5. Validation checks scores, evidence IDs, quoted text and the two-tool policy.
+6. Return a recommendation: **pass - no review needed** only if both tools pass; otherwise **review needed**, with reasons. No confirmation or escalation action is offered.
 
 Normally there are about three model requests: choosing tools, the separate
 context review, and the final assessment. Sequential tool calls and correction
 attempts can increase this. The interface and JSON report distinguish model-issued calls from executed tool
 results. They include the backend, model name, provider call IDs, and review
-status. Each agent pass is limited to six orchestration-model calls and eight business-tool
-calls. A completed assessment that fails evidence validation gets one correction
-pass using the existing history; a second failure escalates to a human. Provider
-retries are limited to one per request, with a 60-second timeout. The context
+status. Each agent pass is limited to four orchestration-model calls and eight business-tool
+calls. A missing, malformed or invalid final assessment gets one direct
+structured-output recovery attempt using completed tool evidence. The business
+tools are not rerun. Fixed IDs/scores and allowed recommendations are constrained
+in the recovery schema, then the result is validated again. A second failure
+returns a `review_needed` recommendation. Exports record `recovery_attempted` and `failure_stage`;
+an invalid final answer has the safe error code `assessment_invalid`. Provider
+requests use a 60-second timeout. Cloud requests may retry once; local requests
+do not automatically repeat a slow inference. Generated final answers have
+bounded lengths, with at most three limitations and three next steps. The context
 review inside `match_lexicon` adds one structured model call and at most one
 validation correction. Its result is cached for the case, including failures,
 so repeated tool calls do not repeat that review. Temperature is set to zero;
 this does not guarantee identical outputs across runs.
+Context reviews also reject a request label that contradicts a warning,
+negation or an explicit 'not a request' explanation. When all candidates have
+protected warning/negation context, the response schema disallows request.
+Uncertainty remains visible rather than being promoted to a confirmed request.
 
-The agent can propose rejection or escalate for review. It cannot remove an ad.
-Rejection proposals require a cited request finding reviewed by the LLM.
-Unconfirmed candidates, negations, warnings, uncertainty, ordinary job/industry
-terms and scores cannot support a proposal. Failed context reviews leave the
-candidates visible and require escalation. Even an LLM-reviewed request can be
-misinterpreted and still needs a human to check its quoted context.
+The two recommendations are `pass_no_review_needed` and `review_needed`.
+The real classifier passes when its valid score is below its cutoff. The lexicon
+passes when context review completes without risky requests, uncertain findings
+or unreviewed candidates. Both must pass to recommend no review. A flag, missing
+or failed tool, test-fixture score or incomplete context check requires review,
+with reasons from the tools. Confirmed warnings/negations and historical terms
+or missing optional fields alone do not fail the lexicon check. This policy is
+implemented in `core/policy.py` and independently enforced during validation.
+These are recommendations only: no rejection, human escalation or confirmation
+action is executed. A pass does not verify an employer or guarantee safety.
+Schema version 5 records this contract; saved older cases retain their original
+meaning and must not be mixed into a new-policy evaluation.
 An application guard also checks the containing sentence for explicit negation
 or warning language, including context outside a short LLM quote. If that
 contradicts the model's request verdict, the finding becomes uncertain. The
@@ -175,8 +217,8 @@ inside a posting are treated as evidence, not instructions for the agent.
 
 The supplied posting is sent to the local service in local mode and to Ollama's
 cloud service in cloud mode. Optional LangSmith
-uploads are disabled. Local review decisions are saved only when confirmed, in
-ignored `agent/runtime/reviews.jsonl`. API keys are excluded from case exports and
+uploads are disabled. The frontend can download a case report; it no longer
+offers reviewer decisions or writes confirmation records. API keys are excluded from case exports and
 application error messages.
 
 ## Notebook 00 lexicon versus the agent's checks
@@ -187,9 +229,9 @@ the agent implementation. The 33 terms currently in
 [`resources/dataset_terms.csv`](resources/dataset_terms.csv) were copied from
 that output and are matched as background only. The agent does not read the
 report CSV at runtime and does not automatically refresh the copy after a
-notebook rerun. Ordinary job and industry terms cannot support rejection.
+notebook rerun. Ordinary job and industry terms do not fail a check by themselves.
 
-Actual risky-request candidates come from [`risk_rules.py`](risk_rules.py),
+Actual risky-request candidates come from [`tools/risk_rules.py`](tools/risk_rules.py),
 not from promoting those historical terms into fraud rules. The LLM context
 review can also add exact-quoted findings the patterns missed. Separately,
 `src/features.py` contains the ML pipeline's fold-trained `FraudPhraseScore`
@@ -205,28 +247,29 @@ updating the historical terms. The main tool implementation is
 
 | File | Responsibility |
 |---|---|
-| `../frontend/app.py` | Streamlit inputs, results, reviewer confirmation and JSON download |
+| `../frontend/app.py` | Streamlit inputs, recommendation results and JSON download |
 | `__main__.py` | Command-line entry point |
-| `config.py` | Environment loading and configuration validation |
-| `models.py` | Real Ollama model construction through LangChain ChatOpenAI |
-| `runner.py` | Agent orchestration, validation and safe failure handling |
-| `middleware.py` | Require the three business checks before final assessment |
-| `tracing.py` | Capture actual model-issued calls and match execution IDs |
-| `errors.py` | Safe authentication, credits, connection and other error messages |
-| `prompts.py` | Instructions and evidence boundaries |
-| `risk_rules.py` | Versioned English payment and secret-credential candidate patterns |
-| `context_review.py` | Structured LLM context review, complete coverage and exact quotes |
+| `core/config.py` | Environment loading and configuration validation |
+| `core/models.py` | Real Ollama model construction through LangChain ChatOpenAI |
+| `core/runner.py` | Agent orchestration, validation and safe failure handling |
+| `core/assessment.py` | One constrained final-answer recovery using completed tool outputs |
+| `core/middleware.py` | Require both planned business tools before final assessment |
+| `core/tracing.py` | Capture actual model-issued calls and match execution IDs |
+| `core/errors.py` | Safe authentication, credits, connection and other error messages |
+| `core/prompts.py` | Instructions and evidence boundaries |
+| `tools/risk_rules.py` | Versioned English payment and secret-credential candidate patterns |
+| `tools/context_review.py` | Structured LLM context review, complete coverage and exact quotes |
 | `resources/` | Frozen background-only dataset terms and synthetic development examples |
-| `evaluate_lexicon.py` | Rules/LLM/combined comparisons on identical annotated examples |
-| `schemas.py` | Posting, evidence, assessment and reviewer data contracts |
+| `tests/evaluate_lexicon.py` | Rules/LLM/combined comparisons on identical annotated examples |
+| `core/schemas.py` | Posting, evidence and recommendation data contracts |
 | `tools/__init__.py` | LangChain tool registration and execution traces |
-| `tools/classifier.py` | Placeholder classifier adapter |
+| `tools/classifier.py` | Real LightGBM subprocess adapter; no simulated classifier option |
 | `tools/lexicon.py` | Risk candidates, LLM interpretation and background-only dataset terms |
-| `tools/posting.py` | Local demonstration inspection rules |
-| `validation.py` | Score consistency, required checks and evidence validation |
-| `reviewer.py`, `audit.py` | Human confirmation and local decision records |
-| `fixtures.py` | Synthetic examples and fixed placeholder scores |
-| `dummy_model.py` | Scripted model used only for explicit offline tests |
+| `tools/posting.py` | Internal missing-field/urgency checks included in the lexicon output |
+| `core/validation.py` | Score consistency, required checks and evidence validation |
+| `core/policy.py` | Both-tool pass checks and review reasons; no business actions |
+| `resources/fixtures.py` | Example input postings; no fixed scores |
+| `tests/chat_model_fixture.py` | Scripted chat responses imported only by automated tests |
 | `tests/` | Agent workflow and mocked provider protocol checks |
 | `../frontend/tests/` | Streamlit interface checks |
 
@@ -243,48 +286,74 @@ against mocked HTTP responses, checking tool calls, structured completion and
 failure handling. These verify software behavior, not the model's explanation
 quality or the classifier's accuracy.
 
-An explicit offline demonstration is available without a key:
+Automated tests mock model and classifier boundaries using
+`tests/chat_model_fixture.py` and `tests/runtime_fixtures.py`. Application code
+never imports these files. There is no simulated backend or classifier CLI/UI
+option. The normal runtime only supports `ollama_local` and `ollama`, and always
+uses real saved LightGBM inference. Missing artifacts and failed requests remain
+visible failures rather than silently substituting a score or explanation.
+
+`ReviewCase.model_backend` and `model_name` are required provenance fields,
+recording where the LLM ran and the exact model selected. They have no fake
+defaults. `uses_test_fixtures` in assessments and `is_test_fixture` in tool
+outputs explicitly distinguish mocked test data from real inference; normal
+runs set these to false. They replace the earlier ambiguous provenance names.
+Schema 5 reflects that contract change. Earlier saved reports are historical
+snapshots; their input/output fields and source hashes have not been rewritten.
+
+## Real classifier artifact
+
+Fit the integration artifact in the modelling environment, from the repository root:
 
 ```powershell
-.\agent\.venv\Scripts\python.exe -m agent --backend dummy --scenario suspicious
+.\.venv\Scripts\python.exe -m src.classifier_inference --fit
 ```
 
-`dummy_model.py` stays so automated tests can check the tool loop, form, failure
-handling and review confirmation without a running LLM or API charges. It runs
-only when `dummy` is explicitly selected. It is never a silent fallback for a
-failed real-model request. In dummy mode, rule matching still runs, but context
-is unconfirmed and cannot justify an automated rejection proposal.
+This uses only `data/processed/d1_train.csv` (14,439 rows), with the existing A2
+feature pipeline, a 2,000-term TF-IDF limit and 200 LightGBM trees. The most
+frequent inner-selected setting is `num_leaves=31` (21 of 25 rounds); the cutoff
+is the median of the saved inner-selected cutoffs, approximately 0.269442.
+This is an integration candidate, not a new unbiased model-selection result.
+The reserved test set and the two synthetic labels are not used for fitting or
+cutoff selection. Training-data and feature-code fingerprints are checked.
 
-The test language model and the classifier stub are separate. Even in real
-local/cloud mode, `tools/classifier.py` still returns a scenario-selected
-synthetic score. `tool_results_are_placeholders=true` remains in exported
-assessments because of that classifier placeholder; individual evidence records
-identify the real rule/context sources and review status.
+The fitted pipeline and provenance metadata are saved under ignored
+`models/agent_lightgbm/`. `tools/classifier.py` calls
+`src.classifier_inference` in the modelling `.venv`, keeping sklearn/LightGBM
+versions separate from the agent environment. Override `CLASSIFIER_PYTHON` or
+`CLASSIFIER_ARTIFACT` in `agent/.env` if their paths differ. Inputs are allowlisted;
+unknown binary values remain missing for LightGBM and missing categories use
+the fitted preprocessing. Every result lists missing inputs and an artifact hash.
+A high score on a very short, incomplete example is not a calibrated probability.
 
-## Connect the trained project tools later
-
-Replace the adapter in `tools/classifier.py` with inference using the frozen
-classifier and its saved preprocessing, cutoff and model version. The historical
-dataset terms are now loaded from a versioned resource as background only.
+The historical dataset terms are loaded from a versioned resource as background only.
 Preserve posting IDs, quote validation and context provenance when extending
 the real lexicon/context checks. Review the posting inspection rules as well.
 
 Do not include synthetic scores in the project's model comparison metrics.
-Evaluate explanation quality separately after connecting and validating the real
-tools. This agent does not train models or evaluate the reserved test dataset.
+Evaluate explanation quality separately from classification. Normal inference
+does not train models; the explicit artifact-fit command uses training data only.
+The reserved test set is not evaluated as part of this integration.
 
 ## Compare the evidence tools
+
+For full-agent recommendation and explanation scoring, use the separate
+[`evaluator/`](../evaluator/README.md) package. It applies code checks plus a
+configurable local/cloud LLM judge to dataset rows or saved agent outputs, keeps
+gold annotations hidden and reports judge failures explicitly. It does not need
+human action annotations. The comparison below instead tests risky-request
+extraction against annotated spans; the two evaluations serve different roles.
 
 Run the deterministic baseline without a model:
 
 ```powershell
-.\agent\.venv\Scripts\python.exe -m agent.evaluate_lexicon --mode rules
+.\agent\.venv\Scripts\python.exe -m agent.tests.evaluate_lexicon --mode rules
 ```
 
 Compare rules alone, the configured LLM alone, and both together:
 
 ```powershell
-.\agent\.venv\Scripts\python.exe -m agent.evaluate_lexicon --mode all --repeats 3
+.\agent\.venv\Scripts\python.exe -m agent.tests.evaluate_lexicon --mode all --repeats 3
 ```
 
 The combined method supplies rule candidates to the same context-review prompt;

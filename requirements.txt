@@ -1,6 +1,8 @@
 # Core data + EDA
 pandas>=2.0
 numpy>=1.24
+scipy>=1.10
+statsmodels>=0.14
 matplotlib>=3.7
 seaborn>=0.13
 jupyterlab>=4.0
@@ -8,6 +10,8 @@ ipykernel>=6.25
 
 # NLP / feature engineering
 scikit-learn>=1.3
+joblib>=1.3
+threadpoolctl>=3.1
 nltk>=3.8
 wordcloud>=1.9
 gensim>=4.3
@@ -21,3 +25,18 @@ shap>=0.43
 
 # Data download
 kaggle>=1.6
+
+# Agent + evaluator (real model calls through LangChain; DeepEval is not used)
+langchain>=1.0,<2
+langchain-core>=1.0,<2
+langchain-openai>=1.0,<2
+langsmith>=0.3,<1
+pydantic>=2.7,<3
+python-dotenv>=1,<2
+
+# Streamlit frontend
+streamlit>=1.40,<2
+
+# HTTP clients used directly by provider/workflow tests
+httpx>=0.28,<1
+requests>=2.31,<3

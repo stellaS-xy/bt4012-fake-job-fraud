@@ -1,9 +1,10 @@
 """Application checks that do not rely on the language model's compliance."""
-from agent.schemas import Assessment, Evidence, Posting, ToolTrace
-from agent.middleware import REQUIRED_TOOLS
+from agent.core.schemas import Assessment, Evidence, Posting, ToolTrace
+from agent.core.middleware import REQUIRED_TOOLS
+from agent.core.policy import recommendation_policy
 
 
-def supports_rejection(item):
+def is_risky_request(item):
     return (item.kind in ("payment_request", "credential_request")
             and item.source in ("risk_lexicon", "llm_context")
             and item.context == "request" and item.reviewed_by == "llm"
@@ -33,6 +34,8 @@ def validate_assessment(assessment: Assessment, posting: Posting, trace: list[To
     score = results["score_posting"]
     if score.get("posting_id") != posting.posting_id:
         raise ValueError("Score belongs to another posting.")
+    if assessment.uses_test_fixtures != score.get('is_test_fixture'):
+        raise ValueError('Assessment changed whether the classifier result is a test fixture.')
     for name in ("model_score", "cutoff", "flagged"):
         if getattr(assessment, name) != score[name]:
             raise ValueError(f"Assessment changed the tool's {name}.")
@@ -45,11 +48,7 @@ def validate_assessment(assessment: Assessment, posting: Posting, trace: list[To
     for item in evidence:
         if item.quote is not None and item.quote not in (getattr(posting, item.field) or ""):
             raise ValueError("A quoted passage does not occur in the supplied field.")
-    if assessment.recommendation == "propose_rejection" and not any(
-        supports_rejection(by_id[e]) for e in assessment.evidence_ids
-    ):
-        raise ValueError("Rejection proposals require a cited, LLM-reviewed request; candidates, warnings, background terms and scores cannot justify them.")
-    if (assessment.recommendation == "propose_rejection"
-            and results['match_lexicon'].get('context_status') != 'completed'):
-        raise ValueError("A failed or missing context review requires escalation.")
+    policy = recommendation_policy(trace)
+    if assessment.recommendation != policy['recommendation']:
+        raise ValueError('Recommendation must follow both tool checks: '+str(policy))
     return evidence
