@@ -1,0 +1,5 @@
+{
+  "model": "multinomial_nb",
+  "folds": 25,
+  "scores_sha256": "0ab0915f4eab9b65ac0c8f76db7283aafbb165b1df4b52a32eca06bd794e0a84"
+}

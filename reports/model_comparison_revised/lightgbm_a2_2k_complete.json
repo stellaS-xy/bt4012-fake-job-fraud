@@ -1,0 +1,5 @@
+{
+  "model": "lightgbm_a2_2k",
+  "folds": 25,
+  "scores_sha256": "a21c20b88cc9207a8cb45e32c808e64afe8cc511046f05e3b0b93f05ada515ec"
+}

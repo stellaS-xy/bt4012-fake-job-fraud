@@ -1,0 +1,5 @@
+{
+  "model": "xgboost_a2_2k",
+  "folds": 25,
+  "scores_sha256": "a79511a8a694ad0aa5927152d43427b5f0ed35781981785398e1747231d31bf7"
+}

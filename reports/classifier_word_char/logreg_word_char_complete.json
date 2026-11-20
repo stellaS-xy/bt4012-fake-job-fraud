@@ -1,0 +1,5 @@
+{
+  "model": "logreg_word_char",
+  "folds": 25,
+  "scores_sha256": "1c92147a271a071a03a2e5ab4f569203f9dc36412fb7d9cdfec573d21d489874"
+}

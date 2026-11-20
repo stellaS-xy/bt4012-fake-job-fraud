@@ -1,0 +1,5 @@
+{
+  "model": "semantic_minilm",
+  "folds": 25,
+  "scores_sha256": "601ee6801c1c16bd77520f1079822eef8b105077fb26c06e597baa6ae3aee974"
+}

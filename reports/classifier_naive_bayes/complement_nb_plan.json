@@ -1,0 +1,57 @@
+{
+  "training_sha256": "61117d0309733e4dcf28d1f9836588ffaf72b7b44479113a742533134cad57ce",
+  "assignments_sha256": "7c7b5117d01e3fc1a1ba9055e999a2c146034f0e86275d3f3417bc381caab9ce",
+  "outer_signatures": {
+    "0:0": "2170b0714a67ff9aaf83f957155925e38d1a918568b729ce10233182619e8763",
+    "0:1": "b88f62817da8b70ea2cf93acc4e4901254bf8cc64461c5ab80c00bee0b5f573c",
+    "0:2": "246c9d4770451455604c25bb2806e4c6e5c06f0b0754ba9aa23ddf16d2f52b2a",
+    "0:3": "606745679ff5bb0a31d1e9c1b7b059a0fe80d5881deff88341bcda0dc2dd14b8",
+    "0:4": "2e6d5529657c0f15f36892222aab0af9aaa443fc5becd7d2bba83400ed5a8cc7",
+    "1:0": "794b1a565cfe51e392d8086b6ac92389a77f3838a7a46499890d8b4e4670bc39",
+    "1:1": "2d3b41bf3586a5a78a0d2d2c5538e5d36a760a753effd2b8269ccd4e7465bdcb",
+    "1:2": "7b632175f7d90bda5cc878ccc63e7fdb87767095241cd6350173175da5059b36",
+    "1:3": "707ba34119af083d03ebeb9d459b0b6ad5861ab02b2c59c1bd20ce32b5abf30d",
+    "1:4": "419bca62f991cd1c0d53f79858ed7f5dbbd08fab43852252d11a3b5458a78f46",
+    "2:0": "c17891412d6daf21e49f61609c593c2b13ca1f2572e0b93b961b8f19100480be",
+    "2:1": "adcd9feb3e4ab027b21237fe7420bc085adc209e831b084968512f346298afa5",
+    "2:2": "14412d17256c5502a6265aaf3ae4fddc2b5dbfdc7d5d0b61a99ccac9d48593dc",
+    "2:3": "5cf169c7933b665cf823d92de4ab6ee50a90d714f439ee7e7a4d585e0ab553d9",
+    "2:4": "a2ad29c88554d699d2f99073b28e682d05199ef371c224bc837f2063a65ddd4f",
+    "3:0": "e0694661f2bbd7e926fc4bf564a9f9a1eb2ac0c732e59b4c26322f7b6e3e7841",
+    "3:1": "fc3da344e9f284653fe5a01418b9b0d6b5b85ec211feb8388243d18430dee0b4",
+    "3:2": "d6d8812e950bd56ec0655382e41e1fea98050d251ae1c902263a4714d8920cac",
+    "3:3": "b2b7c5bbbd048911866ae9767a8681312036016427c1fd1ecc58bfd935827429",
+    "3:4": "b03803bd2028de67c27b1df493f65bc0697e3d225b4a9d6c63133accbd18e7e1",
+    "4:0": "8c4dee7fdb2bea501b274b7ea34b8b711713e3564aa226367ed66e156da045bd",
+    "4:1": "5b64804240b3e644208b689a343c7cba0dd1e9dad71cc92b4ecdb6a5cc6e1906",
+    "4:2": "abd7e622cefdf6b5f21e15c5aaab83ada5318279100123cea6365f7c7b7751fc",
+    "4:3": "2f0ee5c613894d8a1bac27867e7f4ec85ae2168ab670147a1ab5aa9ef3c6e22a",
+    "4:4": "29dce7fd0f5cbeef515071a0bce928b86b810ef3a1ee454bc6bb5e6338fa38aa"
+  },
+  "source_sha256": {
+    "features.py": "090d1a2eacd7623ef8e8af81f79dc21771945abd4d0a6f79cd6222c7c057d340",
+    "evaluation.py": "d64c3dc1fdd55f9231980a0e979df45a93d607c16989f6a721fb61f9fd1511c3"
+  },
+  "runner_sha256": "99d747f74196aa4042f095b3d0aaa2c5153b0c241ebe7eefb9869d19a228eb10",
+  "versions": {
+    "numpy": "2.4.6",
+    "pandas": "3.1.1",
+    "scikit-learn": "1.9.1",
+    "scipy": "1.17.1",
+    "joblib": "1.6.0"
+  },
+  "seed": 42,
+  "inner_splits": 3,
+  "review_share": 0.05,
+  "threshold_rule": "inner OOF maximum F1",
+  "threads": 2,
+  "model": "complement_nb",
+  "estimator": "Pipeline(steps=[('features',\n                 ColumnTransformer(sparse_threshold=1.0,\n                                   transformers=[('tfidf',\n                                                  TfidfVectorizer(dtype=<class 'numpy.float32'>,\n                                                                  max_df=0.5,\n                                                                  max_features=30000,\n                                                                  min_df=5,\n                                                                  ngram_range=(1,\n                                                                               2),\n                                                                  stop_words='english',\n                                                                  sublinear_tf=True),\n                                                  'text_clean')])),\n                ('model', ComplementNB())])",
+  "grid": {
+    "model__alpha": [
+      0.1,
+      1.0,
+      10.0
+    ]
+  }
+}
