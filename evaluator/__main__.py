@@ -8,6 +8,7 @@ from agent.core.config import Settings, load_settings
 from evaluator.config import load_judge_settings
 from evaluator.data import load_examples
 from evaluator.runner import run_evaluation
+from evaluator.export_html import render
 
 
 def main():
@@ -61,8 +62,10 @@ def main():
                   available_cases=original_count, selected_cases=len(examples), repeats=args.repeats,
                   replay=bool(args.cases), offline_agent=False)
     (output/'report.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
+    (output/'review_report.html').write_text(render(report), encoding='utf-8')
     print(json.dumps(report['summary'], indent=2))
     print('Saved:', output/'report.json')
+    print('HTML report:', output/'review_report.html')
     if (report['summary']['judge_failed'] or report['summary']['agent_failures']
             or report['summary']['input_failures'] or report['summary']['code_checks_failed']):
         raise SystemExit(1)
