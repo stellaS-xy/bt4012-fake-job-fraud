@@ -1,14 +1,12 @@
-# Python 3.10 or 3.11. Core versions match the recorded grouped five-fold run.
+# Dedicated Linux NVIDIA GPU environment; cluster Python 3.12 is supported.
+# Do not install over the classifier/agent environments.
 numpy==2.2.6
 pandas==2.3.3
 scipy==1.15.3
-scikit-learn==1.7.2
-tensorflow==2.21.0
-keras==3.12.4
+scikit-learn==1.9.1
+tensorflow[and-cuda]==2.21.0
+# Keras is resolved from TensorFlow's own compatibility requirements.
 threadpoolctl>=3.1,<4
 ipykernel>=6.25,<8
 nbformat>=5.9,<6
-
-# Needed to prepare/recreate the frozen data with notebook 00.
-matplotlib>=3.7,<4
-seaborn>=0.13,<0.14
+nbclient>=0.10,<0.11

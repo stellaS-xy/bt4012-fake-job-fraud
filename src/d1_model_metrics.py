@@ -51,7 +51,8 @@ def export_comparison(root, frame, config, result, output_dir=None, *, write_fil
         raise ValueError('Current results do not match the supplied data/configuration.')
     y, groups = frame.fraudulent.to_numpy(), frame.group_id.to_numpy()
     planned = {(r, k): (fold_signature(y, groups, fit, score), len(fit), len(score))
-               for r, k, fit, score in experiment.split_plan(frame, config)}
+               for r, k, fit, score in experiment.split_plan(
+                   frame, config, root / 'data/processed/model_cv_assignments.csv')}
     for row in reference.itertuples():
         if planned.get((row.repeat, row.fold)) != (row.fold_signature, row.train_rows, row.val_rows):
             raise ValueError('Current results contain folds outside the configured plan.')
@@ -69,13 +70,29 @@ def export_comparison(root, frame, config, result, output_dir=None, *, write_fil
         include(current.loc[current.model == name], name, '09', 'A2', config.tfidf_max_features)
 
     external = [('02 TF-IDF logistic regression', root / 'reports/tables/model_logreg_tf_idf_only_fold_scores.csv',
-                 '02', 'TF-IDF only', 30000)]
+                 '02', 'TF-IDF only', 30000),
+                ('02 A2 logistic regression (saved)', root / 'reports/tables/model_logreg_a2_fold_scores.csv',
+                 '02', 'A2', 30000),
+                ('LightGBM A2 2k (saved)', root / 'reports/model_comparison_revised/lightgbm_a2_2k_fold_scores.csv',
+                 '03 revised', 'A2', 2000)]
     data_file = root / 'data/processed/d1_train.csv'
     file_sha = hashlib.sha256(data_file.read_bytes()).hexdigest()
     for name, path, source, features, limit in external:
         reason = None
         if not path.is_file():
-            reason = 'Saved model fold scores not present; rerun its notebook to include it.'
+            reason = 'Saved fold scores not present; upload existing results to include them.'
+        if reason is None and source == '03 revised':
+            plan_file = path.with_name('lightgbm_a2_2k_plan.json')
+            try:
+                plan = json.loads(plan_file.read_text())
+                hashes = plan.get('source_sha256', {})
+                if plan.get('training_sha256') != file_sha:
+                    reason = 'Historical LightGBM development data hash differs.'
+                elif any(hashes.get(name) != hashlib.sha256((root / 'src' / name).read_bytes()).hexdigest()
+                         for name in ['features.py', 'evaluation.py']):
+                    reason = 'Historical LightGBM preprocessing/evaluation provenance differs or is missing.'
+            except (OSError, ValueError, AttributeError) as exc:
+                reason = f'Historical LightGBM provenance unavailable or invalid: {exc}'
         if reason is None:
             try:
                 include(pd.read_csv(path), name, source, features, limit)
@@ -118,7 +135,9 @@ def export_comparison(root, frame, config, result, output_dir=None, *, write_fil
                                    **paired_comparison(reference, table, metric)})
     tables = {'model_comparison': summary, 'combined_decisions_by_repeat': pd.DataFrame(repeated),
               'fold_metrics': folds, 'mlp_tuning_choices': tuning,
-              'comparison_sources': pd.DataFrame(sources), 'paired_mlp_vs_others': pd.DataFrame(paired)}
+              'comparison_sources': pd.DataFrame(sources), 'paired_mlp_vs_others': pd.DataFrame(paired),
+              'inner_candidates': result['inner_candidates'],
+              'checkpoint_history': result['checkpoint_history']}
     if not write_files:
         return tables
     output.mkdir(parents=True, exist_ok=True)
@@ -133,7 +152,9 @@ def export_comparison(root, frame, config, result, output_dir=None, *, write_fil
         'expected_outer_folds': expected_count, 'final_test_accessed': False,
         'summary_aggregation': 'arithmetic mean of matched outer-fold metrics; AP is average precision',
         'count_aggregation': 'combined decisions separately per repeat; repeated postings are never added across repeats',
-        'comparison_note': '02-aligned comparison only: A2 MLP, A2 LR and optional matching 02 text-only LR.',
+        'comparison_note': 'Matched outer folds; saved models are not retrained. Historical training protocols may differ.',
+        'assignments_sha256': hashlib.sha256((root / 'data/processed/model_cv_assignments.csv').read_bytes()).hexdigest(),
+        'cache_dir': result['cache_dir'],
         'versions': experiment._versions()}
     (output / 'run_manifest.json').write_text(json.dumps(provenance, indent=2))
     tables['output_dir'] = str(output)

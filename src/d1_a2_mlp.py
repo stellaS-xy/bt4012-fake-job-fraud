@@ -149,18 +149,35 @@ def load_development(path):
 
 
 def split_plan(frame, config, team_assignments=None):
-    """Make 02's exact folds; check saved team assignments if provided and present."""
-    y, groups = frame[TARGET].to_numpy(), frame[GROUP].to_numpy()
-    folds = make_folds(groups, y, n_splits=config.outer_splits, n_repeats=config.repeats, seed=config.seed)
-    if team_assignments is not None and Path(team_assignments).is_file():
-        saved = pd.read_csv(team_assignments)
-        for repeat, fold, _, scoring in folds:
-            rows = saved.loc[(saved.repeat == repeat) & (saved.fold == fold)]
-            expected = frame.iloc[scoring][['job_id', GROUP]].sort_values('job_id').reset_index(drop=True)
-            actual = rows[['job_id', GROUP]].sort_values('job_id').reset_index(drop=True)
-            if not expected.equals(actual):
-                raise ValueError('Saved notebook 02 assignments differ. Resolve data/fold versions before comparing.')
-    return folds
+    """Restore saved outer folds by job ID; never regenerate the agreed split."""
+    if team_assignments is None or not Path(team_assignments).is_file():
+        raise FileNotFoundError('Saved model_cv_assignments.csv is required. Upload the agreed file from 02.')
+    saved = pd.read_csv(team_assignments)
+    required = {'repeat', 'fold', 'job_id', GROUP}
+    if not required.issubset(saved):
+        raise ValueError('Saved assignments need repeat, fold, job_id and group_id.')
+    for column in ['repeat', 'fold']:
+        values = pd.to_numeric(saved[column], errors='raise')
+        if values.isna().any() or not np.isfinite(values).all() or (values < 0).any() or (values % 1 != 0).any():
+            raise ValueError('Assignment repeat/fold identifiers must be nonnegative integers.')
+        saved[column] = values.astype(int)
+    if saved[['job_id', GROUP]].isna().any().any():
+        raise ValueError('Saved assignments contain missing job/group IDs.')
+    folds = []
+    positions = np.arange(len(frame))
+    indexed = frame.set_index('job_id')
+    for repeat in range(config.repeats):
+        rows = saved.loc[saved.repeat == repeat]
+        if (rows.job_id.duplicated().any() or set(rows.job_id) != set(frame.job_id)
+                or set(rows.fold) != set(range(config.outer_splits))):
+            raise ValueError(f'Saved repeat {repeat} must assign every development job once across all folds.')
+        expected = indexed.loc[rows.job_id, GROUP].to_numpy()
+        if not np.array_equal(expected, rows[GROUP].to_numpy()):
+            raise ValueError('Saved job/group identities differ from development data.')
+        for fold in range(config.outer_splits):
+            scoring = frame.job_id.isin(rows.loc[rows.fold == fold, 'job_id']).to_numpy()
+            folds.append((repeat, fold, positions[~scoring], positions[scoring]))
+    return validate_folds(folds, frame[TARGET], frame[GROUP])
 
 
 def _versions():
@@ -187,7 +204,9 @@ def run_comparison(frame, config, cache_dir, folds=None):
     A partial screen intentionally leaves unevaluated OOF rows as NaN. It is
     never labelled a full CV result and no missing predictions are filled in.
     """
-    folds = split_plan(frame, config) if folds is None else validate_folds(list(folds), frame[TARGET], frame[GROUP])
+    if folds is None:
+        raise ValueError('Pass the restored saved outer folds explicitly.')
+    folds = validate_folds(list(folds), frame[TARGET], frame[GROUP])
     requested = folds if config.outer_limit is None else folds[:config.outer_limit]
     y, groups = frame[TARGET].to_numpy(), frame[GROUP].to_numpy()
     X = build_inputs(frame.copy())
