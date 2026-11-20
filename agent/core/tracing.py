@@ -1,6 +1,6 @@
 """Capture provider-issued business tool calls, without prompts or credentials."""
 from langchain_core.callbacks import BaseCallbackHandler
-from agent.middleware import REQUIRED_TOOLS
+from agent.core.middleware import REQUIRED_TOOLS
 
 
 class ToolCallRecorder(BaseCallbackHandler):

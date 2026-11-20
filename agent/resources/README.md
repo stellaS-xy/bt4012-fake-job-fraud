@@ -41,7 +41,7 @@ keep gold labels outside the LLM input, and do not use the project's reserved
 test set for prompt/rule development. Annotate the exact supporting span, field
 and category. The script rejects invalid gold spans and duplicate case IDs.
 
-The English patterns are maintained separately in `agent/risk_rules.py`, with a
+The English patterns are maintained separately in `agent/tools/risk_rules.py`, with a
 version identifier included in reports. Regex matches select candidates; they
 do not verify employer intent. Extend patterns using development failures, then
 evaluate on a fresh annotated development set. Preserve full context and exact

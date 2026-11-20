@@ -1,16 +1,17 @@
 """LLM context extraction and strict coverage/quote validation."""
 import json
+import re
 from typing import Literal
 
 from langchain_core.messages import HumanMessage, SystemMessage
 from langsmith import tracing_context
 from pydantic import Field, create_model
 
-from agent.models import create_review_model
-from agent.risk_rules import TEXT_FIELDS, context_guard
-from agent.schemas import Contract
+from agent.core.models import create_review_model
+from agent.tools.risk_rules import TEXT_FIELDS, context_guard
+from agent.core.schemas import Contract
 
-Interpretation = Literal["request", "negated", "warning", "uncertain"]
+Interpretation = Literal["uncertain", "negated", "warning", "request"]
 Category = Literal["payment_request", "credential_request"]
 
 
@@ -50,7 +51,10 @@ Additional findings must quote an EXACT substring of their named field, includin
 enough context to interpret it. Do not duplicate a candidate as an additional
 finding. Return empty lists where appropriate. Do not invent external facts.
 Use interpretation=request only for an actual employer request; uncertainty,
-negation and warnings must not support rejection. Copy posting_id exactly.
+negation and warnings must not be labelled as employer requests. Copy posting_id exactly.
+Your selected interpretation MUST agree with your explanation. If the reason
+says 'not a request', do not select request. For a warning use warning; for an
+instruction never to pay/share use negated. Uncertain is safer than guessing.
 """
 
 
@@ -96,9 +100,21 @@ def interpreted_findings(report, posting, candidates):
     return findings
 
 
+def validate_interpretations(report, posting, candidates):
+    """Reject contradictory model output before marking its review complete."""
+    findings = interpreted_findings(report, posting, candidates)
+    for finding in findings:
+        denies_request = re.search(
+            r"\bnot\s+(?:(?:a|an|actual|direct|real|employer|payment|credential|financial)\s+){0,5}request\b"
+            r"|\bdoes not\s+(?:constitute|contain|make|represent)\s+(?:(?:a|an|actual|direct|payment|credential)\s+){0,5}request\b",
+            finding['reason'], re.I)
+        if finding['model_interpretation'] == 'request' and (finding['context_guard'] or denies_request):
+            raise ValueError('A request verdict contradicts the sentence context or its own explanation. '
+                             'Use warning, negated or uncertain as appropriate; do not label it request.')
+    return report
+
+
 def review_context(posting, candidates, settings, model=None):
-    if settings.backend == "dummy":
-        raise ValueError("Context interpretation requires a real model.")
     model = model or create_review_model(settings)
     method = "json_schema" if settings.backend == "ollama_local" else "function_calling"
     fields = [f for f in TEXT_FIELDS if getattr(posting, f)]
@@ -106,8 +122,12 @@ def review_context(posting, candidates, settings, model=None):
     # small model should interpret context, not guess bookkeeping values.
     review_type = CandidateReview
     if candidates:
+        # If every candidate is protected, request is already disallowed by the
+        # application's policy. Encode that constraint to avoid first-enum bias.
+        protected = all(context_guard(posting, c['field'], c['quote']) for c in candidates)
         review_type = create_model("CandidateReview", __base__=CandidateReview,
-            evidence_id=(Literal[tuple(c['evidence_id'] for c in candidates)], Field(...)))
+            evidence_id=(Literal[tuple(c['evidence_id'] for c in candidates)], Field(...)),
+            interpretation=(Literal['uncertain', 'negated', 'warning'] if protected else Interpretation, Field(...)))
     response_type = create_model("ContextReport", __base__=ContextReport,
         posting_id=(Literal[posting.posting_id], Field(...)),
         checked_fields=(list[Literal[tuple(fields)]], Field(..., min_length=len(fields), max_length=len(fields))),
@@ -117,12 +137,15 @@ def review_context(posting, candidates, settings, model=None):
                "required_checked_fields": fields,
                "fields": {f: getattr(posting, f) for f in TEXT_FIELDS if getattr(posting, f)},
                "candidates": candidates}
+    payload['context_hints'] = {c['evidence_id']: context_guard(posting, c['field'], c['quote'])
+                               for c in candidates}
     messages = [SystemMessage(content=CONTEXT_PROMPT), HumanMessage(content=json.dumps(payload))]
     for attempt in range(2):
         try:
             with tracing_context(enabled=False):
                 raw = structured.invoke(messages)
-            return validate_context(raw, posting, candidates)
+            report = validate_context(raw, posting, candidates)
+            return validate_interpretations(report, posting, candidates)
         except ValueError as exc:
             if attempt:
                 raise

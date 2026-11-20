@@ -4,10 +4,12 @@ from functools import lru_cache
 from pathlib import Path
 import re
 
-from agent.context_review import review_context, validate_context, interpreted_findings
-from agent.errors import error_code_for
-from agent.risk_rules import VERSION, TEXT_FIELDS, candidate_matches
-from agent.schemas import Evidence
+from agent.tools.context_review import review_context, validate_context, interpreted_findings
+from agent.core.errors import error_code_for
+from agent.tools.risk_rules import VERSION, TEXT_FIELDS, candidate_matches
+from agent.core.schemas import Evidence
+from agent.tools.posting import posting_observations
+from agent.core.policy import lexicon_check
 
 BACKGROUND_PATH = Path(__file__).resolve().parents[1] / "resources" / "dataset_terms.csv"
 
@@ -25,7 +27,7 @@ def match_lexicon(posting, settings=None, context_reviewer=None):
                          observation="Rule candidate; context has not yet been confirmed.",
                          rule_id=c["rule_id"]).model_dump() for c in candidates]
     status, error = "not_run", None
-    if settings is not None and settings.backend != "dummy":
+    if settings is not None:
         try:
             report = (context_reviewer or review_context)(posting, candidates, settings)
             report = validate_context(report, posting, candidates)
@@ -51,7 +53,11 @@ def match_lexicon(posting, settings=None, context_reviewer=None):
                 evidence.append(Evidence(evidence_id=f"background_{len(evidence)+1}", source="dataset_lexicon",
                     field=field, kind="dataset_association", quote=match.group(), context="background",
                     observation=f"'{term}' was associated with labels in the historical training analysis. Background only; not evidence of a risky request.").model_dump())
-    return {"is_dummy": False, "lexicon_version": VERSION, "context_status": status,
+    basic = posting_observations(posting)
+    evidence.extend(basic['evidence'])
+    output = {"is_test_fixture": False, "lexicon_version": VERSION, "context_status": status,
+            'external_checks': basic['external_checks'],
             "context_error": error, "context_model": settings.model if status == "completed" else None,
             "evidence": evidence,
-            "note": "Only LLM-reviewed request findings can support a rejection proposal. Background terms and unmatched wording do not establish fraud or safety."}
+            "note": "Pass requires a completed context review with no risky or unresolved findings. Background words and missing optional fields alone do not fail this check. No external facts were verified."}
+    return {**output, **lexicon_check(output)}

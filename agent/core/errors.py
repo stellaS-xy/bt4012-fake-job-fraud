@@ -1,5 +1,6 @@
 """Safe provider error classification; never return raw exception messages."""
 ERROR_MESSAGES = {
+    "assessment_invalid": "The model did not return a valid final assessment. Review the evidence manually.",
     "credits_required": "Ollama requires usage credits or a subscription for this request. Check your Ollama account billing.",
     "authentication_failed": "Ollama rejected the API key. Check OLLAMA_API_KEY.",
     "access_denied": "This Ollama account does not have access to the requested model.",

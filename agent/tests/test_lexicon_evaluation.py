@@ -1,9 +1,9 @@
 import unittest
 
-from agent.config import Settings
-from agent.context_review import ContextReport
-from agent.evaluate_lexicon import DEFAULT_CASES, evaluate, load_cases, metrics
-from agent.risk_rules import TEXT_FIELDS
+from agent.core.config import Settings
+from agent.tools.context_review import ContextReport
+from agent.tests.evaluate_lexicon import DEFAULT_CASES, evaluate, load_cases, metrics
+from agent.tools.risk_rules import TEXT_FIELDS
 
 
 class LexiconEvaluationTests(unittest.TestCase):
@@ -51,6 +51,6 @@ class LexiconEvaluationTests(unittest.TestCase):
         self.assertEqual(result['unsupported_findings'], 1)
 
     def test_rules_comparison_runs_without_model_and_covers_full_fixture_set(self):
-        result = evaluate(load_cases(DEFAULT_CASES), Settings(backend='dummy'), mode='rules')
+        result = evaluate(load_cases(DEFAULT_CASES), Settings(backend='ollama_local'), mode='rules')
         self.assertEqual(result['independent_cases'], 12)
         self.assertEqual(result['metrics']['rules']['failed_reviews'], 0)
