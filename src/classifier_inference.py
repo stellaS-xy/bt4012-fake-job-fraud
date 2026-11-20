@@ -22,6 +22,7 @@ from src.model_comparison import model_spec
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_ARTIFACT = ROOT/'models'/'agent_lightgbm'
+DEFAULT_COMPARISON = ROOT/'reports'/'model_comparison_revised'
 INPUT_FIELDS = tuple(dict.fromkeys(TEXT_COLS + RAW_BINARY + RAW_CAT + ['location', 'department', 'salary_range']))
 
 
@@ -29,19 +30,50 @@ def fingerprint(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def fit_artifact(destination=DEFAULT_ARTIFACT):
-    destination = Path(destination)
-    train_path = ROOT/'data/processed/d1_train.csv'
-    results = ROOT/'reports/model_comparison'
-    plan = json.loads((results/'run_plan.json').read_text(encoding='utf-8'))
+def comparison_selection(results, train_path):
+    """Validate a completed comparison before reusing its integration settings."""
+    results = Path(results)
+    revised = (results/'lightgbm_a2_2k_plan.json').is_file()
+    stem = 'lightgbm_a2_2k' if revised else 'lightgbm_a2'
+    plan_path = results/(f'{stem}_plan.json' if revised else 'run_plan.json')
+    score_path = results/f'{stem}_fold_scores.csv'
+    complete_path = results/f'{stem}_complete.json'
+    plan = json.loads(plan_path.read_text(encoding='utf-8'))
+    complete = json.loads(complete_path.read_text(encoding='utf-8'))
     if fingerprint(train_path) != plan['training_sha256']:
         raise ValueError('Training data differs from the saved comparison; do not reuse its selected settings/cutoffs.')
-    if fingerprint(ROOT/'src/features.py') != plan['source_sha256']['features.py']:
-        raise ValueError('Feature code differs from the saved comparison; do not silently reuse its cutoffs.')
-    scores = pd.read_csv(results/'lightgbm_a2_fold_scores.csv')
+    for name in ('features.py', 'model_comparison.py', 'evaluation.py'):
+        if fingerprint(ROOT/'src'/name) != plan['source_sha256'][name]:
+            raise ValueError(f'{name} differs from the saved comparison; do not silently reuse its settings/cutoffs.')
+    if revised and fingerprint(score_path) != complete['scores_sha256']:
+        raise ValueError('Comparison scores do not match the completed run fingerprint.')
+    scores = pd.read_csv(score_path)
+    if len(scores) != complete['folds'] or scores.duplicated(['repeat', 'fold']).any():
+        raise ValueError('Comparison has missing or duplicate completed folds.')
+    if revised:
+        signatures = {f'{int(row.repeat)}:{int(row.fold)}': row.fold_signature
+                      for row in scores.itertuples()}
+        if signatures != plan['outer_signatures']:
+            raise ValueError('Comparison scores do not match the saved outer fold plan.')
+        if plan['model'] != 'lightgbm_a2_2k':
+            raise ValueError('Expected the completed A2 LightGBM 2k experiment.')
+    thresholds = scores['threshold'].to_numpy(dtype=float)
+    if not len(thresholds) or not np.isfinite(thresholds).all() or ((thresholds < 0) | (thresholds > 1)).any():
+        raise ValueError('Saved cutoffs must be finite values between zero and one.')
     selected = Counter(scores['selected_params'])
     params = json.loads(selected.most_common(1)[0][0])
-    cutoff = statistics.median(scores['threshold'].astype(float))
+    provenance = dict(comparison_directory=str(results.resolve()),
+                      comparison_plan_sha256=fingerprint(plan_path),
+                      comparison_scores_sha256=fingerprint(score_path),
+                      comparison_model=stem, comparison_folds=len(scores),
+                      comparison_versions=plan.get('versions', {}))
+    return plan, params, statistics.median(thresholds), provenance
+
+
+def fit_artifact(destination=DEFAULT_ARTIFACT, comparison=DEFAULT_COMPARISON):
+    destination = Path(destination)
+    train_path = ROOT/'data/processed/d1_train.csv'
+    plan, params, cutoff, provenance = comparison_selection(comparison, train_path)
     print('Reading training rows only...', flush=True)
     train = pd.read_csv(train_path)
     X = build_inputs(train.copy())
@@ -64,6 +96,7 @@ def fit_artifact(destination=DEFAULT_ARTIFACT):
         heldout_test_used=False, calibrated_probability=False,
         purpose='Real classifier integration candidate; not a final-model selection or new performance claim.',
         versions={p: importlib.metadata.version(p) for p in ('numpy','pandas','scikit-learn','lightgbm','joblib')})
+    metadata.update(provenance)
     (destination/'metadata.json').write_text(json.dumps(metadata, indent=2), encoding='utf-8')
     print('Saved:', destination, flush=True)
     return metadata
@@ -102,9 +135,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--fit', action='store_true')
     parser.add_argument('--artifact', type=Path, default=DEFAULT_ARTIFACT)
+    parser.add_argument('--comparison-dir', type=Path, default=DEFAULT_COMPARISON,
+                        help='Completed comparison supplying integration settings/cutoffs (used with --fit).')
     args = parser.parse_args()
     if args.fit:
-        fit_artifact(args.artifact)
+        fit_artifact(args.artifact, args.comparison_dir)
     else:
         print(json.dumps(score_payload(json.load(sys.stdin), args.artifact), allow_nan=False))
 

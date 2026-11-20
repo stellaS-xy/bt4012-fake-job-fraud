@@ -311,11 +311,32 @@ Fit the integration artifact in the modelling environment, from the repository r
 
 This uses only `data/processed/d1_train.csv` (14,439 rows), with the existing A2
 feature pipeline, a 2,000-term TF-IDF limit and 200 LightGBM trees. The most
-frequent inner-selected setting is `num_leaves=31` (21 of 25 rounds); the cutoff
-is the median of the saved inner-selected cutoffs, approximately 0.269442.
+frequent inner-selected setting from the revised Notebook 03 experiment is
+`num_leaves=31`; the cutoff is the median of its saved inner-selected cutoffs,
+approximately 0.267256. The default comparison directory is
+`reports/model_comparison_revised/`; `--comparison-dir` selects another completed
+comparison explicitly. The original `reports/model_comparison/` experiment is
+historical and currently has a different feature-code fingerprint.
 This is an integration candidate, not a new unbiased model-selection result.
 The reserved test set and the two synthetic labels are not used for fitting or
-cutoff selection. Training-data and feature-code fingerprints are checked.
+cutoff selection. Training-data and modelling-code fingerprints, completed score
+hashes and revised fold identities are checked. Metadata records the comparison
+source, its hashes, historical package versions and the actual fitting versions.
+
+On the Linux cluster, after installing dependencies and syncing the revised
+code/results, submit this CPU-only fitting step through Slurm from the project
+directory (adjust resources if required by your allocation):
+
+```bash
+sbatch --partition=normal --cpus-per-task=2 --mem=16G --time=00:15:00 \
+  --job-name=fit-job-classifier \
+  --wrap='.venv/bin/python -u -m src.classifier_inference --fit'
+```
+
+This job needs `data/processed/d1_train.csv` and the committed comparison files,
+but does not need Ollama or a GPU. Its log reports the selected settings and
+artifact destination. The median cutoff is an integration default, not a
+replacement for a final training-only threshold-selection procedure.
 
 The fitted pipeline and provenance metadata are saved under ignored
 `models/agent_lightgbm/`. `tools/classifier.py` calls

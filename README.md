@@ -59,6 +59,15 @@ artifact using training data only:
 .\.venv\Scripts\python.exe -m src.classifier_inference --fit
 ```
 
+By default, this reads the completed revised Notebook 03 experiment in
+`reports/model_comparison_revised/`. `--comparison-dir` can select a different
+completed comparison explicitly. Data, modelling-code and completed-result
+fingerprints are checked before reusing settings and cutoffs; mismatches must
+be investigated rather than bypassed. This fits one integration artifact, not
+another cross-validation experiment, and does not read the reserved test set.
+For the SoC cluster, see [`cluster/README.md`](cluster/README.md) for separate
+CPU artifact-fitting and GPU agent/evaluator smoke-test Slurm scripts.
+
 The artifact is stored under ignored `models/agent_lightgbm/`. The agent calls
 that environment for inference; missing artifacts produce an error, never a
 synthetic replacement score. Start the interface:
