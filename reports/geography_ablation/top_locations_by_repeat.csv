@@ -1,0 +1,1001 @@
+key,absolute_count_contribution,variant,level,repeat,key_type,weighting
+MISSING,666.6745760823138,V1,state,0,requested,posting
+US|ca,293.8668475003596,V1,state,0,requested,posting
+US|ny,138.62777681203556,V1,state,0,requested,posting
+GB|lnd,105.52577309996414,V1,state,0,requested,posting
+US|tx,96.50239972511451,V1,state,0,requested,posting
+GR|i,61.00907134046634,V1,state,0,requested,posting
+US|il,20.69887794338993,V1,state,0,requested,posting
+US|oh,16.365723759176845,V1,state,0,requested,posting
+US|fl,15.7025607904813,V1,state,0,requested,posting
+EE|37,13.472986455810947,V1,state,0,requested,posting
+MISSING,233.82955992809877,V1,state,0,requested,group_location_once
+US|ca,85.81469522405564,V1,state,0,requested,group_location_once
+US|ny,41.422231854157125,V1,state,0,requested,group_location_once
+GB|lnd,28.39022377918341,V1,state,0,requested,group_location_once
+US|tx,26.96441647993894,V1,state,0,requested,group_location_once
+GR|i,24.88046523543426,V1,state,0,requested,group_location_once
+US|fl,8.438268915352747,V1,state,0,requested,group_location_once
+US|il,7.578593830400352,V1,state,0,requested,group_location_once
+US|oh,4.064431852092166,V1,state,0,requested,group_location_once
+US|pa,3.996615322653388,V1,state,0,requested,group_location_once
+MISSING,666.6745760823138,V1,state,0,resolved,posting
+US|ca,293.8668475003596,V1,state,0,resolved,posting
+US|ny,138.62777681203556,V1,state,0,resolved,posting
+GB|lnd,105.52577309996414,V1,state,0,resolved,posting
+US|tx,96.50239972511451,V1,state,0,resolved,posting
+GB,61.10815694024207,V1,state,0,resolved,posting
+GR|i,61.00907134046634,V1,state,0,resolved,posting
+UNSEEN,39.34261883700205,V1,state,0,resolved,posting
+US|il,20.69887794338993,V1,state,0,resolved,posting
+US|oh,16.365723759176845,V1,state,0,resolved,posting
+MISSING,233.82955992809877,V1,state,0,resolved,group_location_once
+US|ca,85.81469522405564,V1,state,0,resolved,group_location_once
+US|ny,41.422231854157125,V1,state,0,resolved,group_location_once
+GB|lnd,28.39022377918341,V1,state,0,resolved,group_location_once
+US|tx,26.96441647993894,V1,state,0,resolved,group_location_once
+GR|i,24.88046523543426,V1,state,0,resolved,group_location_once
+GB,19.140436439758957,V1,state,0,resolved,group_location_once
+UNSEEN,11.806920577135962,V1,state,0,resolved,group_location_once
+US|fl,8.438268915352747,V1,state,0,resolved,group_location_once
+US|il,7.578593830400352,V1,state,0,resolved,group_location_once
+MISSING,789.4187919490265,V1,state,1,requested,posting
+US|ca,348.7621342526851,V1,state,1,requested,posting
+US|ny,162.17789765265977,V1,state,1,requested,posting
+GB|lnd,118.34408632806998,V1,state,1,requested,posting
+US|tx,107.48420190983707,V1,state,1,requested,posting
+GR|i,67.81336479633303,V1,state,1,requested,posting
+US|il,25.761229711096107,V1,state,1,requested,posting
+US|fl,19.50675599972587,V1,state,1,requested,posting
+US|oh,17.846308143219833,V1,state,1,requested,posting
+DE|by,17.13756281512353,V1,state,1,requested,posting
+MISSING,281.90841333268685,V1,state,1,requested,group_location_once
+US|ca,100.29610461124874,V1,state,1,requested,group_location_once
+US|ny,49.73707907151406,V1,state,1,requested,group_location_once
+US|tx,32.95482911886269,V1,state,1,requested,group_location_once
+GB|lnd,32.377913834199454,V1,state,1,requested,group_location_once
+GR|i,30.721559859203353,V1,state,1,requested,group_location_once
+US|fl,9.75521520210226,V1,state,1,requested,group_location_once
+US|il,9.405677594154657,V1,state,1,requested,group_location_once
+US|oh,5.149545812746524,V1,state,1,requested,group_location_once
+US|pa,4.93804196211439,V1,state,1,requested,group_location_once
+MISSING,789.4187919490265,V1,state,1,resolved,posting
+US|ca,348.7621342526851,V1,state,1,resolved,posting
+US|ny,162.17789765265977,V1,state,1,resolved,posting
+GB|lnd,118.34408632806998,V1,state,1,resolved,posting
+US|tx,107.48420190983707,V1,state,1,resolved,posting
+GB,80.96680867984658,V1,state,1,resolved,posting
+GR|i,67.81336479633303,V1,state,1,resolved,posting
+UNSEEN,26.825164428632057,V1,state,1,resolved,posting
+US|il,25.761229711096107,V1,state,1,resolved,posting
+US|fl,19.50675599972587,V1,state,1,resolved,posting
+MISSING,281.90841333268685,V1,state,1,resolved,group_location_once
+US|ca,100.29610461124874,V1,state,1,resolved,group_location_once
+US|ny,49.73707907151406,V1,state,1,resolved,group_location_once
+US|tx,32.95482911886269,V1,state,1,resolved,group_location_once
+GB|lnd,32.377913834199454,V1,state,1,resolved,group_location_once
+GR|i,30.721559859203353,V1,state,1,resolved,group_location_once
+GB,21.414284057549736,V1,state,1,resolved,group_location_once
+UNSEEN,12.332164509924743,V1,state,1,resolved,group_location_once
+US|fl,9.75521520210226,V1,state,1,resolved,group_location_once
+US|il,9.405677594154657,V1,state,1,resolved,group_location_once
+MISSING,800.5266948737295,V1,state,2,requested,posting
+US|ca,367.88675003633784,V1,state,2,requested,posting
+US|ny,165.645070700426,V1,state,2,requested,posting
+GB|lnd,125.41894758809195,V1,state,2,requested,posting
+US|tx,111.74887520138516,V1,state,2,requested,posting
+GR|i,72.20333664418203,V1,state,2,requested,posting
+US|il,28.530322022805418,V1,state,2,requested,posting
+US|oh,21.091484052370944,V1,state,2,requested,posting
+US|fl,19.635834099181388,V1,state,2,requested,posting
+US|va,14.559829400655627,V1,state,2,requested,posting
+MISSING,297.0988300957313,V1,state,2,requested,group_location_once
+US|ca,103.33478188272808,V1,state,2,requested,group_location_once
+US|ny,52.24665813383679,V1,state,2,requested,group_location_once
+GB|lnd,34.54715045290713,V1,state,2,requested,group_location_once
+US|tx,32.43119066138241,V1,state,2,requested,group_location_once
+GR|i,31.62943496821439,V1,state,2,requested,group_location_once
+US|fl,10.436004835956666,V1,state,2,requested,group_location_once
+US|il,9.295989554103782,V1,state,2,requested,group_location_once
+US|pa,4.854453581127934,V1,state,2,requested,group_location_once
+US|oh,4.547245642184906,V1,state,2,requested,group_location_once
+MISSING,800.5266948737295,V1,state,2,resolved,posting
+US|ca,367.88675003633784,V1,state,2,resolved,posting
+US|ny,165.645070700426,V1,state,2,resolved,posting
+GB|lnd,125.41894758809195,V1,state,2,resolved,posting
+US|tx,111.74887520138516,V1,state,2,resolved,posting
+GB,73.98223227489628,V1,state,2,resolved,posting
+GR|i,72.20333664418203,V1,state,2,resolved,posting
+US|il,28.530322022805418,V1,state,2,resolved,posting
+UNSEEN,26.347239359117285,V1,state,2,resolved,posting
+US|oh,21.091484052370944,V1,state,2,resolved,posting
+MISSING,297.0988300957313,V1,state,2,resolved,group_location_once
+US|ca,103.33478188272808,V1,state,2,resolved,group_location_once
+US|ny,52.24665813383679,V1,state,2,resolved,group_location_once
+GB|lnd,34.54715045290713,V1,state,2,resolved,group_location_once
+US|tx,32.43119066138241,V1,state,2,resolved,group_location_once
+GR|i,31.62943496821439,V1,state,2,resolved,group_location_once
+GB,20.87925950074096,V1,state,2,resolved,group_location_once
+UNSEEN,11.2631390562464,V1,state,2,resolved,group_location_once
+US|fl,10.436004835956666,V1,state,2,resolved,group_location_once
+US|il,9.295989554103782,V1,state,2,resolved,group_location_once
+MISSING,722.2640616742295,V1,state,3,requested,posting
+US|ca,332.8787384079432,V1,state,3,requested,posting
+US|ny,148.17825174508152,V1,state,3,requested,posting
+GB|lnd,113.7167382089431,V1,state,3,requested,posting
+US|tx,104.54434481706306,V1,state,3,requested,posting
+GR|i,68.33829654209671,V1,state,3,requested,posting
+US|il,24.270850384465618,V1,state,3,requested,posting
+US|oh,18.700799340332928,V1,state,3,requested,posting
+US|fl,17.529427309586488,V1,state,3,requested,posting
+US|va,13.960474317598964,V1,state,3,requested,posting
+MISSING,264.3232698953164,V1,state,3,requested,group_location_once
+US|ca,95.53740218257154,V1,state,3,requested,group_location_once
+US|ny,46.608371762995276,V1,state,3,requested,group_location_once
+GB|lnd,30.25931915413119,V1,state,3,requested,group_location_once
+US|tx,29.778892338968106,V1,state,3,requested,group_location_once
+GR|i,28.24039737582306,V1,state,3,requested,group_location_once
+US|fl,9.360934434090055,V1,state,3,requested,group_location_once
+US|il,8.895837855622178,V1,state,3,requested,group_location_once
+US|pa,4.736592930797314,V1,state,3,requested,group_location_once
+US|oh,4.564546356426652,V1,state,3,requested,group_location_once
+MISSING,722.2640616742295,V1,state,3,resolved,posting
+US|ca,332.8787384079432,V1,state,3,resolved,posting
+US|ny,148.17825174508152,V1,state,3,resolved,posting
+GB|lnd,113.7167382089431,V1,state,3,resolved,posting
+US|tx,104.54434481706306,V1,state,3,resolved,posting
+GR|i,68.33829654209671,V1,state,3,resolved,posting
+GB,67.89356797165034,V1,state,3,resolved,posting
+UNSEEN,27.023987052461933,V1,state,3,resolved,posting
+US|il,24.270850384465618,V1,state,3,resolved,posting
+US|oh,18.700799340332928,V1,state,3,resolved,posting
+MISSING,264.3232698953164,V1,state,3,resolved,group_location_once
+US|ca,95.53740218257154,V1,state,3,resolved,group_location_once
+US|ny,46.608371762995276,V1,state,3,resolved,group_location_once
+GB|lnd,30.25931915413119,V1,state,3,resolved,group_location_once
+US|tx,29.778892338968106,V1,state,3,resolved,group_location_once
+GR|i,28.24039737582306,V1,state,3,resolved,group_location_once
+GB,18.173705544838896,V1,state,3,resolved,group_location_once
+UNSEEN,13.514607563107306,V1,state,3,resolved,group_location_once
+US|fl,9.360934434090055,V1,state,3,resolved,group_location_once
+US|il,8.895837855622178,V1,state,3,resolved,group_location_once
+MISSING,655.1487411423311,V1,state,4,requested,posting
+US|ca,339.7987016442875,V1,state,4,requested,posting
+US|ny,167.28068525532143,V1,state,4,requested,posting
+GB|lnd,125.47336246645018,V1,state,4,requested,posting
+US|tx,103.48355366266247,V1,state,4,requested,posting
+GR|i,77.90525269536923,V1,state,4,requested,posting
+US|il,28.5978584237161,V1,state,4,requested,posting
+US|oh,21.902259277904395,V1,state,4,requested,posting
+US|fl,19.27388689005051,V1,state,4,requested,posting
+US|pa,14.815043909861847,V1,state,4,requested,posting
+MISSING,280.2017898629576,V1,state,4,requested,group_location_once
+US|ca,100.49096316993123,V1,state,4,requested,group_location_once
+US|ny,47.088337429611926,V1,state,4,requested,group_location_once
+US|tx,33.24844295476617,V1,state,4,requested,group_location_once
+GR|i,31.74212796997056,V1,state,4,requested,group_location_once
+GB|lnd,31.108198228792432,V1,state,4,requested,group_location_once
+US|il,10.621723394775296,V1,state,4,requested,group_location_once
+US|fl,10.114609265875336,V1,state,4,requested,group_location_once
+US|pa,4.639930502731056,V1,state,4,requested,group_location_once
+US|oh,4.597198000043926,V1,state,4,requested,group_location_once
+MISSING,655.1487411423311,V1,state,4,resolved,posting
+US|ca,339.7987016442875,V1,state,4,resolved,posting
+US|ny,167.28068525532143,V1,state,4,resolved,posting
+GB|lnd,125.47336246645018,V1,state,4,resolved,posting
+US|tx,103.48355366266247,V1,state,4,resolved,posting
+GR|i,77.90525269536923,V1,state,4,resolved,posting
+GB,61.65450420838304,V1,state,4,resolved,posting
+UNSEEN,33.30050675797207,V1,state,4,resolved,posting
+US|il,28.5978584237161,V1,state,4,resolved,posting
+US|oh,21.902259277904395,V1,state,4,resolved,posting
+MISSING,280.2017898629576,V1,state,4,resolved,group_location_once
+US|ca,100.49096316993123,V1,state,4,resolved,group_location_once
+US|ny,47.088337429611926,V1,state,4,resolved,group_location_once
+US|tx,33.24844295476617,V1,state,4,resolved,group_location_once
+GR|i,31.74212796997056,V1,state,4,resolved,group_location_once
+GB|lnd,31.108198228792432,V1,state,4,resolved,group_location_once
+GB,20.266259112132712,V1,state,4,resolved,group_location_once
+UNSEEN,16.685611203804392,V1,state,4,resolved,group_location_once
+US|il,10.621723394775296,V1,state,4,resolved,group_location_once
+US|fl,10.114609265875336,V1,state,4,resolved,group_location_once
+MISSING,702.0920593720725,V2,state,0,requested,posting
+US|ca,329.5664047387285,V2,state,0,requested,posting
+US|ny,159.59914683711324,V2,state,0,requested,posting
+GB|lnd,117.00910047519803,V2,state,0,requested,posting
+US|tx,112.11563879800606,V2,state,0,requested,posting
+GR|i,70.14923134840916,V2,state,0,requested,posting
+US|il,23.97740223269329,V2,state,0,requested,posting
+US|oh,20.951728019259313,V2,state,0,requested,posting
+US|fl,18.014758014887295,V2,state,0,requested,posting
+US|pa,13.243249674311603,V2,state,0,requested,posting
+MISSING,261.5056660706489,V2,state,0,requested,group_location_once
+US|ca,97.66427575484508,V2,state,0,requested,group_location_once
+US|ny,46.982647491023194,V2,state,0,requested,group_location_once
+GB|lnd,31.80325989089409,V2,state,0,requested,group_location_once
+US|tx,30.082539406063066,V2,state,0,requested,group_location_once
+GR|i,28.043301200951095,V2,state,0,requested,group_location_once
+US|fl,9.394977128716388,V2,state,0,requested,group_location_once
+US|il,8.78702425315364,V2,state,0,requested,group_location_once
+US|pa,4.579557063903283,V2,state,0,requested,group_location_once
+US|oh,4.458457297387615,V2,state,0,requested,group_location_once
+MISSING,702.0920593720725,V2,state,0,resolved,posting
+US|ca,329.5664047387285,V2,state,0,resolved,posting
+US|ny,159.59914683711324,V2,state,0,resolved,posting
+GB|lnd,117.00910047519803,V2,state,0,resolved,posting
+US|tx,112.11563879800606,V2,state,0,resolved,posting
+GR|i,70.14923134840916,V2,state,0,resolved,posting
+GB,63.33740511444283,V2,state,0,resolved,posting
+UNSEEN,41.629692845614585,V2,state,0,resolved,posting
+US|il,23.97740223269329,V2,state,0,resolved,posting
+US|oh,20.951728019259313,V2,state,0,resolved,posting
+MISSING,261.5056660706489,V2,state,0,resolved,group_location_once
+US|ca,97.66427575484508,V2,state,0,resolved,group_location_once
+US|ny,46.982647491023194,V2,state,0,resolved,group_location_once
+GB|lnd,31.80325989089409,V2,state,0,resolved,group_location_once
+US|tx,30.082539406063066,V2,state,0,resolved,group_location_once
+GR|i,28.043301200951095,V2,state,0,resolved,group_location_once
+GB,20.708812574147895,V2,state,0,resolved,group_location_once
+UNSEEN,13.443342836161724,V2,state,0,resolved,group_location_once
+US|fl,9.394977128716388,V2,state,0,resolved,group_location_once
+US|il,8.78702425315364,V2,state,0,resolved,group_location_once
+MISSING,771.9658570681795,V2,state,1,requested,posting
+US|ca,329.91599585553655,V2,state,1,requested,posting
+US|ny,151.86293626436577,V2,state,1,requested,posting
+GB|lnd,109.49987341259241,V2,state,1,requested,posting
+US|tx,102.14794542710706,V2,state,1,requested,posting
+GR|i,62.93680707182508,V2,state,1,requested,posting
+US|il,23.942913311823855,V2,state,1,requested,posting
+US|fl,18.354224973311332,V2,state,1,requested,posting
+DE|by,16.27608712815034,V2,state,1,requested,posting
+US|oh,16.126048490658537,V2,state,1,requested,posting
+MISSING,266.38466712072943,V2,state,1,requested,group_location_once
+US|ca,94.89001269709324,V2,state,1,requested,group_location_once
+US|ny,46.627491713820135,V2,state,1,requested,group_location_once
+US|tx,30.973261257410783,V2,state,1,requested,group_location_once
+GB|lnd,30.28333220822939,V2,state,1,requested,group_location_once
+GR|i,28.641376699922446,V2,state,1,requested,group_location_once
+US|fl,9.212691075292318,V2,state,1,requested,group_location_once
+US|il,8.907213841166435,V2,state,1,requested,group_location_once
+US|oh,4.936599900452349,V2,state,1,requested,group_location_once
+US|pa,4.669526894472372,V2,state,1,requested,group_location_once
+MISSING,771.9658570681795,V2,state,1,resolved,posting
+US|ca,329.91599585553655,V2,state,1,resolved,posting
+US|ny,151.86293626436577,V2,state,1,resolved,posting
+GB|lnd,109.49987341259241,V2,state,1,resolved,posting
+US|tx,102.14794542710706,V2,state,1,resolved,posting
+GB,80.60026342881575,V2,state,1,resolved,posting
+GR|i,62.93680707182508,V2,state,1,resolved,posting
+UNSEEN,25.52315710359201,V2,state,1,resolved,posting
+US|il,23.942913311823855,V2,state,1,resolved,posting
+US|fl,18.354224973311332,V2,state,1,resolved,posting
+MISSING,266.38466712072943,V2,state,1,resolved,group_location_once
+US|ca,94.89001269709324,V2,state,1,resolved,group_location_once
+US|ny,46.627491713820135,V2,state,1,resolved,group_location_once
+US|tx,30.973261257410783,V2,state,1,resolved,group_location_once
+GB|lnd,30.28333220822939,V2,state,1,resolved,group_location_once
+GR|i,28.641376699922446,V2,state,1,resolved,group_location_once
+GB,20.33903263735184,V2,state,1,resolved,group_location_once
+UNSEEN,11.676345138911511,V2,state,1,resolved,group_location_once
+US|fl,9.212691075292318,V2,state,1,resolved,group_location_once
+US|il,8.907213841166435,V2,state,1,resolved,group_location_once
+MISSING,813.2463347056818,V2,state,2,requested,posting
+US|ca,393.92749942510073,V2,state,2,requested,posting
+US|ny,180.6984935293498,V2,state,2,requested,posting
+GB|lnd,134.18950455195778,V2,state,2,requested,posting
+US|tx,116.59149907085406,V2,state,2,requested,posting
+GR|i,76.61875433732978,V2,state,2,requested,posting
+US|il,31.2606155887369,V2,state,2,requested,posting
+US|oh,22.02354003950879,V2,state,2,requested,posting
+US|fl,21.305263975245236,V2,state,2,requested,posting
+US|va,16.610756429514954,V2,state,2,requested,posting
+MISSING,315.3642976747334,V2,state,2,requested,group_location_once
+US|ca,110.9764538879089,V2,state,2,requested,group_location_once
+US|ny,56.603490824716964,V2,state,2,requested,group_location_once
+GB|lnd,36.88206334781625,V2,state,2,requested,group_location_once
+GR|i,34.56122794729776,V2,state,2,requested,group_location_once
+US|tx,34.3393032301375,V2,state,2,requested,group_location_once
+US|fl,11.06338656349419,V2,state,2,requested,group_location_once
+US|il,10.156333957358875,V2,state,2,requested,group_location_once
+US|pa,5.349799621068926,V2,state,2,requested,group_location_once
+US|oh,4.947900725552954,V2,state,2,requested,group_location_once
+MISSING,813.2463347056818,V2,state,2,resolved,posting
+US|ca,393.92749942510073,V2,state,2,resolved,posting
+US|ny,180.6984935293498,V2,state,2,resolved,posting
+GB|lnd,134.18950455195778,V2,state,2,resolved,posting
+US|tx,116.59149907085406,V2,state,2,resolved,posting
+GB,77.22460755233409,V2,state,2,resolved,posting
+GR|i,76.61875433732978,V2,state,2,resolved,posting
+US|il,31.2606155887369,V2,state,2,resolved,posting
+UNSEEN,26.793036118793793,V2,state,2,resolved,posting
+US|oh,22.02354003950879,V2,state,2,resolved,posting
+MISSING,315.3642976747334,V2,state,2,resolved,group_location_once
+US|ca,110.9764538879089,V2,state,2,resolved,group_location_once
+US|ny,56.603490824716964,V2,state,2,resolved,group_location_once
+GB|lnd,36.88206334781625,V2,state,2,resolved,group_location_once
+GR|i,34.56122794729776,V2,state,2,resolved,group_location_once
+US|tx,34.3393032301375,V2,state,2,resolved,group_location_once
+GB,21.507904342160597,V2,state,2,resolved,group_location_once
+UNSEEN,12.153316552863155,V2,state,2,resolved,group_location_once
+US|fl,11.06338656349419,V2,state,2,resolved,group_location_once
+US|il,10.156333957358875,V2,state,2,resolved,group_location_once
+MISSING,791.2079860941536,V2,state,3,requested,posting
+US|ca,367.2642758943027,V2,state,3,requested,posting
+US|ny,154.64468587525732,V2,state,3,requested,posting
+GB|lnd,123.56979676370067,V2,state,3,requested,posting
+US|tx,112.24848576313514,V2,state,3,requested,posting
+GR|i,79.83798962209438,V2,state,3,requested,posting
+US|il,27.80868677770865,V2,state,3,requested,posting
+US|oh,23.690751429818203,V2,state,3,requested,posting
+US|fl,18.656702151732382,V2,state,3,requested,posting
+US|pa,15.265139412898474,V2,state,3,requested,posting
+MISSING,292.38773038343936,V2,state,3,requested,group_location_once
+US|ca,104.9320530014169,V2,state,3,requested,group_location_once
+US|ny,50.0571693341842,V2,state,3,requested,group_location_once
+US|tx,33.30965808431479,V2,state,3,requested,group_location_once
+GB|lnd,33.13855282067435,V2,state,3,requested,group_location_once
+GR|i,31.0759997996363,V2,state,3,requested,group_location_once
+US|fl,10.689092200115502,V2,state,3,requested,group_location_once
+US|il,9.37819268440901,V2,state,3,requested,group_location_once
+US|oh,4.788342140047153,V2,state,3,requested,group_location_once
+US|pa,4.712661039309612,V2,state,3,requested,group_location_once
+MISSING,791.2079860941536,V2,state,3,resolved,posting
+US|ca,367.2642758943027,V2,state,3,resolved,posting
+US|ny,154.64468587525732,V2,state,3,resolved,posting
+GB|lnd,123.56979676370067,V2,state,3,resolved,posting
+US|tx,112.24848576313514,V2,state,3,resolved,posting
+GR|i,79.83798962209438,V2,state,3,resolved,posting
+GB,75.35996150919988,V2,state,3,resolved,posting
+UNSEEN,31.894468144480555,V2,state,3,resolved,posting
+US|il,27.80868677770865,V2,state,3,resolved,posting
+US|oh,23.690751429818203,V2,state,3,resolved,posting
+MISSING,292.38773038343936,V2,state,3,resolved,group_location_once
+US|ca,104.9320530014169,V2,state,3,resolved,group_location_once
+US|ny,50.0571693341842,V2,state,3,resolved,group_location_once
+US|tx,33.30965808431479,V2,state,3,resolved,group_location_once
+GB|lnd,33.13855282067435,V2,state,3,resolved,group_location_once
+GR|i,31.0759997996363,V2,state,3,resolved,group_location_once
+GB,20.078626674190218,V2,state,3,resolved,group_location_once
+UNSEEN,15.712397421089749,V2,state,3,resolved,group_location_once
+US|fl,10.689092200115502,V2,state,3,resolved,group_location_once
+US|il,9.37819268440901,V2,state,3,resolved,group_location_once
+MISSING,720.0594284146642,V2,state,4,requested,posting
+US|ca,379.9434940370739,V2,state,4,requested,posting
+US|ny,187.98933720826858,V2,state,4,requested,posting
+GB|lnd,140.41222454142448,V2,state,4,requested,posting
+US|tx,114.04012742334618,V2,state,4,requested,posting
+GR|i,86.02565697495376,V2,state,4,requested,posting
+US|il,32.3745893053955,V2,state,4,requested,posting
+US|oh,24.495062886932885,V2,state,4,requested,posting
+US|fl,21.74192952484363,V2,state,4,requested,posting
+US|pa,16.515251422051183,V2,state,4,requested,posting
+MISSING,314.01121361242105,V2,state,4,requested,group_location_once
+US|ca,112.80547696648985,V2,state,4,requested,group_location_once
+US|ny,52.34747336926289,V2,state,4,requested,group_location_once
+US|tx,37.622842149450946,V2,state,4,requested,group_location_once
+GR|i,35.94998942035201,V2,state,4,requested,group_location_once
+GB|lnd,34.72309148159768,V2,state,4,requested,group_location_once
+US|il,11.968451006714243,V2,state,4,requested,group_location_once
+US|fl,11.248536461876569,V2,state,4,requested,group_location_once
+US|oh,5.320088626685035,V2,state,4,requested,group_location_once
+US|pa,5.216678261372273,V2,state,4,requested,group_location_once
+MISSING,720.0594284146642,V2,state,4,resolved,posting
+US|ca,379.9434940370739,V2,state,4,resolved,posting
+US|ny,187.98933720826858,V2,state,4,resolved,posting
+GB|lnd,140.41222454142448,V2,state,4,resolved,posting
+US|tx,114.04012742334618,V2,state,4,resolved,posting
+GR|i,86.02565697495376,V2,state,4,resolved,posting
+GB,69.03224345972183,V2,state,4,resolved,posting
+UNSEEN,39.42290924033104,V2,state,4,resolved,posting
+US|il,32.3745893053955,V2,state,4,resolved,posting
+US|oh,24.495062886932885,V2,state,4,resolved,posting
+MISSING,314.01121361242105,V2,state,4,resolved,group_location_once
+US|ca,112.80547696648985,V2,state,4,resolved,group_location_once
+US|ny,52.34747336926289,V2,state,4,resolved,group_location_once
+US|tx,37.622842149450946,V2,state,4,resolved,group_location_once
+GR|i,35.94998942035201,V2,state,4,resolved,group_location_once
+GB|lnd,34.72309148159768,V2,state,4,resolved,group_location_once
+GB,22.83937995202198,V2,state,4,resolved,group_location_once
+UNSEEN,19.402693724643168,V2,state,4,resolved,group_location_once
+US|il,11.968451006714243,V2,state,4,resolved,group_location_once
+US|fl,11.248536461876569,V2,state,4,resolved,group_location_once
+MISSING,323.6274141708737,V2,city,0,requested,posting
+GB|lnd|london,57.94498466659374,V2,city,0,requested,posting
+US|ny|new york,43.1896338634565,V2,city,0,requested,posting
+US|ca|san francisco,28.10478316535159,V2,city,0,requested,posting
+GR|i|athens,26.571085970759036,V2,city,0,requested,posting
+US|il|chicago,14.149599809279376,V2,city,0,requested,posting
+US|tx|houston,12.900469403427069,V2,city,0,requested,posting
+DE|be|berlin,11.305618048077173,V2,city,0,requested,posting
+NZ|n|auckland,10.691485850237541,V2,city,0,requested,posting
+EE|37|tallinn,9.796537365149346,V2,city,0,requested,posting
+MISSING,121.07786215259158,V2,city,0,requested,group_location_once
+US|ny|new york,15.012410640193483,V2,city,0,requested,group_location_once
+GB|lnd|london,14.695739199104572,V2,city,0,requested,group_location_once
+GR|i|athens,12.958158132530924,V2,city,0,requested,group_location_once
+US|ca|san francisco,11.084909952938684,V2,city,0,requested,group_location_once
+US|tx|houston,5.6250798013373595,V2,city,0,requested,group_location_once
+US|il|chicago,4.074137282799094,V2,city,0,requested,group_location_once
+US|ca|los angeles,3.499642558775223,V2,city,0,requested,group_location_once
+DE|be|berlin,2.822695550158824,V2,city,0,requested,group_location_once
+US|ca|san diego,1.773501836153554,V2,city,0,requested,group_location_once
+MISSING,323.6274141708737,V2,city,0,resolved,posting
+GB|lnd|london,57.94498466659374,V2,city,0,resolved,posting
+US|ca,54.58368594390498,V2,city,0,resolved,posting
+US|ny|new york,43.1896338634565,V2,city,0,resolved,posting
+GB,38.90020903866817,V2,city,0,resolved,posting
+US|ca|san francisco,28.10478316535159,V2,city,0,resolved,posting
+GR|i|athens,26.571085970759036,V2,city,0,resolved,posting
+US|ny,19.835226668990348,V2,city,0,resolved,posting
+UNSEEN,16.351023695938913,V2,city,0,resolved,posting
+US|tx,16.334425843510658,V2,city,0,resolved,posting
+MISSING,121.07786215259158,V2,city,0,resolved,group_location_once
+US|ca,17.927282865564177,V2,city,0,resolved,group_location_once
+US|ny|new york,15.012410640193483,V2,city,0,resolved,group_location_once
+GB|lnd|london,14.695739199104572,V2,city,0,resolved,group_location_once
+GR|i|athens,12.958158132530924,V2,city,0,resolved,group_location_once
+GB,12.071416016239029,V2,city,0,resolved,group_location_once
+US|ca|san francisco,11.084909952938684,V2,city,0,resolved,group_location_once
+US|ny,7.4373908572952185,V2,city,0,resolved,group_location_once
+US|tx|houston,5.6250798013373595,V2,city,0,resolved,group_location_once
+GR|i,4.59914681037416,V2,city,0,resolved,group_location_once
+MISSING,267.6976480161339,V2,city,1,requested,posting
+GB|lnd|london,52.964274611555545,V2,city,1,requested,posting
+US|ny|new york,41.453016618284224,V2,city,1,requested,posting
+GR|i|athens,30.90620416419398,V2,city,1,requested,posting
+US|ca|san francisco,22.591865101193356,V2,city,1,requested,posting
+US|il|chicago,13.457042593809552,V2,city,1,requested,posting
+US|tx|houston,12.682121749689255,V2,city,1,requested,posting
+NZ|n|auckland,9.34388434794946,V2,city,1,requested,posting
+DE|be|berlin,9.257397013898554,V2,city,1,requested,posting
+US|ca|los angeles,8.240710652345053,V2,city,1,requested,posting
+MISSING,111.57797213695464,V2,city,1,requested,group_location_once
+US|ny|new york,14.072663933492304,V2,city,1,requested,group_location_once
+GB|lnd|london,13.605851227394494,V2,city,1,requested,group_location_once
+GR|i|athens,12.721010026266745,V2,city,1,requested,group_location_once
+US|ca|san francisco,9.09888267999596,V2,city,1,requested,group_location_once
+US|tx|houston,5.44511329861787,V2,city,1,requested,group_location_once
+US|il|chicago,4.093329170332427,V2,city,1,requested,group_location_once
+US|ca|los angeles,3.169736776705647,V2,city,1,requested,group_location_once
+DE|be|berlin,2.7421594721834084,V2,city,1,requested,group_location_once
+US|ca|san diego,2.1774229542168695,V2,city,1,requested,group_location_once
+MISSING,267.6976480161339,V2,city,1,resolved,posting
+US|ca,60.75859415244089,V2,city,1,resolved,posting
+GB|lnd|london,52.964274611555545,V2,city,1,resolved,posting
+US|ny|new york,41.453016618284224,V2,city,1,resolved,posting
+GR|i|athens,30.90620416419398,V2,city,1,resolved,posting
+GB,29.21002774535537,V2,city,1,resolved,posting
+US|ca|san francisco,22.591865101193356,V2,city,1,resolved,posting
+US|ny,19.28926780016599,V2,city,1,resolved,posting
+US|tx,18.31752221191124,V2,city,1,resolved,posting
+US|il|chicago,13.457042593809552,V2,city,1,resolved,posting
+MISSING,111.57797213695464,V2,city,1,resolved,group_location_once
+US|ca,18.325688382938978,V2,city,1,resolved,group_location_once
+US|ny|new york,14.072663933492304,V2,city,1,resolved,group_location_once
+GB|lnd|london,13.605851227394494,V2,city,1,resolved,group_location_once
+GR|i|athens,12.721010026266745,V2,city,1,resolved,group_location_once
+GB,9.939985329366838,V2,city,1,resolved,group_location_once
+US|ca|san francisco,9.09888267999596,V2,city,1,resolved,group_location_once
+US|ny,6.8734350079458055,V2,city,1,resolved,group_location_once
+US|tx|houston,5.44511329861787,V2,city,1,resolved,group_location_once
+GR|i,4.986508056242564,V2,city,1,resolved,group_location_once
+MISSING,339.3335356774501,V2,city,2,requested,posting
+GB|lnd|london,50.41372884647743,V2,city,2,requested,posting
+US|ny|new york,40.02535731248315,V2,city,2,requested,posting
+GR|i|athens,36.131347137993544,V2,city,2,requested,posting
+US|ca|san francisco,32.480635374202556,V2,city,2,requested,posting
+US|tx|houston,14.007676635635208,V2,city,2,requested,posting
+US|il|chicago,13.201480779703118,V2,city,2,requested,posting
+NZ|n|auckland,7.748822414577911,V2,city,2,requested,posting
+DE|be|berlin,7.699843526054499,V2,city,2,requested,posting
+US|ca|san diego,7.224917805380376,V2,city,2,requested,posting
+MISSING,121.31248113236478,V2,city,2,requested,group_location_once
+US|ny|new york,14.315510889393174,V2,city,2,requested,group_location_once
+GR|i|athens,14.300772763097319,V2,city,2,requested,group_location_once
+GB|lnd|london,12.96402394968113,V2,city,2,requested,group_location_once
+US|ca|san francisco,10.510489368415696,V2,city,2,requested,group_location_once
+US|tx|houston,5.668620453317199,V2,city,2,requested,group_location_once
+US|il|chicago,4.138452271132753,V2,city,2,requested,group_location_once
+US|ca|los angeles,3.666462661671959,V2,city,2,requested,group_location_once
+DE|be|berlin,3.3143733465489995,V2,city,2,requested,group_location_once
+US|ca|san diego,2.277871219575721,V2,city,2,requested,group_location_once
+MISSING,339.3335356774501,V2,city,2,resolved,posting
+US|ca,55.935014722753486,V2,city,2,resolved,posting
+GB|lnd|london,50.41372884647743,V2,city,2,resolved,posting
+US|ny|new york,40.02535731248315,V2,city,2,resolved,posting
+GR|i|athens,36.131347137993544,V2,city,2,resolved,posting
+GB,35.6350587377764,V2,city,2,resolved,posting
+US|ca|san francisco,32.480635374202556,V2,city,2,resolved,posting
+US|ny,22.188021162506338,V2,city,2,resolved,posting
+US|tx,20.094844819602688,V2,city,2,resolved,posting
+US|tx|houston,14.007676635635208,V2,city,2,resolved,posting
+MISSING,121.31248113236478,V2,city,2,resolved,group_location_once
+US|ca,18.625900277236262,V2,city,2,resolved,group_location_once
+US|ny|new york,14.315510889393174,V2,city,2,resolved,group_location_once
+GR|i|athens,14.300772763097319,V2,city,2,resolved,group_location_once
+GB|lnd|london,12.96402394968113,V2,city,2,resolved,group_location_once
+US|ca|san francisco,10.510489368415696,V2,city,2,resolved,group_location_once
+GB,9.375839303208409,V2,city,2,resolved,group_location_once
+US|ny,7.788058839457886,V2,city,2,resolved,group_location_once
+US|tx|houston,5.668620453317199,V2,city,2,resolved,group_location_once
+GR|i,4.830859457355397,V2,city,2,resolved,group_location_once
+MISSING,442.72282354673126,V2,city,3,requested,posting
+GB|lnd|london,76.77779035628879,V2,city,3,requested,posting
+US|ny|new york,59.1762273508773,V2,city,3,requested,posting
+GR|i|athens,46.86807204282249,V2,city,3,requested,posting
+US|ca|san francisco,41.14011547606969,V2,city,3,requested,posting
+US|tx|houston,20.015199319347172,V2,city,3,requested,posting
+US|il|chicago,17.596696151064293,V2,city,3,requested,posting
+DE|be|berlin,12.100363209078717,V2,city,3,requested,posting
+US|ca|los angeles,11.120065841401313,V2,city,3,requested,posting
+US|dc|washington,10.5212491738355,V2,city,3,requested,posting
+MISSING,176.30361565448945,V2,city,3,requested,group_location_once
+US|ny|new york,20.60683444528244,V2,city,3,requested,group_location_once
+GB|lnd|london,19.359537124211794,V2,city,3,requested,group_location_once
+GR|i|athens,17.533255947459857,V2,city,3,requested,group_location_once
+US|ca|san francisco,14.79901514931449,V2,city,3,requested,group_location_once
+US|tx|houston,7.427574761139748,V2,city,3,requested,group_location_once
+US|il|chicago,6.006701054267568,V2,city,3,requested,group_location_once
+US|ca|los angeles,5.025567223549749,V2,city,3,requested,group_location_once
+DE|be|berlin,4.795824395782789,V2,city,3,requested,group_location_once
+US|ca|san diego,2.9291127204782406,V2,city,3,requested,group_location_once
+MISSING,442.72282354673126,V2,city,3,resolved,posting
+US|ca,86.67049001510291,V2,city,3,resolved,posting
+GB|lnd|london,76.77779035628879,V2,city,3,resolved,posting
+US|ny|new york,59.1762273508773,V2,city,3,resolved,posting
+GB,51.48337177445607,V2,city,3,resolved,posting
+GR|i|athens,46.86807204282249,V2,city,3,resolved,posting
+US|ca|san francisco,41.14011547606969,V2,city,3,resolved,posting
+US|tx,30.732509930192,V2,city,3,resolved,posting
+US|ny,29.54873716811996,V2,city,3,resolved,posting
+US|tx|houston,20.015199319347172,V2,city,3,resolved,posting
+MISSING,176.30361565448945,V2,city,3,resolved,group_location_once
+US|ca,27.268669108473738,V2,city,3,resolved,group_location_once
+US|ny|new york,20.60683444528244,V2,city,3,resolved,group_location_once
+GB|lnd|london,19.359537124211794,V2,city,3,resolved,group_location_once
+GR|i|athens,17.533255947459857,V2,city,3,resolved,group_location_once
+US|ca|san francisco,14.79901514931449,V2,city,3,resolved,group_location_once
+GB,14.048696648518533,V2,city,3,resolved,group_location_once
+US|ny,10.762106446182074,V2,city,3,resolved,group_location_once
+GR|i,7.776008564048163,V2,city,3,resolved,group_location_once
+US|tx|houston,7.427574761139748,V2,city,3,resolved,group_location_once
+MISSING,276.1026866176962,V2,city,4,requested,posting
+GB|lnd|london,39.90123806754001,V2,city,4,requested,posting
+US|ny|new york,31.936950225558512,V2,city,4,requested,posting
+US|ca|san francisco,26.19575974522614,V2,city,4,requested,posting
+GR|i|athens,24.231195225358015,V2,city,4,requested,posting
+US|tx|houston,12.326955607422418,V2,city,4,requested,posting
+US|il|chicago,11.291542183819558,V2,city,4,requested,posting
+DE|be|berlin,6.208372458066999,V2,city,4,requested,posting
+US|ca|san diego,6.188454671863921,V2,city,4,requested,posting
+US|va|virginia beach,6.162643011630645,V2,city,4,requested,posting
+MISSING,98.78659721981839,V2,city,4,requested,group_location_once
+US|ny|new york,11.942748563016389,V2,city,4,requested,group_location_once
+GB|lnd|london,11.380725662234132,V2,city,4,requested,group_location_once
+GR|i|athens,10.567684930317203,V2,city,4,requested,group_location_once
+US|ca|san francisco,8.457446672770796,V2,city,4,requested,group_location_once
+US|tx|houston,4.483353163708889,V2,city,4,requested,group_location_once
+US|il|chicago,2.9240647878296513,V2,city,4,requested,group_location_once
+US|ca|los angeles,2.895862164484,V2,city,4,requested,group_location_once
+DE|be|berlin,2.344829644053235,V2,city,4,requested,group_location_once
+US|ca|san diego,1.7583042089249057,V2,city,4,requested,group_location_once
+MISSING,276.1026866176962,V2,city,4,resolved,posting
+US|ca,44.71649230480107,V2,city,4,resolved,posting
+GB|lnd|london,39.90123806754001,V2,city,4,resolved,posting
+GB,33.20482121348883,V2,city,4,resolved,posting
+US|ny|new york,31.936950225558512,V2,city,4,resolved,posting
+US|ca|san francisco,26.19575974522614,V2,city,4,resolved,posting
+GR|i|athens,24.231195225358015,V2,city,4,resolved,posting
+US|ny,16.00637798920187,V2,city,4,resolved,posting
+US|tx,15.748980164127643,V2,city,4,resolved,posting
+US|tx|houston,12.326955607422418,V2,city,4,resolved,posting
+MISSING,98.78659721981839,V2,city,4,resolved,group_location_once
+US|ca,15.217569765472582,V2,city,4,resolved,group_location_once
+US|ny|new york,11.942748563016389,V2,city,4,resolved,group_location_once
+GB|lnd|london,11.380725662234132,V2,city,4,resolved,group_location_once
+GR|i|athens,10.567684930317203,V2,city,4,resolved,group_location_once
+GB,8.617575135618697,V2,city,4,resolved,group_location_once
+US|ca|san francisco,8.457446672770796,V2,city,4,resolved,group_location_once
+US|ny,5.931957626030706,V2,city,4,resolved,group_location_once
+US|tx|houston,4.483353163708889,V2,city,4,resolved,group_location_once
+GR|i,3.950436117731945,V2,city,4,resolved,group_location_once
+MISSING,1450.310043062339,V3,state,0,requested,posting
+US|ca,719.7070987421067,V3,state,0,requested,posting
+US|ny,349.3517947197651,V3,state,0,requested,posting
+GB|lnd,235.8491483650259,V3,state,0,requested,posting
+US|tx,221.04832937758005,V3,state,0,requested,posting
+GR|i,170.26276350394158,V3,state,0,requested,posting
+US|fl,59.67019557867884,V3,state,0,requested,posting
+US|il,49.37781236952032,V3,state,0,requested,posting
+EE|37,40.889419454537745,V3,state,0,requested,posting
+DE|by,24.112288150461254,V3,state,0,requested,posting
+MISSING,545.5702282054843,V3,state,0,requested,group_location_once
+US|ca,210.83602774882422,V3,state,0,requested,group_location_once
+US|ny,104.8760514945969,V3,state,0,requested,group_location_once
+GR|i,71.45706311457873,V3,state,0,requested,group_location_once
+GB|lnd,63.825255863270904,V3,state,0,requested,group_location_once
+US|tx,62.041858003370784,V3,state,0,requested,group_location_once
+US|fl,30.487191277290165,V3,state,0,requested,group_location_once
+US|il,16.38334986212821,V3,state,0,requested,group_location_once
+US|ma,11.149445736309517,V3,state,0,requested,group_location_once
+US|nj,8.869632107573928,V3,state,0,requested,group_location_once
+MISSING,1450.310043062339,V3,state,0,resolved,posting
+US|ca,719.7070987421067,V3,state,0,resolved,posting
+US|ny,349.3517947197651,V3,state,0,resolved,posting
+GB|lnd,235.8491483650259,V3,state,0,resolved,posting
+US|tx,221.04832937758005,V3,state,0,resolved,posting
+GB,172.79480214443365,V3,state,0,resolved,posting
+GR|i,170.26276350394158,V3,state,0,resolved,posting
+UNSEEN,149.87490067618057,V3,state,0,resolved,posting
+US|fl,59.67019557867884,V3,state,0,resolved,posting
+US|il,49.37781236952032,V3,state,0,resolved,posting
+MISSING,545.5702282054843,V3,state,0,resolved,group_location_once
+US|ca,210.83602774882422,V3,state,0,resolved,group_location_once
+US|ny,104.8760514945969,V3,state,0,resolved,group_location_once
+GR|i,71.45706311457873,V3,state,0,resolved,group_location_once
+GB|lnd,63.825255863270904,V3,state,0,resolved,group_location_once
+US|tx,62.041858003370784,V3,state,0,resolved,group_location_once
+GB,53.0235120532172,V3,state,0,resolved,group_location_once
+UNSEEN,46.616137245451625,V3,state,0,resolved,group_location_once
+US|fl,30.487191277290165,V3,state,0,resolved,group_location_once
+US|il,16.38334986212821,V3,state,0,resolved,group_location_once
+MISSING,1558.6763821659965,V3,state,1,requested,posting
+US|ca,744.1023983005105,V3,state,1,requested,posting
+US|ny,342.6293348312698,V3,state,1,requested,posting
+GB|lnd,229.97442446799224,V3,state,1,requested,posting
+US|tx,216.44505989857325,V3,state,1,requested,posting
+GR|i,172.70346934386458,V3,state,1,requested,posting
+US|fl,61.26812487829546,V3,state,1,requested,posting
+US|il,50.8865994404361,V3,state,1,requested,posting
+EE|37,48.91029005407139,V3,state,1,requested,posting
+DE|by,28.857504131307643,V3,state,1,requested,posting
+MISSING,566.2901273780869,V3,state,1,requested,group_location_once
+US|ca,212.13259360855628,V3,state,1,requested,group_location_once
+US|ny,106.43675558049354,V3,state,1,requested,group_location_once
+GR|i,75.43478610035814,V3,state,1,requested,group_location_once
+US|tx,65.13430125893177,V3,state,1,requested,group_location_once
+GB|lnd,62.87227618203739,V3,state,1,requested,group_location_once
+US|fl,31.173594157059885,V3,state,1,requested,group_location_once
+US|il,16.879445690886563,V3,state,1,requested,group_location_once
+US|ma,11.104243460418486,V3,state,1,requested,group_location_once
+US|nj,8.742754507288236,V3,state,1,requested,group_location_once
+MISSING,1558.6763821659965,V3,state,1,resolved,posting
+US|ca,744.1023983005105,V3,state,1,resolved,posting
+US|ny,342.6293348312698,V3,state,1,resolved,posting
+GB|lnd,229.97442446799224,V3,state,1,resolved,posting
+US|tx,216.44505989857325,V3,state,1,resolved,posting
+GB,206.5726312743435,V3,state,1,resolved,posting
+GR|i,172.70346934386458,V3,state,1,resolved,posting
+UNSEEN,167.03648444666612,V3,state,1,resolved,posting
+US|fl,61.26812487829546,V3,state,1,resolved,posting
+US|il,50.8865994404361,V3,state,1,resolved,posting
+MISSING,566.2901273780869,V3,state,1,resolved,group_location_once
+US|ca,212.13259360855628,V3,state,1,resolved,group_location_once
+US|ny,106.43675558049354,V3,state,1,resolved,group_location_once
+GR|i,75.43478610035814,V3,state,1,resolved,group_location_once
+US|tx,65.13430125893177,V3,state,1,resolved,group_location_once
+GB|lnd,62.87227618203739,V3,state,1,resolved,group_location_once
+GB,56.1403401225211,V3,state,1,resolved,group_location_once
+UNSEEN,44.85143204607183,V3,state,1,resolved,group_location_once
+US|fl,31.173594157059885,V3,state,1,resolved,group_location_once
+US|il,16.879445690886563,V3,state,1,resolved,group_location_once
+MISSING,1572.7177775585185,V3,state,2,requested,posting
+US|ca,799.6691595537453,V3,state,2,requested,posting
+US|ny,374.48956946434964,V3,state,2,requested,posting
+GB|lnd,251.51368049518123,V3,state,2,requested,posting
+US|tx,231.72092628166888,V3,state,2,requested,posting
+GR|i,184.22119163263028,V3,state,2,requested,posting
+US|fl,64.25634792279882,V3,state,2,requested,posting
+US|il,55.55297866329204,V3,state,2,requested,posting
+EE|37,48.667208886918985,V3,state,2,requested,posting
+DE|by,29.06580544879224,V3,state,2,requested,posting
+MISSING,600.0849177781055,V3,state,2,requested,group_location_once
+US|ca,225.67300183516292,V3,state,2,requested,group_location_once
+US|ny,114.87944876346876,V3,state,2,requested,group_location_once
+GR|i,80.81210526712461,V3,state,2,requested,group_location_once
+GB|lnd,67.99588558194098,V3,state,2,requested,group_location_once
+US|tx,67.40087279530995,V3,state,2,requested,group_location_once
+US|fl,33.58377899579233,V3,state,2,requested,group_location_once
+US|il,18.011595636963694,V3,state,2,requested,group_location_once
+US|ma,12.193696721056629,V3,state,2,requested,group_location_once
+US|nj,9.752262709164608,V3,state,2,requested,group_location_once
+MISSING,1572.7177775585185,V3,state,2,resolved,posting
+US|ca,799.6691595537453,V3,state,2,resolved,posting
+US|ny,374.48956946434964,V3,state,2,resolved,posting
+GB|lnd,251.51368049518123,V3,state,2,resolved,posting
+US|tx,231.72092628166888,V3,state,2,resolved,posting
+GB,202.49571259717771,V3,state,2,resolved,posting
+GR|i,184.22119163263028,V3,state,2,resolved,posting
+UNSEEN,165.94646790265818,V3,state,2,resolved,posting
+US|fl,64.25634792279882,V3,state,2,resolved,posting
+US|il,55.55297866329204,V3,state,2,resolved,posting
+MISSING,600.0849177781055,V3,state,2,resolved,group_location_once
+US|ca,225.67300183516292,V3,state,2,resolved,group_location_once
+US|ny,114.87944876346876,V3,state,2,resolved,group_location_once
+GR|i,80.81210526712461,V3,state,2,resolved,group_location_once
+GB|lnd,67.99588558194098,V3,state,2,resolved,group_location_once
+US|tx,67.40087279530995,V3,state,2,resolved,group_location_once
+GB,60.54454719592252,V3,state,2,resolved,group_location_once
+UNSEEN,48.71674965944102,V3,state,2,resolved,group_location_once
+US|fl,33.58377899579233,V3,state,2,resolved,group_location_once
+US|il,18.011595636963694,V3,state,2,resolved,group_location_once
+MISSING,1458.064898062359,V3,state,3,requested,posting
+US|ca,722.2531973372351,V3,state,3,requested,posting
+US|ny,325.86555211215784,V3,state,3,requested,posting
+GB|lnd,226.15137466238653,V3,state,3,requested,posting
+US|tx,214.58464851027364,V3,state,3,requested,posting
+GR|i,176.14527786182467,V3,state,3,requested,posting
+US|fl,57.0043731415449,V3,state,3,requested,posting
+US|il,48.39358016508492,V3,state,3,requested,posting
+EE|37,46.44260795747887,V3,state,3,requested,posting
+DE|by,26.96937842835991,V3,state,3,requested,posting
+MISSING,540.4183651988211,V3,state,3,requested,group_location_once
+US|ca,206.16307101280842,V3,state,3,requested,group_location_once
+US|ny,102.44503646697403,V3,state,3,requested,group_location_once
+GR|i,71.73904839663658,V3,state,3,requested,group_location_once
+US|tx,61.612548981927105,V3,state,3,requested,group_location_once
+GB|lnd,59.88419101354481,V3,state,3,requested,group_location_once
+US|fl,30.109883063350193,V3,state,3,requested,group_location_once
+US|il,16.259901963929426,V3,state,3,requested,group_location_once
+US|ma,10.849699773309078,V3,state,3,requested,group_location_once
+US|nj,8.69075194321125,V3,state,3,requested,group_location_once
+MISSING,1458.064898062359,V3,state,3,resolved,posting
+US|ca,722.2531973372351,V3,state,3,resolved,posting
+US|ny,325.86555211215784,V3,state,3,resolved,posting
+GB|lnd,226.15137466238653,V3,state,3,resolved,posting
+US|tx,214.58464851027364,V3,state,3,resolved,posting
+GR|i,176.14527786182467,V3,state,3,resolved,posting
+GB,168.7434365443315,V3,state,3,resolved,posting
+UNSEEN,139.7821405378903,V3,state,3,resolved,posting
+US|fl,57.0043731415449,V3,state,3,resolved,posting
+US|il,48.39358016508492,V3,state,3,resolved,posting
+MISSING,540.4183651988211,V3,state,3,resolved,group_location_once
+US|ca,206.16307101280842,V3,state,3,resolved,group_location_once
+US|ny,102.44503646697403,V3,state,3,resolved,group_location_once
+GR|i,71.73904839663658,V3,state,3,resolved,group_location_once
+US|tx,61.612548981927105,V3,state,3,resolved,group_location_once
+GB|lnd,59.88419101354481,V3,state,3,resolved,group_location_once
+GB,50.56708671291571,V3,state,3,resolved,group_location_once
+UNSEEN,43.69843815184274,V3,state,3,resolved,group_location_once
+US|fl,30.109883063350193,V3,state,3,resolved,group_location_once
+US,16.80547762445284,V3,state,3,resolved,group_location_once
+MISSING,1674.903529222622,V3,state,4,requested,posting
+US|ca,837.507769352912,V3,state,4,requested,posting
+US|ny,391.6857362062413,V3,state,4,requested,posting
+GB|lnd,264.11237533407404,V3,state,4,requested,posting
+US|tx,236.81353047671692,V3,state,4,requested,posting
+GR|i,202.87658914378827,V3,state,4,requested,posting
+US|fl,67.63610437854783,V3,state,4,requested,posting
+US|il,59.80902620927786,V3,state,4,requested,posting
+EE|37,54.05202239567764,V3,state,4,requested,posting
+US|ma,29.978181752557244,V3,state,4,requested,posting
+MISSING,639.6659168692084,V3,state,4,requested,group_location_once
+US|ca,241.53238323145382,V3,state,4,requested,group_location_once
+US|ny,118.16806012672812,V3,state,4,requested,group_location_once
+GR|i,86.21241927495382,V3,state,4,requested,group_location_once
+US|tx,73.24385486690868,V3,state,4,requested,group_location_once
+GB|lnd,69.67089599087952,V3,state,4,requested,group_location_once
+US|fl,35.37777655801254,V3,state,4,requested,group_location_once
+US|il,19.113723723633193,V3,state,4,requested,group_location_once
+US|ma,11.994479275253976,V3,state,4,requested,group_location_once
+US|nj,10.061897048636824,V3,state,4,requested,group_location_once
+MISSING,1674.903529222622,V3,state,4,resolved,posting
+US|ca,837.507769352912,V3,state,4,resolved,posting
+US|ny,391.6857362062413,V3,state,4,resolved,posting
+GB|lnd,264.11237533407404,V3,state,4,resolved,posting
+US|tx,236.81353047671692,V3,state,4,resolved,posting
+GB,209.4230065119407,V3,state,4,resolved,posting
+GR|i,202.87658914378827,V3,state,4,resolved,posting
+UNSEEN,169.04606629733914,V3,state,4,resolved,posting
+US|fl,67.63610437854783,V3,state,4,resolved,posting
+US|il,59.80902620927786,V3,state,4,resolved,posting
+MISSING,639.6659168692084,V3,state,4,resolved,group_location_once
+US|ca,241.53238323145382,V3,state,4,resolved,group_location_once
+US|ny,118.16806012672812,V3,state,4,resolved,group_location_once
+GR|i,86.21241927495382,V3,state,4,resolved,group_location_once
+US|tx,73.24385486690868,V3,state,4,resolved,group_location_once
+GB|lnd,69.67089599087952,V3,state,4,resolved,group_location_once
+GB,62.61410670538786,V3,state,4,resolved,group_location_once
+UNSEEN,56.9094847335101,V3,state,4,resolved,group_location_once
+US|fl,35.37777655801254,V3,state,4,resolved,group_location_once
+US|il,19.113723723633193,V3,state,4,resolved,group_location_once
+MISSING,1839.6932649435635,V3,city,0,requested,posting
+GB|lnd|london,264.19914192853724,V3,city,0,requested,posting
+US|ny|new york,239.81097060144964,V3,city,0,requested,posting
+GR|i|athens,184.49488738534063,V3,city,0,requested,posting
+US|ca|san francisco,157.0013766556169,V3,city,0,requested,posting
+US|tx|houston,85.58120359376792,V3,city,0,requested,posting
+US|il|chicago,56.13775960250443,V3,city,0,requested,posting
+DE|be|berlin,53.820791841805736,V3,city,0,requested,posting
+US|ca|los angeles,43.261207452122775,V3,city,0,requested,posting
+US|ca|el segundo,33.65227313158192,V3,city,0,requested,posting
+MISSING,730.521099989506,V3,city,0,requested,group_location_once
+US|ny|new york,81.77776077356924,V3,city,0,requested,group_location_once
+GR|i|athens,77.51225347289123,V3,city,0,requested,group_location_once
+GB|lnd|london,69.2451067411093,V3,city,0,requested,group_location_once
+US|ca|san francisco,58.546977811253456,V3,city,0,requested,group_location_once
+US|tx|houston,28.30912363311857,V3,city,0,requested,group_location_once
+US|ca|los angeles,19.1529245693696,V3,city,0,requested,group_location_once
+US|il|chicago,17.022733038164898,V3,city,0,requested,group_location_once
+DE|be|berlin,11.918807555451531,V3,city,0,requested,group_location_once
+US|ga|atlanta,9.819374934568943,V3,city,0,requested,group_location_once
+MISSING,1839.6932649435635,V3,city,0,resolved,posting
+US|ca,410.6720818739216,V3,city,0,resolved,posting
+GB|lnd|london,264.19914192853724,V3,city,0,resolved,posting
+GB,249.53896877358977,V3,city,0,resolved,posting
+US|ny|new york,239.81097060144964,V3,city,0,resolved,posting
+GR|i|athens,184.49488738534063,V3,city,0,resolved,posting
+US|ca|san francisco,157.0013766556169,V3,city,0,resolved,posting
+US|tx,134.61675117833394,V3,city,0,resolved,posting
+US|ny,120.51256499520262,V3,city,0,resolved,posting
+UNSEEN,115.74611653419007,V3,city,0,resolved,posting
+MISSING,730.521099989506,V3,city,0,resolved,group_location_once
+US|ca,121.21885432284269,V3,city,0,resolved,group_location_once
+US|ny|new york,81.77776077356924,V3,city,0,resolved,group_location_once
+GR|i|athens,77.51225347289123,V3,city,0,resolved,group_location_once
+GB,76.86871922909492,V3,city,0,resolved,group_location_once
+GB|lnd|london,69.2451067411093,V3,city,0,resolved,group_location_once
+US|ca|san francisco,58.546977811253456,V3,city,0,resolved,group_location_once
+US|ny,42.24347869919698,V3,city,0,resolved,group_location_once
+UNSEEN,37.072563694454736,V3,city,0,resolved,group_location_once
+GR|i,34.276098305206325,V3,city,0,resolved,group_location_once
+MISSING,1872.7782024738126,V3,city,1,requested,posting
+GB|lnd|london,235.42382829694822,V3,city,1,requested,posting
+US|ny|new york,216.1422760896511,V3,city,1,requested,posting
+GR|i|athens,171.07047830325536,V3,city,1,requested,posting
+US|ca|san francisco,153.24520255035037,V3,city,1,requested,posting
+US|tx|houston,71.04107822049579,V3,city,1,requested,posting
+US|il|chicago,52.67495020552015,V3,city,1,requested,posting
+EE|37|tallinn,36.87457261131714,V3,city,1,requested,posting
+DE|be|berlin,36.71982709786484,V3,city,1,requested,posting
+US|ca|los angeles,35.91957232608337,V3,city,1,requested,posting
+MISSING,695.304482240757,V3,city,1,requested,group_location_once
+US|ny|new york,73.98403713003918,V3,city,1,requested,group_location_once
+GR|i|athens,73.32426039851802,V3,city,1,requested,group_location_once
+GB|lnd|london,61.48335653152674,V3,city,1,requested,group_location_once
+US|ca|san francisco,52.312533712107765,V3,city,1,requested,group_location_once
+US|tx|houston,25.546834927800937,V3,city,1,requested,group_location_once
+US|ca|los angeles,16.840106888332407,V3,city,1,requested,group_location_once
+US|il|chicago,15.517309923575539,V3,city,1,requested,group_location_once
+DE|be|berlin,10.220182542639321,V3,city,1,requested,group_location_once
+US|tx|dallas,9.229660153950784,V3,city,1,requested,group_location_once
+MISSING,1872.7782024738126,V3,city,1,resolved,posting
+US|ca,394.76408556644515,V3,city,1,resolved,posting
+GB,284.1677296776354,V3,city,1,resolved,posting
+GB|lnd|london,235.42382829694822,V3,city,1,resolved,posting
+US|ny|new york,216.1422760896511,V3,city,1,resolved,posting
+GR|i|athens,171.07047830325536,V3,city,1,resolved,posting
+US|ca|san francisco,153.24520255035037,V3,city,1,resolved,posting
+US|tx,119.84295504148118,V3,city,1,resolved,posting
+UNSEEN,118.61126955686204,V3,city,1,resolved,posting
+US|ny,115.03109134995438,V3,city,1,resolved,posting
+MISSING,695.304482240757,V3,city,1,resolved,group_location_once
+US|ca,114.64188806388498,V3,city,1,resolved,group_location_once
+GB,76.66247207396603,V3,city,1,resolved,group_location_once
+US|ny|new york,73.98403713003918,V3,city,1,resolved,group_location_once
+GR|i|athens,73.32426039851802,V3,city,1,resolved,group_location_once
+GB|lnd|london,61.48335653152674,V3,city,1,resolved,group_location_once
+US|ca|san francisco,52.312533712107765,V3,city,1,resolved,group_location_once
+US|ny,41.08227962613954,V3,city,1,resolved,group_location_once
+GR|i,33.15805796036385,V3,city,1,resolved,group_location_once
+UNSEEN,30.38787920184071,V3,city,1,resolved,group_location_once
+MISSING,1940.3725723140801,V3,city,2,requested,posting
+GB|lnd|london,260.03927731227793,V3,city,2,requested,posting
+US|ny|new york,239.122375822438,V3,city,2,requested,posting
+GR|i|athens,191.72130850237042,V3,city,2,requested,posting
+US|ca|san francisco,160.96634210494628,V3,city,2,requested,posting
+US|tx|houston,72.61192854093511,V3,city,2,requested,posting
+US|il|chicago,59.020006979987855,V3,city,2,requested,posting
+EE|37|tallinn,51.88321379911233,V3,city,2,requested,posting
+DE|be|berlin,44.37974904756436,V3,city,2,requested,posting
+US|ca|los angeles,43.7931845370405,V3,city,2,requested,posting
+MISSING,754.0381682830398,V3,city,2,requested,group_location_once
+US|ny|new york,82.13921248802309,V3,city,2,requested,group_location_once
+GR|i|athens,81.53866371262554,V3,city,2,requested,group_location_once
+GB|lnd|london,68.17405930763435,V3,city,2,requested,group_location_once
+US|ca|san francisco,57.06209389035098,V3,city,2,requested,group_location_once
+US|tx|houston,27.66009994936491,V3,city,2,requested,group_location_once
+US|ca|los angeles,18.670533442164555,V3,city,2,requested,group_location_once
+US|il|chicago,17.389932276065267,V3,city,2,requested,group_location_once
+DE|be|berlin,11.59847616166596,V3,city,2,requested,group_location_once
+US|tx|dallas,10.150769044671817,V3,city,2,requested,group_location_once
+MISSING,1940.3725723140801,V3,city,2,resolved,posting
+US|ca,427.0203167294831,V3,city,2,resolved,posting
+GB,277.39505104910563,V3,city,2,resolved,posting
+GB|lnd|london,260.03927731227793,V3,city,2,resolved,posting
+US|ny|new york,239.122375822438,V3,city,2,resolved,posting
+GR|i|athens,191.72130850237042,V3,city,2,resolved,posting
+US|ca|san francisco,160.96634210494628,V3,city,2,resolved,posting
+UNSEEN,133.36813038431666,V3,city,2,resolved,posting
+US|ny,126.736161635144,V3,city,2,resolved,posting
+US|tx,124.69322395014647,V3,city,2,resolved,posting
+MISSING,754.0381682830398,V3,city,2,resolved,group_location_once
+US|ca,130.4516874009617,V3,city,2,resolved,group_location_once
+GB,82.90216995203514,V3,city,2,resolved,group_location_once
+US|ny|new york,82.13921248802309,V3,city,2,resolved,group_location_once
+GR|i|athens,81.53866371262554,V3,city,2,resolved,group_location_once
+GB|lnd|london,68.17405930763435,V3,city,2,resolved,group_location_once
+US|ca|san francisco,57.06209389035098,V3,city,2,resolved,group_location_once
+US|ny,44.34262188145707,V3,city,2,resolved,group_location_once
+GR|i,37.00805994864996,V3,city,2,resolved,group_location_once
+UNSEEN,33.804447246323925,V3,city,2,resolved,group_location_once
+MISSING,1713.5874849546067,V3,city,3,requested,posting
+GB|lnd|london,245.39776118349678,V3,city,3,requested,posting
+US|ny|new york,214.36966903426253,V3,city,3,requested,posting
+GR|i|athens,178.38503171249215,V3,city,3,requested,posting
+US|ca|san francisco,142.83657030018094,V3,city,3,requested,posting
+US|tx|houston,68.69535564485271,V3,city,3,requested,posting
+US|il|chicago,49.517859877460104,V3,city,3,requested,posting
+DE|be|berlin,42.90515630938469,V3,city,3,requested,posting
+US|ca|los angeles,37.20856419509931,V3,city,3,requested,posting
+EE|37|tallinn,37.0631079558305,V3,city,3,requested,posting
+MISSING,670.8364144546313,V3,city,3,requested,group_location_once
+US|ny|new york,74.05222397543466,V3,city,3,requested,group_location_once
+GR|i|athens,68.51780962250706,V3,city,3,requested,group_location_once
+GB|lnd|london,61.81036350552059,V3,city,3,requested,group_location_once
+US|ca|san francisco,50.72574766380252,V3,city,3,requested,group_location_once
+US|tx|houston,25.412492187351738,V3,city,3,requested,group_location_once
+US|ca|los angeles,16.760770906631834,V3,city,3,requested,group_location_once
+US|il|chicago,15.647299185953237,V3,city,3,requested,group_location_once
+DE|be|berlin,10.450238416868014,V3,city,3,requested,group_location_once
+US|tx|dallas,9.33534404482313,V3,city,3,requested,group_location_once
+MISSING,1713.5874849546067,V3,city,3,resolved,posting
+US|ca,396.35990574827616,V3,city,3,resolved,posting
+GB|lnd|london,245.39776118349678,V3,city,3,resolved,posting
+GB,222.0645238374938,V3,city,3,resolved,posting
+US|ny|new york,214.36966903426253,V3,city,3,resolved,posting
+GR|i|athens,178.38503171249215,V3,city,3,resolved,posting
+US|ca|san francisco,142.83657030018094,V3,city,3,resolved,posting
+US|tx,123.21013375268458,V3,city,3,resolved,posting
+US|ny,114.95529394158872,V3,city,3,resolved,posting
+UNSEEN,102.82976852797375,V3,city,3,resolved,posting
+MISSING,670.8364144546313,V3,city,3,resolved,group_location_once
+US|ca,113.55133409970377,V3,city,3,resolved,group_location_once
+US|ny|new york,74.05222397543466,V3,city,3,resolved,group_location_once
+GB,68.5359994204723,V3,city,3,resolved,group_location_once
+GR|i|athens,68.51780962250706,V3,city,3,resolved,group_location_once
+GB|lnd|london,61.81036350552059,V3,city,3,resolved,group_location_once
+US|ca|san francisco,50.72574766380252,V3,city,3,resolved,group_location_once
+US|ny,40.299994517863595,V3,city,3,resolved,group_location_once
+GR|i,31.704015611204905,V3,city,3,resolved,group_location_once
+UNSEEN,31.657950949139913,V3,city,3,resolved,group_location_once
+MISSING,2064.2436511311635,V3,city,4,requested,posting
+GB|lnd|london,287.9260961260067,V3,city,4,requested,posting
+US|ny|new york,257.6373298847513,V3,city,4,requested,posting
+GR|i|athens,200.45844224546605,V3,city,4,requested,posting
+US|ca|san francisco,174.74609478374245,V3,city,4,requested,posting
+US|tx|houston,76.88337264797246,V3,city,4,requested,posting
+US|il|chicago,64.80290273453528,V3,city,4,requested,posting
+EE|37|tallinn,53.8010044549906,V3,city,4,requested,posting
+US|ca|los angeles,48.250706373796504,V3,city,4,requested,posting
+DE|be|berlin,46.93387818119907,V3,city,4,requested,posting
+MISSING,806.9883114685312,V3,city,4,requested,group_location_once
+US|ny|new york,88.93215075257325,V3,city,4,requested,group_location_once
+GR|i|athens,86.68708300430296,V3,city,4,requested,group_location_once
+GB|lnd|london,72.39764770938183,V3,city,4,requested,group_location_once
+US|ca|san francisco,60.801705321608125,V3,city,4,requested,group_location_once
+US|tx|houston,30.24505331722309,V3,city,4,requested,group_location_once
+US|ca|los angeles,19.854008719655635,V3,city,4,requested,group_location_once
+US|il|chicago,18.670834517750926,V3,city,4,requested,group_location_once
+DE|be|berlin,12.15913509842979,V3,city,4,requested,group_location_once
+US|tx|dallas,11.13638976511015,V3,city,4,requested,group_location_once
+MISSING,2064.2436511311635,V3,city,4,resolved,posting
+US|ca,470.201559792811,V3,city,4,resolved,posting
+GB,291.0514977963182,V3,city,4,resolved,posting
+GB|lnd|london,287.9260961260067,V3,city,4,resolved,posting
+US|ny|new york,257.6373298847513,V3,city,4,resolved,posting
+GR|i|athens,200.45844224546605,V3,city,4,resolved,posting
+US|ca|san francisco,174.74609478374245,V3,city,4,resolved,posting
+US|ny,141.47255122041204,V3,city,4,resolved,posting
+UNSEEN,139.8295879392514,V3,city,4,resolved,posting
+US|tx,131.7020567016263,V3,city,4,resolved,posting
+MISSING,806.9883114685312,V3,city,4,resolved,group_location_once
+US|ca,146.83964280813782,V3,city,4,resolved,group_location_once
+GB,89.38889817560892,V3,city,4,resolved,group_location_once
+US|ny|new york,88.93215075257325,V3,city,4,resolved,group_location_once
+GR|i|athens,86.68708300430296,V3,city,4,resolved,group_location_once
+GB|lnd|london,72.39764770938183,V3,city,4,resolved,group_location_once
+US|ca|san francisco,60.801705321608125,V3,city,4,resolved,group_location_once
+US|ny,49.55247565916342,V3,city,4,resolved,group_location_once
+UNSEEN,43.389286643642606,V3,city,4,resolved,group_location_once
+GR|i,37.61653725949425,V3,city,4,resolved,group_location_once
