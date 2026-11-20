@@ -237,6 +237,7 @@ HTML-escaped. The two-tool LightGBM demonstration is saved in
 | `judge.py` | LLM rubric, constrained response and validation |
 | `runner.py` | Per-case execution, replay, failure accounting and label isolation |
 | `export_html.py` | Standalone readable input/tool/answer/evaluation report |
+| `report.css`, `report.js` | Dashboard styling, posting search/filter and expandable sections; embedded into the standalone HTML |
 | `report.py` | Code/judge summaries and eligible classifier metrics |
 | `scoring.py` | Execution eligibility and explicit adjustments, preserving the raw judge opinion |
 | `__main__.py` | CLI, split metadata and incremental local outputs |
@@ -253,3 +254,34 @@ This evaluator instead scores complete agent recommendations and explanations.
 Schema version 5 agent cases use the new recommendation policy. Keep earlier
 rejection/escalation reports as historical runs; rerun their input postings to
 evaluate this policy instead of mixing old and new case contracts.
+
+## HTML evaluation dashboard
+
+New evaluator CLI runs save `review_report.html` alongside `report.json`.
+Create or refresh a presentation from saved results without making model calls:
+
+```powershell
+.\agent\.venv\Scripts\python.exe -m evaluator.export_html --report path/to/report.json --output path/to/review_report.html
+```
+
+The classifier section starts with precision, recall and F1, followed by its
+confusion matrix and a ten-bin score distribution with the saved cutoff marked.
+The LLM section separately compares completed recommendations with the dataset
+labels: `review_needed` maps to predicted fake (the positive class), while
+`pass_no_review_needed` maps to predicted genuine. It shows precision, recall,
+F1, its own confusion matrix and the four LLM-as-judge ratings. This is an
+explicit reporting convention; a review recommendation remains a recommendation.
+Fallbacks, missing recommendations and unlabelled cases are excluded from this
+binary comparison, with coverage shown. Execution metrics are expandable.
+
+Unavailable metrics stay N/A: recall is undefined without actual fake ads.
+F1 uses `2*TP / (2*TP + FP + FN)`, so a genuine-only set with false positives
+has F1 = 0 even though recall is unavailable. Failed or excluded judge scores
+are not promoted into completed-answer averages. Report presentation metrics
+are defined in `dashboard_metrics.py`; saved evaluation JSON is not rewritten.
+
+Search or filter the posting table, then open a posting to expand its input,
+classifier tool, lexicon tool, LLM answer and evaluation independently. Full JSON
+is available in additional dropdowns. CSS and JavaScript are embedded in the HTML;
+the finished file works locally without external assets or a server. Historical
+report JSON can be rendered directly without changing its schema or results.
