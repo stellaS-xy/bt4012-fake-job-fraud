@@ -18,17 +18,23 @@ class Settings:
     request_timeout: float = 60.0
     recursion_limit: int = 18
     classifier_backend: str = 'auto'
-    classifier_artifact: Path = AGENT_DIR.parent/'models'/'agent_lightgbm'
-    classifier_python: Path = AGENT_DIR.parent/'.venv'/('Scripts/python.exe' if sys.platform == 'win32' else 'bin/python')
+    classifier_artifact: Path | None = None
+    classifier_python: Path | None = None
 
     def __post_init__(self):
-        for field_name in ('classifier_artifact', 'classifier_python'):
-            path = Path(getattr(self, field_name)).expanduser()
-            object.__setattr__(self, field_name, path if path.is_absolute() else AGENT_DIR.parent/path)
         if self.classifier_backend == 'auto':
-            object.__setattr__(self, 'classifier_backend', 'lightgbm')
-        if self.classifier_backend != 'lightgbm':
-            raise ValueError('CLASSIFIER_BACKEND must be lightgbm; simulated classifiers are not supported.')
+            object.__setattr__(self, 'classifier_backend', 'ensemble')
+        if self.classifier_backend not in ('ensemble', 'lightgbm'):
+            raise ValueError('CLASSIFIER_BACKEND must be ensemble or lightgbm; simulated classifiers are not supported.')
+        ensemble = self.classifier_backend == 'ensemble'
+        defaults = {
+            'classifier_artifact': AGENT_DIR.parent/'models'/('final_ensemble_v1' if ensemble else 'agent_lightgbm'),
+            'classifier_python': AGENT_DIR.parent/('.venv-mlp' if ensemble else '.venv')/('Scripts/python.exe' if sys.platform == 'win32' else 'bin/python'),
+        }
+        for field_name, default in defaults.items():
+            value = getattr(self, field_name)
+            path = Path(default if value is None else value).expanduser()
+            object.__setattr__(self, field_name, path if path.is_absolute() else AGENT_DIR.parent/path)
         if self.backend not in ("ollama", "ollama_local"):
             raise ValueError("AGENT_BACKEND must be ollama_local (local model) or ollama (cloud).")
         local = self.backend == "ollama_local"
@@ -60,5 +66,5 @@ def load_settings():
                     api_key=values.get("OLLAMA_API_KEY", ""),
                     model=values.get("OLLAMA_MODEL", ""),
                     classifier_backend=values.get('CLASSIFIER_BACKEND', 'auto'),
-                    classifier_artifact=Path(values.get('CLASSIFIER_ARTIFACT', AGENT_DIR.parent/'models'/'agent_lightgbm')),
-                    classifier_python=Path(values.get('CLASSIFIER_PYTHON', AGENT_DIR.parent/'.venv'/('Scripts/python.exe' if sys.platform == 'win32' else 'bin/python'))))
+                    classifier_artifact=values.get('CLASSIFIER_ARTIFACT'),
+                    classifier_python=values.get('CLASSIFIER_PYTHON'))

@@ -19,7 +19,7 @@ background observations, not failed checks or evidence of fraud. A context-
 reviewed warning or negated request is not an employer demand. Explain wording
 accurately and cite only returned evidence IDs. A pass means no review is needed
 under these checks; it does not verify legitimacy. No employer searches or
-market-salary checks are available. The score is not a calibrated probability.
+market-salary checks are available. Respect the calibration status in the classifier output; even a calibrated score does not guarantee real-world probability accuracy. Missing required binary classifier inputs mean the classifier check is unavailable, not evidence of fraud.
 Lexicon findings are not classifier attributions. Disclose a test fixture score;
 it cannot pass. Do not invent facts about when hiring fees are lawful or normal.
 

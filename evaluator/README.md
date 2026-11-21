@@ -14,7 +14,8 @@ records. A judge's rating is an automated assessment, not verified ground truth.
 | Fraud labels | Precision/recall and false alarms only when a validated **non-placeholder classifier** prediction is available |
 | Action annotations | Optional exact comparison with `expected_action`; not required for judge evaluation |
 
-Normal agent runs now use a real LightGBM A2 classifier artifact. Fraud metrics
+Normal agent runs use the saved calibrated MLP + Extra Trees v1 ensemble.
+See [cluster deployment](../cluster/ENSEMBLE_AGENT_README.md) for the runtime and smoke test. Fraud metrics
 use valid real classifier tool outputs even if the LLM later falls back, so
 failed final answers are not silently removed from classifier evaluation.
 Automated tests use explicitly marked test fixtures; their classifier outputs are excluded from fraud metrics. Recommendations are not automatically converted to fraud labels.
@@ -112,7 +113,7 @@ JSONL is also supported; see `examples/postings.jsonl` for two invented examples
 Gold annotations are retained only for reporting. Each row's selected posting
 fields go to the agent. The agent receives the same `ordinary` example identifier for every row,
 independently of the gold label. In real mode the identifier does not choose a
-score: LightGBM always scores the actual fields. Test-only fixture scores are
+score: the configured saved classifier scores the actual fields. Test-only fixture scores are
 excluded from fraud metrics.
 
 To skip only the judge while still running the real agent:

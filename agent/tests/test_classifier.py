@@ -32,7 +32,8 @@ class ClassifierToolTests(unittest.TestCase):
             root = Path(folder)
             (root/'python.exe').touch()
             (root/'pipeline.joblib').touch()
-            settings = Settings(backend='ollama_local', classifier_artifact=root, classifier_python=root/'python.exe')
+            (root/'metadata.json').touch()
+            settings = Settings(backend='ollama_local', classifier_backend='lightgbm', classifier_artifact=root, classifier_python=root/'python.exe')
             output = dict(posting_id=posting.posting_id, model_score=.7, cutoff=.3, flagged=True, is_test_fixture=False,
                           missing_input_fields=['industry'], model_version='model-test',
                           input_sha256=hashlib.sha256(json.dumps(posting.model_dump(exclude={'posting_id'}),
@@ -48,6 +49,6 @@ class ClassifierToolTests(unittest.TestCase):
             self.assertTrue(result["review_reasons"])
 
     def test_real_classifier_is_selected_independently_of_the_llm_provider(self):
-        self.assertEqual(Settings(backend='ollama_local').classifier_backend, 'lightgbm')
-        self.assertEqual(Settings(backend='ollama', api_key='TEST').classifier_backend, 'lightgbm')
-        self.assertEqual(Settings().classifier_backend, 'lightgbm')
+        self.assertEqual(Settings(backend='ollama_local').classifier_backend, 'ensemble')
+        self.assertEqual(Settings(backend='ollama', api_key='TEST').classifier_backend, 'ensemble')
+        self.assertEqual(Settings().classifier_backend, 'ensemble')

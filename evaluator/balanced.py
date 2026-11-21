@@ -261,15 +261,24 @@ def artifact_provenance(artifact, sample_manifest):
     artifact = Path(artifact)
     metadata_sha = sha256(artifact/'metadata.json')
     metadata = json.loads((artifact/'metadata.json').read_text(encoding='utf-8'))
-    pipeline_sha = sha256(artifact/'pipeline.joblib')
-    if pipeline_sha != metadata.get('artifact_sha256'):
-        raise ValueError('Classifier artifact checksum differs from its metadata.')
+    if metadata.get('model') == 'calibrated_mlp_extra_trees':
+        from src.final_ensemble_artifact import verify_artifact
+        verify_artifact(artifact)
+        binaries = dict(file_hashes=metadata['file_hashes'], threshold=metadata['threshold'],
+                        model_version='calibrated-mlp-extra-trees-v1')
+        features_sha = metadata.get('features_source_sha256')
+    else:
+        pipeline_sha = sha256(artifact/'pipeline.joblib')
+        if pipeline_sha != metadata.get('artifact_sha256'):
+            raise ValueError('Classifier artifact checksum differs from its metadata.')
+        binaries = dict(pipeline_sha256=pipeline_sha)
+        features_sha = metadata.get('features_sha256')
     if (sample_manifest['split'] == 'heldout'
             and metadata.get('training_sha256') != sample_manifest.get('training_sha256')):
         raise ValueError('Classifier training file differs from the heldout group-overlap reference.')
-    if metadata.get('features_sha256') != sha256(ROOT/'src/features.py'):
+    if features_sha != sha256(ROOT/'src/features.py'):
         raise ValueError('Classifier preprocessing source changed; freeze/fit a consistent artifact first.')
-    return dict(artifact=str(artifact), pipeline_sha256=pipeline_sha, metadata_sha256=metadata_sha,
+    return dict(artifact=str(artifact), **binaries, metadata_sha256=metadata_sha,
                 training_sha256=metadata.get('training_sha256'))
 
 
@@ -281,7 +290,9 @@ def runtime_manifest(sample_manifest):
     from evaluator.judge import RUBRIC_VERSION, SYSTEM_PROMPT
     actor, judge = load_settings(), load_judge_settings()
     artifact = actor.classifier_artifact
-    paths = sorted({*ROOT.glob('agent/core/*.py'), *ROOT.glob('agent/tools/*.py'), *ROOT.glob('evaluator/*.py')})
+    paths = sorted({*ROOT.glob('agent/core/*.py'), *ROOT.glob('agent/tools/*.py'), *ROOT.glob('evaluator/*.py'),
+                    ROOT/'src/ensemble_inference.py', ROOT/'src/d1_final_ensemble.py',
+                    ROOT/'src/final_ensemble_artifact.py', ROOT/'src/features.py'})
     return dict(protocol=sample_manifest['protocol'], sample_sha256=sample_manifest['sample_sha256'],
         actor=dict(backend=actor.backend, model=actor.model, timeout=actor.request_timeout),
         judge=dict(backend=judge.backend, model=judge.model, timeout=judge.request_timeout,

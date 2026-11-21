@@ -39,7 +39,7 @@ def main():
     scenario = st.selectbox("Demo scenario", list(SCENARIOS), format_func=lambda k: SCENARIOS[k]["label"],
                             key="scenario", on_change=clear_case)
     example = SCENARIOS[scenario]["posting"]
-    st.info('Classifier: saved LightGBM A2 pipeline. Scores are computed from your inputs and are not calibrated fraud probabilities.')
+    st.info('Classifier: '+('calibrated MLP + Extra Trees v1 (50/50).' if settings.classifier_backend == 'ensemble' else 'saved LightGBM A2 pipeline.'))
     st.caption('Selecting an example fills a posting; it does not choose its classifier score.')
     with st.form("posting_form"):
         title = st.text_input("Job title", value=example["title"], key=f"title_{scenario}")
@@ -51,7 +51,8 @@ def main():
                                key=f"salary_{scenario}")
         requirements = st.text_area("Requirements, if supplied", key=f"requirements_{scenario}")
         benefits = st.text_area("Benefits, if supplied", key=f"benefits_{scenario}")
-        with st.expander('Additional classifier fields (optional)'):
+        st.caption('Ensemble v1 requires the three Yes/No fields below. Leave unknown values unknown; incomplete input requires review rather than an invented score.')
+        with st.expander('Structured classifier fields', expanded=settings.classifier_backend == 'ensemble'):
             structured = {field: st.text_input(field.replace('_', ' ').capitalize(), key=f'{field}_{scenario}')
                           for field in ('location', 'department', 'employment_type', 'required_experience',
                                         'required_education', 'industry', 'function')}
@@ -88,7 +89,7 @@ def main():
     left.metric("Classifier score", "Unavailable" if a.model_score is None else f"{a.model_score:.3f}")
     middle.metric("Classifier cutoff", "Unavailable" if a.cutoff is None else f"{a.cutoff:.3f}")
     right.metric("Classifier flag", "Unavailable" if a.flagged is None else ("Flagged" if a.flagged else "Below cutoff"))
-    st.caption("The score is not a calibrated probability. A below-cutoff score does not establish safety.")
+    st.caption("Calibration does not guarantee real-world probability accuracy. A below-cutoff score does not establish safety.")
     score_result = next((t.output for t in case.tool_trace if t.name == 'score_posting' and t.status == 'success'), {})
     if score_result.get('missing_input_fields'):
         st.caption('Classifier fields not supplied: '+', '.join(score_result['missing_input_fields']))

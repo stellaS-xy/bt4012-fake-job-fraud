@@ -10,10 +10,10 @@ The Streamlit frontend is in the sibling `frontend/` folder. See the
 the agent logic; it can run without starting the interface.
 
 The language model and tool-calling loop are live. Exactly two tools are exposed:
-`score_posting` runs a real saved LightGBM A2 pipeline, and `match_lexicon` runs
+`score_posting` runs the saved calibrated MLP + Extra Trees v1 ensemble, and `match_lexicon` runs
 risk patterns plus LLM context review. Missing-field and urgency observations
 are internal parts of the lexicon result, not a third agent tool. The classifier
-score is not a calibrated fraud probability; explanation quality still needs
+uses saved sigmoid calibration, which does not guarantee real-world probability accuracy; explanation quality still needs
 representative development evaluation.
 
 ## Folder organization
@@ -53,7 +53,7 @@ python -m venv agent/.venv
 
 This installs both the agent and interface dependencies. For backend-only use,
 install `agent/requirements.txt` instead. The separate modelling environment is
-`.venv/`; do not mix the two sets of dependencies. If `python` is not recognized,
+`.venv-mlp/` for ensemble v1; do not mix the two sets of dependencies. If `python` is not recognized,
 use your installed Python executable's full path.
 
 ## Free local use on Windows
@@ -76,7 +76,7 @@ the local service. Requests go to `http://localhost:11434/v1` and use your
 computer's resources with no Ollama cloud API charges. Do not select a cloud
 model. Start the interface with the command below and click **Review posting**.
 Restart Streamlit after changing settings. Local inference speed depends on your
-computer. The classifier uses the locally saved LightGBM artifact.
+computer. The classifier uses the saved ensemble artifact and its matching inference environment.
 
 ```powershell
 .\agent\.venv\Scripts\python.exe -m streamlit run frontend/app.py --browser.gatherUsageStats false
@@ -263,7 +263,7 @@ updating the historical terms. The main tool implementation is
 | `tests/evaluate_lexicon.py` | Rules/LLM/combined comparisons on identical annotated examples |
 | `core/schemas.py` | Posting, evidence and recommendation data contracts |
 | `tools/__init__.py` | LangChain tool registration and execution traces |
-| `tools/classifier.py` | Real LightGBM subprocess adapter; no simulated classifier option |
+| `tools/classifier.py` | Saved ensemble/legacy LightGBM subprocess adapter; no simulated classifier option |
 | `tools/lexicon.py` | Risk candidates, LLM interpretation and background-only dataset terms |
 | `tools/posting.py` | Internal missing-field/urgency checks included in the lexicon output |
 | `core/validation.py` | Score consistency, required checks and evidence validation |
@@ -290,7 +290,7 @@ Automated tests mock model and classifier boundaries using
 `tests/chat_model_fixture.py` and `tests/runtime_fixtures.py`. Application code
 never imports these files. There is no simulated backend or classifier CLI/UI
 option. The normal runtime only supports `ollama_local` and `ollama`, and always
-uses real saved LightGBM inference. Missing artifacts and failed requests remain
+uses real saved classifier inference. Missing artifacts and failed requests remain
 visible failures rather than silently substituting a score or explanation.
 
 `ReviewCase.model_backend` and `model_name` are required provenance fields,
@@ -301,51 +301,29 @@ runs set these to false. They replace the earlier ambiguous provenance names.
 Schema 5 reflects that contract change. Earlier saved reports are historical
 snapshots; their input/output fields and source hashes have not been rewritten.
 
-## Real classifier artifact
+## Final ensemble v1 artifact
 
-Fit the integration artifact in the modelling environment, from the repository root:
+The default backend is `ensemble`. It loads the released calibrated 50/50 MLP +
+Extra Trees model from `models/final_ensemble_v1`, using `.venv-mlp/bin/python`
+(on Linux), separately from the agent environment. No fitting or dataset access
+occurs during inference. The saved threshold is 0.20923746948802296.
 
-```powershell
-.\.venv\Scripts\python.exe -m src.classifier_inference --fit
-```
+For the cluster setup, verified ZIP extraction and Slurm commands, follow
+[the ensemble deployment guide](../cluster/ENSEMBLE_AGENT_README.md). Reuse the
+existing cluster environment; no model execution or dependency installation is
+required on your Mac. Override `CLASSIFIER_ARTIFACT` and `CLASSIFIER_PYTHON` for
+other deployment paths. The scripts explicitly select `CLASSIFIER_BACKEND=ensemble`.
 
-This uses only `data/processed/d1_train.csv` (14,439 rows), with the existing A2
-feature pipeline, a 2,000-term TF-IDF limit and 200 LightGBM trees. The most
-frequent inner-selected setting from the revised Notebook 03 experiment is
-`num_leaves=31`; the cutoff is the median of its saved inner-selected cutoffs,
-approximately 0.267256. The default comparison directory is
-`reports/model_comparison_revised/`; `--comparison-dir` selects another completed
-comparison explicitly. The original `reports/model_comparison/` experiment is
-historical and currently has a different feature-code fingerprint.
-This is an integration candidate, not a new unbiased model-selection result.
-The reserved test set and the two synthetic labels are not used for fitting or
-cutoff selection. Training-data and modelling-code fingerprints, completed score
-hashes and revised fold identities are checked. Metadata records the comparison
-source, its hashes, historical package versions and the actual fitting versions.
+The inference adapter verifies model file hashes, the preprocessing source and
+exported runtime versions. It rejects missing binary inputs (`telecommuting`,
+`has_company_logo`, `has_questions`) rather than assuming unknown means zero.
+Incomplete classifier checks require review. Other optional fields keep their
+fitted missing-value handling. Scores and cutoffs are copied exactly into the
+agent output; calibration does not guarantee probability accuracy in deployment.
 
-On the Linux cluster, after installing dependencies and syncing the revised
-code/results, submit this CPU-only fitting step through Slurm from the project
-directory (adjust resources if required by your allocation):
-
-```bash
-sbatch --partition=normal --cpus-per-task=2 --mem=16G --time=00:15:00 \
-  --job-name=fit-job-classifier \
-  --wrap='.venv/bin/python -u -m src.classifier_inference --fit'
-```
-
-This job needs `data/processed/d1_train.csv` and the committed comparison files,
-but does not need Ollama or a GPU. Its log reports the selected settings and
-artifact destination. The median cutoff is an integration default, not a
-replacement for a final training-only threshold-selection procedure.
-
-The fitted pipeline and provenance metadata are saved under ignored
-`models/agent_lightgbm/`. `tools/classifier.py` calls
-`src.classifier_inference` in the modelling `.venv`, keeping sklearn/LightGBM
-versions separate from the agent environment. Override `CLASSIFIER_PYTHON` or
-`CLASSIFIER_ARTIFACT` in `agent/.env` if their paths differ. Inputs are allowlisted;
-unknown binary values remain missing for LightGBM and missing categories use
-the fitted preprocessing. Every result lists missing inputs and an artifact hash.
-A high score on a very short, incomplete example is not a calibrated probability.
+Legacy LightGBM support is retained via an explicit `CLASSIFIER_BACKEND=lightgbm`
+plus its corresponding Python environment and artifact. It is not an automatic
+fallback when the ensemble is unavailable.
 
 The historical dataset terms are loaded from a versioned resource as background only.
 Preserve posting IDs, quote validation and context provenance when extending

@@ -36,7 +36,7 @@ def build_tools(posting: Posting, scenario: str, trace: list[ToolTrace], setting
 
     @tool
     def score_posting(posting_id: str) -> str:
-        """Score this posting with real LightGBM; return passed, review_reasons, score, cutoff, flag and limitations."""
+        """Score this posting with the configured saved classifier; return passed, review_reasons, score, cutoff, flag and limitations."""
         return execute("score_posting", posting_id, classifier_result)
 
     @tool

@@ -1,3 +1,7 @@
+# Current agent: final ensemble v1
+
+Use [the ensemble deployment guide](ENSEMBLE_AGENT_README.md) to reuse the saved model and working cluster environments without retraining. The evaluator smoke and balanced jobs now select ensemble v1. The LightGBM fitting instructions below describe the legacy integration candidate.
+
 # SoC Slurm smoke test
 
 Run submission commands from the cloned repository root. These scripts do not
@@ -6,21 +10,13 @@ Commit/push the local changes and pull them on the cluster first.
 
 Prerequisites:
 
-- Uploaded `data/processed/d1_train.csv`; no reserved test file is needed.
-- Working modelling `.venv` and agent/evaluator `agent/.venv` environments.
+- Verified ensemble v1 under `models/final_ensemble_v1/` (or an explicit artifact override).
+- Working classifier `.venv-mlp` and agent/evaluator `agent/.venv` environments.
 - Existing Ollama at `$HOME/ollama-local/bin/ollama` and model cache at
   `$HOME/ollama-models`, containing `qwen2.5:14b-instruct`.
-- The committed revised comparison reports and current artifact-builder code.
 
-Submit the CPU-only, single classifier fit:
-
-```bash
-sbatch cluster/fit_classifier.slurm
-```
-
-After it completes successfully, check its `slurm-fit-classifier-JOBID.out` log
-and verify `models/agent_lightgbm/pipeline.joblib` and `metadata.json` exist.
-Then submit the GPU smoke test:
+No training/test CSVs or new fitting job are needed. Follow the linked deployment
+guide for ZIP verification/extraction, then submit:
 
 ```bash
 sbatch cluster/evaluator_smoke.slurm
@@ -52,7 +48,7 @@ saved report rather than treating it as an infrastructure failure automatically.
 Re-running a job uses a new Slurm ID and does not overwrite previous evaluations.
 
 This is a deployment/software smoke test, not a representative fraud benchmark.
-The classifier is an integration candidate fitted once on training data, with
-the revised experiment's modal setting and median cutoff. Testing that artifact
-on its own training rows would not estimate generalisation. Keep the reserved
-test set untouched until model, prompts, rules and evaluation policy are frozen.
+The classifier is the frozen released ensemble with a development-selected
+threshold. Review-needed is not a fraud label. Existing historical evaluations
+are preserved. The separate `fit_classifier.slurm` trains the legacy LightGBM
+integration candidate and is not a prerequisite for these ensemble jobs.

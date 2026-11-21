@@ -6,11 +6,11 @@ from agent.core.schemas import ReviewCase
 
 
 class RealRuntimeConfigTests(unittest.TestCase):
-    def test_default_is_real_local_model_and_lightgbm(self):
+    def test_default_is_real_local_model_and_ensemble(self):
         settings = Settings()
         self.assertEqual(settings.backend, 'ollama_local')
         self.assertEqual(settings.model, 'qwen3:4b-instruct')
-        self.assertEqual(settings.classifier_backend, 'lightgbm')
+        self.assertEqual(settings.classifier_backend, 'ensemble')
 
     def test_simulated_modes_are_rejected_instead_of_renamed(self):
         for backend in ('dummy', 'test_fixture', 'simulated'):

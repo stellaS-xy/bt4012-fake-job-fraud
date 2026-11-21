@@ -19,8 +19,6 @@ test -f evaluator/balanced.py
 : "${EVAL_SAMPLE_DIR:?Set EVAL_SAMPLE_DIR to an already locked sample directory. No dataset is selected automatically.}"
 test -f "$EVAL_SAMPLE_DIR/sample.jsonl"
 test -f "$EVAL_SAMPLE_DIR/sample_manifest.json"
-test -f models/agent_lightgbm/pipeline.joblib
-test -f models/agent_lightgbm/metadata.json
 test -x "$HOME/ollama-local/bin/ollama"
 export PATH="$HOME/ollama-local/bin:$PATH"
 export OLLAMA_MODELS="${OLLAMA_MODELS:-$HOME/ollama-models}"
@@ -34,8 +32,13 @@ export OLLAMA_MODEL="${OLLAMA_MODEL:-qwen2.5:14b-instruct}"
 export JUDGE_BACKEND=ollama_local
 export JUDGE_MODEL="$OLLAMA_MODEL"
 export JUDGE_TIMEOUT_SECONDS="${JUDGE_TIMEOUT_SECONDS:-90}"
-export CLASSIFIER_PYTHON="$PROJECT_DIR/.venv/bin/python"
-export CLASSIFIER_ARTIFACT="$PROJECT_DIR/models/agent_lightgbm"
+export CLASSIFIER_BACKEND=ensemble
+export CLASSIFIER_PYTHON="${CLASSIFIER_PYTHON:-$PROJECT_DIR/.venv-mlp/bin/python}"
+export CLASSIFIER_ARTIFACT="${CLASSIFIER_ARTIFACT:-$PROJECT_DIR/models/final_ensemble_v1}"
+test -x "$CLASSIFIER_PYTHON"
+# Separate classifier subprocesses use CPU, leaving the GPU available to Ollama.
+# No training, test-set access, package installation or model download in this job.
+CUDA_VISIBLE_DEVICES=-1 "$CLASSIFIER_PYTHON" -m src.ensemble_inference --check --artifact "$CLASSIFIER_ARTIFACT"
 export PYTHONUNBUFFERED=1
 export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK:-4}"
 
@@ -46,7 +49,7 @@ echo "Node: $(hostname); job: $SLURM_JOB_ID; model: $OLLAMA_MODEL"
 nvidia-smi
 agent/.venv/bin/python -c 'import evaluator.balanced; print("Balanced evaluator imports OK")'
 agent/.venv/bin/python -m pip freeze >"$OUTPUT_DIR/environment.txt"
-.venv/bin/python -c 'import lightgbm, joblib; print("Classifier imports OK")'
+CUDA_VISIBLE_DEVICES=-1 "$CLASSIFIER_PYTHON" -c 'import tensorflow as tf, sklearn; print("Ensemble imports OK:", tf.__version__, sklearn.__version__)'
 
 # Never attach to or stop another job's existing localhost service.
 agent/.venv/bin/python - <<'PY'

@@ -14,7 +14,7 @@ or review needed with reasons when either does not. It takes no business action.
 | Feature engineering | Raw fields, missingness/contact/salary features, text style, TF-IDF and a learned phrase-score option | Validate which signals generalize to new employers and job types |
 | Fair model evaluation | Shared grouped folds; inner unseen-row predictions select settings and the flagging cutoff | Choose and freeze a final model and cutoff |
 | Model comparison | Text-only logistic regression, A2 logistic regression, LightGBM and XGBoost; saved reports | Final held-out test evaluation after selection |
-| Agent backend | Real LightGBM classifier + lexicon/context tools, local/cloud Ollama, evidence validation and local review records | Validate classifier calibration and robustness on representative postings |
+| Agent backend | Saved MLP + Extra Trees v1 ensemble + lexicon/context tools, local/cloud Ollama, evidence validation and local review records | Validate classifier calibration and robustness on representative postings |
 | Risk lexicon | Real payment/secret-credential patterns, LLM context checks, exact quotes and conservative warning/negation checks | Evaluate on representative human-annotated development ads |
 | Frontend | Separate Streamlit application in `frontend/` | Further usability evaluation |
 | Agent evaluator | Separate `evaluator/` package with code checks, configurable LLM judge, dataset-row input, saved-case replay and local reports | Representative development evaluation and calibration |
@@ -22,9 +22,10 @@ or review needed with reasons when either does not. It takes no business action.
 
 The reserved D1 test set has not been used for the saved model-comparison run.
 Agent development results use invented examples and must not be presented as
-fraud-detection accuracy. The agent now loads a real LightGBM A2 training-only
-refit. Its integration cutoff is the median of saved inner-selected cutoffs,
-not a newly optimized final deployment policy.
+fraud-detection accuracy. The agent defaults to the saved calibrated MLP + Extra Trees v1 ensemble,
+with its frozen development-selected threshold. See
+[cluster deployment](cluster/ENSEMBLE_AGENT_README.md) to run it without local
+TensorFlow installation or retraining.
 
 ## Start the agent and frontend locally
 
@@ -51,26 +52,15 @@ AGENT_BACKEND=ollama_local
 OLLAMA_MODEL=qwen3:4b-instruct
 ```
 
-No real API key is needed in local mode. Before the first real classifier run,
-prepare the modelling environment (see the ML setup below), then fit its local
-artifact using training data only:
-
-```powershell
-.\.venv\Scripts\python.exe -m src.classifier_inference --fit
-```
-
-By default, this reads the completed revised Notebook 03 experiment in
-`reports/model_comparison_revised/`. `--comparison-dir` can select a different
-completed comparison explicitly. Data, modelling-code and completed-result
-fingerprints are checked before reusing settings and cutoffs; mismatches must
-be investigated rather than bypassed. This fits one integration artifact, not
-another cross-validation experiment, and does not read the reserved test set.
-For the SoC cluster, see [`cluster/README.md`](cluster/README.md) for separate
-CPU artifact-fitting and GPU agent/evaluator smoke-test Slurm scripts.
-
-The artifact is stored under ignored `models/agent_lightgbm/`. The agent calls
-that environment for inference; missing artifacts produce an error, never a
-synthetic replacement score. Start the interface:
+No real API key is needed in local mode. The default classifier loads the
+released calibrated MLP + Extra Trees v1 from `models/final_ensemble_v1` through
+`.venv-mlp`, separately from the agent environment. Unpack the verified ZIP and
+use its pinned runtime dependencies wherever the classifier runs. The ZIP
+eliminates retraining, not inference dependencies. For the recommended cluster
+setup, reuse the working environments and follow
+[`cluster/ENSEMBLE_AGENT_README.md`](cluster/ENSEMBLE_AGENT_README.md).
+No training/test datasets are needed for inference. Missing artifacts produce
+an error, never a synthetic replacement score. Start the interface:
 
 ```powershell
 .\agent\.venv\Scripts\python.exe -m streamlit run frontend/app.py
@@ -82,7 +72,7 @@ Click **Review posting**. Opening the interface alone does not call the model.
 The current input form is manual; it does not automatically import dataset rows.
 Never include the known `fraudulent` label in the LLM input.
 
-In real mode, the example selector fills a posting; LightGBM computes its score
+In real mode, the example selector fills a posting; the saved classifier computes its score
 from the submitted fields. Example selection never fixes the classifier score. The live model and risk checks analyse the submitted text. Results include a
 written rationale, quoted findings, context interpretations, limitations and a
 recommendation: **pass - no review needed** when both tools pass, or **review
@@ -122,7 +112,7 @@ employer legitimacy or market salaries. `agent/core/policy.py` enforces this rul
 Automated tests use `agent/tests/chat_model_fixture.py` and
 `agent/tests/runtime_fixtures.py` to mock external calls. These files are imported
 only by tests. Normal use supports real local/cloud Ollama models and the real
-LightGBM classifier; no simulated backend or fixed classifier score is offered.
+saved classifier; no simulated backend or fixed classifier score is offered.
 Saved cases require actual backend/model metadata. Earlier reports remain
 unchanged historical snapshots; current schema 5 uses explicit test-fixture
 provenance names instead of the former ambiguous fields.

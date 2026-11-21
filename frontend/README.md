@@ -60,17 +60,17 @@ Submit one job posting, corresponding to one dataset row:
 The current form accepts manual input and does not automatically load dataset
 rows. It is an evidence-review interface, not a general chatbot.
 
-The example selector fills a posting. In normal local/cloud mode, LightGBM
+The example selector fills a posting. In normal local/cloud mode, the saved classifier
 computes a real score from the submitted fields. The optional classifier fields
 include location, department, job categories and unknown/yes/no binary fields.
-Leave unknown values unknown; the tool lists omitted inputs. Scores always come from the real saved classifier.
+Leave unknown values unknown; ensemble v1 cannot score without all three binary fields and an incomplete check requires review. The tool lists other omitted inputs. Scores always come from the real saved classifier.
 
 ## What the screen shows
 
 | Area | Meaning |
 |---|---|
 | Model banner | Selected local/cloud model, or explicit offline test mode |
-| Classifier score, cutoff and flag | Real LightGBM score and saved integration cutoff; not a calibrated probability |
+| Classifier score, cutoff and flag | Saved classifier score and threshold; v1 uses sigmoid calibration without a guarantee of real-world probability accuracy |
 | Rationale and recommendation | LLM explanation: pass - no review needed, or review needed with reasons |
 | Risk findings and context | Exact text, field, source and interpretation: request, negation, warning, uncertainty or an unconfirmed candidate |
 | Historical dataset terms | Notebook 00's vocabulary snapshot, displayed separately as background only |
