@@ -1,2 +1,12 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Preserve hashes used by notebook 14 on Windows checkouts.
+src/features.py text eol=lf
+src/evaluation.py text eol=lf
+src/d1_a2_mlp.py text eol=lf
+src/d1_row_neural.py text eol=lf
+src/d1_a2_character_mlp.py text eol=lf
+src/d1_sparse_nn.py text eol=lf
+src/d1_sparse_nn_tuning.py text eol=lf
+notebooks/14_d1_mlp_development.ipynb text eol=lf
