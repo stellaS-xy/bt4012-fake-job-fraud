@@ -31,7 +31,8 @@ from src.reference13_runtime import training_lock
 ROOT = Path(__file__).resolve().parents[1]
 TRAIN_SHA = '61117d0309733e4dcf28d1f9836588ffaf72b7b44479113a742533134cad57ce'
 TEST_SHA = 'd3a9c9ba17208157f9f85fe01e78af22f31fe0f543d3343d60622262a32c1480'
-MLP_CLASS_SHA = 'b6c4e2a2c4f9197814894d6a7058202ae120b30efdf78e9b902c932a8a229dcf'
+MLP_CLASS_SHA = 'b46a0fad2eb68398c3b378496b6414ee5fc7a30c34fb531eafc6616aae0d2573'
+CSR_FUNCTION_SHA = '3dd03d0476085f01fdc5e19b83b88abfb3dc8c5accb70ceacfef19bf807864dc'
 ARTIFACT_FILES = ('mlp_features.joblib', 'mlp.keras', 'mlp_calibrator.joblib',
                   'trees_features.joblib', 'trees.joblib', 'trees_calibrator.joblib')
 HISTORY_NOTE = ('Current posting/group separation passed the audit. Earlier project-wide '
@@ -76,6 +77,24 @@ def load_fixed_split(root):
     return train, test
 
 
+def ast_fingerprint(node):
+    """Portable syntax fingerprint: normalise only Python 3.12's empty type_params.
+
+    ast.dump() itself is version-dependent. Nonempty type parameters and all
+    other semantic fields remain checked, including defaults and method bodies.
+    """
+    def canonical(value):
+        if isinstance(value, ast.AST):
+            return {'node': type(value).__name__,
+                    'fields': [[name, canonical(item)] for name, item in ast.iter_fields(value)
+                               if not (name == 'type_params' and item == [])]}
+        if isinstance(value, list):
+            return [canonical(item) for item in value]
+        return value
+    content = json.dumps(canonical(node), sort_keys=True, separators=(',', ':')).encode()
+    return hashlib.sha256(content).hexdigest()
+
+
 def verify_selected_sources(root):
     """Freeze the estimator/calibration implementations that produced notebook 13."""
     root = Path(root)
@@ -87,9 +106,14 @@ def verify_selected_sources(root):
             raise ValueError(f'Selected implementation changed: {name}')
     tree = ast.parse((root/'src/d1_a2_mlp.py').read_text())
     node = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == 'A2MLP')
-    if hashlib.sha256(ast.dump(node, include_attributes=False).encode()).hexdigest() != MLP_CLASS_SHA:
+    if ast_fingerprint(node) != MLP_CLASS_SHA:
         raise ValueError('MLP estimator differs from the audited notebook 13 implementation.')
-    return {name: file_sha(root/'src'/name) for name in names} | {'A2MLP_class_ast_sha256': MLP_CLASS_SHA}
+    csr = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == '_csr')
+    if ast_fingerprint(csr) != CSR_FUNCTION_SHA:
+        raise ValueError('MLP sparse-input conversion differs from the audited implementation.')
+    return {name: file_sha(root/'src'/name) for name in names} | {
+        'A2MLP_class_ast_sha256': MLP_CLASS_SHA, '_csr_ast_sha256': CSR_FUNCTION_SHA,
+        'ast_fingerprint_format': 'canonical-v1-empty-type-params-normalised'}
 
 
 def select_threshold(train, config, directory):

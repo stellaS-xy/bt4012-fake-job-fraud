@@ -1,5 +1,7 @@
 """Final protocol and portable packaging checks; no TensorFlow/models/test data run."""
 import contextlib
+import ast
+import copy
 import io
 import json
 from pathlib import Path
@@ -19,6 +21,31 @@ from src.d1_candidate_comparison import ComparisonConfig
 class FinalProtocolTests(unittest.TestCase):
     def test_selected_estimator_sources_match_published_implementation(self):
         self.assertIn('features.py', final.verify_selected_sources(final.ROOT))
+
+    def test_python312_empty_type_params_do_not_change_estimator_fingerprint(self):
+        source = (final.ROOT/'src/d1_a2_mlp.py').read_text()
+        node = next(n for n in ast.parse(source).body if isinstance(n, ast.ClassDef) and n.name == 'A2MLP')
+        baseline = final.ast_fingerprint(node)
+        changed = copy.deepcopy(node)
+        for child in ast.walk(changed):
+            if isinstance(child, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
+                if 'type_params' not in child._fields:
+                    child._fields = (*child._fields, 'type_params')
+                child.type_params = []
+        self.assertEqual(final.ast_fingerprint(changed), baseline)
+        self.assertEqual(baseline, final.MLP_CLASS_SHA)
+
+    def test_real_estimator_changes_still_change_fingerprint(self):
+        source = (final.ROOT/'src/d1_a2_mlp.py').read_text()
+        baseline = next(n for n in ast.parse(source).body if isinstance(n, ast.ClassDef) and n.name == 'A2MLP')
+        changed = next(n for n in ast.parse(source.replace('max_epochs=50', 'max_epochs=49')).body
+                       if isinstance(n, ast.ClassDef) and n.name == 'A2MLP')
+        self.assertNotEqual(final.ast_fingerprint(changed), final.ast_fingerprint(baseline))
+        generic = copy.deepcopy(baseline)
+        if 'type_params' not in generic._fields:
+            generic._fields = (*generic._fields, 'type_params')
+        generic.type_params = [ast.Name(id='T', ctx=ast.Load())]
+        self.assertNotEqual(final.ast_fingerprint(generic), final.ast_fingerprint(baseline))
 
     def test_inner_predictions_never_receive_outer_or_test_labels(self):
         frame = pd.DataFrame({'job_id': np.arange(120), 'group_id': np.repeat(np.arange(60), 2),

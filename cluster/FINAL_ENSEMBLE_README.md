@@ -140,3 +140,14 @@ After the actual artifact exists:
 4. Record the actual download link and ZIP checksum in the repository instructions. Other teammates download that release, verify/extract it with the helper, and install the exported runtime requirements. They do not rerun model training.
 
 No release is created or published by these scripts. GitHub blocks files above 100 MiB in normal Git and recommends Releases for distributing large binaries: [official large-file guidance](https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-large-files-on-github). Release assets are currently limited to under 2 GiB each: [release documentation](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases).
+
+## Source-check compatibility
+
+The final runner uses a canonical AST fingerprint rather than raw `ast.dump()`
+for the MLP class and sparse-conversion helper. Python 3.12 adds empty
+`type_params` fields to classes/functions; those empty compatibility fields are
+normalised so the same implementation passes on Python 3.11 and 3.12. Changed
+hyperparameter defaults, method bodies and nonempty type parameters still fail.
+If an older runner reports an MLP-source mismatch before printing threshold
+selection, update the source and rerun the Slurm submission. Do not disable the
+source guard or replace the expected hash with an arbitrary computed value.
