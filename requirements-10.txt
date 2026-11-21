@@ -1,0 +1,5 @@
+# Notebook 10 optional dependencies. No TensorFlow, CUDA packages or cluster required.
+# Notebook install cell preserves installed scientific-library versions via constraints.
+torch>=2.6,<3
+transformers>=4.57.3,<6
+psutil>=5.9,<8
