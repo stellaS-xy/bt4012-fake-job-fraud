@@ -1,0 +1,19 @@
+{
+  "status": "complete",
+  "folds_per_model": 25,
+  "models": [
+    "lightgbm_replay",
+    "calibrated_ensemble"
+  ],
+  "original_run_fingerprint": "6fe05ca3f824e45564c3",
+  "completed_utc": "2026-11-21T15:39:57.606443+00:00",
+  "files_sha256": {
+    "summary.csv": "4bb0222b6dd84c8c5f4a609be39507e5ef7ed546a6cf3681a5be34f29826c34f",
+    "paired_differences.csv": "7a12755d5cefae65dc6f1ebd5db07e2667e5bd8dcbb829f23d05206baf219e2b",
+    "comparison.html": "2b55a1464c0b8dc6356632a94c69e21ee42c1923cac980b006b76fc67c179ac9",
+    "historical_replay_check.csv": "22a586cfba016128edecf4102b050c8d20febfb180c26ada6937603bf050bb63",
+    "manifest.json": "351f533d8637be1d76c7e9643767e77f6d3f0a43fc22942f941fad3d60fcb198",
+    "fold_metrics.csv": "986d6ad6a53f7d045d58025ed188a908c46e9e1d7637399914a03f2c56181575"
+  },
+  "note": "These are the original completed run outputs. Packaging changes affect setup/platform support only; estimator, calibration and evaluation modules are unchanged."
+}
