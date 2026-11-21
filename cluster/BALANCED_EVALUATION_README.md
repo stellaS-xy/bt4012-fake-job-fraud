@@ -1,107 +1,135 @@
-# Balanced 20-case agent-quality audit (one-hour cluster job)
+# Balanced 100-case agent-quality audit
 
-This implements a **quality audit**, not model selection or a prevalence-representative accuracy estimate. It uses 10 genuine and 10 fraudulent real postings, 20 distinct near-duplicate groups, fixed sampling seed 2026 and one execution per case. No test file is automatically read. No LLMs, classifier training or model downloads are performed by preparing this code locally.
+Protocol `balanced-agent-quality-v2` uses **50 genuine + 50 fraudulent postings
+from 100 distinct near-duplicate groups**, fixed seed 2026, and one agent/judge
+execution per case. It audits workflow and explanation quality, not performance
+at natural fraud prevalence. Preparation makes no model calls. Existing locked
+20-case v1 samples and their reports are never expanded or overwritten.
 
-## What must be fixed first
+## Deployment and freeze
 
-The current agent tool still supports **LightGBM**. This launcher evaluates that existing artifact; it does not convert or deploy the MLP. To claim an MLP-based agent evaluation, finish that integration and freeze it before preparing the formal sample. Do not change prompts, tools, classifier artifacts or judge rubric after seeing heldout results. A `--frozen-version` is a declaration/provenance label, not proof that freezing occurred.
+Use the [ensemble deployment guide](ENSEMBLE_AGENT_README.md) first. The launcher
+uses saved ensemble v1 through `.venv-mlp`, plus the existing `agent/.venv` and
+cached Qwen2.5 14B for both agent and judge. Classifier inference uses CPU;
+Ollama uses the allocated GPU. No new fitting or model downloads are needed.
 
-## 1. Transfer the implementation
+Commit/push these code changes, then pull them on the cluster when no running
+job is using the affected files. No new packages are required for this change.
+Freeze prompts, tools, model artifact and rubric before a formal heldout audit.
+A frozen-version label records a declaration, not proof of historical isolation.
 
-Use GitHub Desktop to commit/push the new balanced evaluator, tests, documentation and the small evaluator/runner.py checkpoint change. On the cluster, inspect `git status` and pull normally if the working tree permits. Do not overwrite unrelated uncommitted cluster changes. If another job is actively using these evaluator files, wait for it to finish before updating them.
+## Prepare a new locked sample
 
-No new Python packages are required beyond the agent/evaluator environment already installed. Nothing is installed in `.venv-mlp` or the DistilBERT environment.
-
-## 2. Prepare and lock the sample — explicit action, no model calls
-
-Run preparation once, on the cluster, from `~/bt4012-fake-job-fraud`.
-
-If the system is **still being developed**, use development data:
+From the cluster repository root, choose **one** source. During system development:
 
 ```bash
 agent/.venv/bin/python -m evaluator.balanced prepare \
   --data data/processed/d1_train.csv \
   --split development \
-  --output-dir evaluator/outputs/balanced20_development_2026
+  --output-dir evaluator/outputs/balanced100_development_2026
 ```
 
-If the complete system is **frozen for final evaluation**, upload the agreed test CSV if it is not on the cluster, then use the explicit heldout command instead. This reads the test file and checks that its groups do not overlap training; do not execute it during prompt/model development:
+This development audit can inform debugging, but its classifier results are not
+an independent generalisation estimate because the classifier used development
+data. Once the complete system is frozen, use the explicitly declared heldout
+source instead (never run both commands into the same directory):
 
 ```bash
 agent/.venv/bin/python -m evaluator.balanced prepare \
   --data data/processed/d1_test.csv \
-  --split heldout --frozen-version final-agent-v1 \
+  --split heldout --frozen-version ensemble-v1-agent-eval-v2 \
   --training-data data/processed/d1_train.csv \
-  --output-dir evaluator/outputs/balanced20_heldout_2026
+  --output-dir evaluator/outputs/balanced100_heldout_2026
 ```
 
-Preparation validates binary labels, unique posting IDs and nonmissing groups. It samples groups without replacement within labels, then one random posting of the requested label within each selected group. Mixed-label groups are allocated without repeating a group or exhausting the other label's quota. The order alternates labels with a random starting class. This is a group-distinct, class-balanced audit, not a uniformly random posting-level sample. No prediction, correctness, wording or length filter is used. Invalid posting text, if selected, remains an evaluation input failure; no replacement is drawn.
+Heldout preparation checks group separation against the training file. It does
+not prove the test file has never been accessed elsewhere in the project.
+If the source cannot provide the required distinct groups, preparation fails
+rather than weakening the design or substituting cases.
 
-A new directory contains:
+Sampling chooses a group, then one random posting of the requested label.
+Mixed-label group allocation preserves both quotas without reusing groups.
+The run alternates labels with a random starting class. There is no selection
+based on predictions, errors, wording or length. Selected invalid inputs remain
+failures; no replacement is drawn. Three binary classifier fields must be
+available to score the posting; unknown values are not silently filled as zero.
 
-- `sample.jsonl`: only supported posting fields, IDs, groups and labels. The worker input loader strips annotations/group IDs before sending postings to the agent; the judge also never sees the gold label.
-- `sample_manifest.json`: source/sample hashes, split, frozen declaration, group IDs, lengths, selected IDs and sampling rules.
-- `manual_review.csv`: four cases preselected with seed 2027 (two per label); all human-review fields are initially blank/pending. Complete after inspecting their actual outputs. This is additional human time, not GPU time.
+The new directory contains:
 
-Existing sample directories are never overwritten. Keep using the same locked sample; do not draw alternatives based on the results. All these paths are ignored by Git through `evaluator/outputs/`.
+- `sample.jsonl`: supported posting fields plus evaluator annotations. The loader
+  strips labels and groups before passing postings to the agent; the judge also
+  does not see the gold fraud label.
+- `sample_manifest.json`: source/sample hashes, IDs/groups, lengths, split,
+  protocol, seed and declared frozen version.
+- `manual_review.csv`: **20 preselected cases (10 per class)**, seed 2027.
+  Human-review fields start blank/pending. Review their evidence, interpretations
+  and judge agreement after execution; the model does not perform this audit.
 
-## 3. Submit the one-hour job
+Samples are locked and ignored by Git. Do not redraw after seeing results.
 
-For the development sample above:
+## Submit and monitor
+
+Reuse the final-fit artifact directly, without making another copy:
 
 ```bash
-sbatch --export=ALL,EVAL_SAMPLE_DIR=evaluator/outputs/balanced20_development_2026 \
-  cluster/evaluator_balanced.slurm
+export CLASSIFIER_ARTIFACT="$PWD/data/processed/final_ensemble_test/v1/artifact"
+export CLASSIFIER_PYTHON="$PWD/.venv-mlp/bin/python"
+export EVAL_SAMPLE_DIR="$PWD/evaluator/outputs/balanced100_development_2026"
+# For the frozen heldout design, set EVAL_SAMPLE_DIR to that locked directory instead.
+sbatch cluster/evaluator_balanced.slurm
 ```
 
-For a formally prepared heldout sample, substitute `balanced20_heldout_2026`. The script does not select either dataset by default and does not prepare new samples.
-
-Defaults: A100 40 GB, four CPUs, 32 GB RAM, Qwen2.5 14B for agent and judge, existing LightGBM classifier, one repeat. It starts its own Ollama server only if the local port is free and cached weights are present; it does not attach to or stop other services or download a model. A different actor/judge setup requires a separately frozen evaluation design.
-
-## Runtime bounds
-
-- Slurm maximum wall time: **60 minutes**, excluding queue wait.
-- Target: complete 20 cases, approximately 30–45 minutes based on earlier smoke timings, not guaranteed.
-- Each whole worker has **150 seconds**, including imports, classifier subprocess, all agent/context calls, judge and validation correction.
-- The job starts the evaluator with the remaining time to minute 55, reserving time for report output and cleanup. It stops launching cases when there is insufficient remaining time for a complete case budget. Startup/warm-up is bounded at approximately five minutes.
-- A timeout kills only that isolated worker process group, including its classifier subprocess. The shared job-owned Ollama service stays alive for subsequent cases. Inference cancellation on the server may not be instantaneous.
-- An ordinary case/worker failure does not abort the other selected cases or trigger replacement sampling.
-- Completed agent output is checkpointed **before the judge**. A judge-stage timeout preserves validated classifier predictions, agent status, evidence and code checks. A timeout before that checkpoint has no claimed classifier result.
-- Unstarted cases and timeouts remain in the denominator of 20. Missing judge scores stay null, not zero and not a pass. Judge means always carry their eligible scored counts.
-
-The wall-time cap is a resource limit, not a promise of 20 successful judgments. Unexpected OS/filesystem failures or forced Slurm termination can prevent the final update; previously written atomic reports and per-case checkpoints remain. There is no automatic retry/resume/replacement: preserve failures in this run and disclose any separately planned follow-up.
-
-## 4. Monitor
-
-Replace JOBID with the actual ID:
+Without an artifact override, the script uses `models/final_ensemble_v1`.
+It requires a locked v2 100-case manifest; an old 20-case sample is rejected
+before loading the LLM. No dataset is automatically selected.
 
 ```bash
 squeue -j JOBID
-
 tail -f slurm-agent-balanced-JOBID.out
-
 sacct -j JOBID --format=JobID,State,Elapsed,MaxRSS,ExitCode
 ```
 
-Outputs are under `evaluator/outputs/balanced20_JOBID/`:
+## Runtime and failures
 
-- `environment.txt`, `available_models.json`, `resident_models.json`, `ollama.log`: environment/service provenance.
-- `run/runtime_manifest.json`: allowlisted model settings, source/package/rubric and classifier artifact hashes; no API keys.
-- `run/report.json`: all 20 cases, execution state, legacy evaluator summary and the balanced-quality summary.
-- `run/quality_summary.csv` / `.json`: **primary results**, overall and by label; planned counts, completion/code-pass/coverage rates, effective dimension means and scored counts, unsupported-claim case count with judge denominator, fallback/timeout counts, median/maximum latency.
-- `run/review_report.html`: readable posting/tool/answer/judge report with a prominent balanced-sampling warning and quality summary. Legacy classifier and recommendation-label panels remain descriptive only and must not be reported as population metrics.
-- `run/results.jsonl`: incremental case results, including failures and unstarted cases.
-- `run/cases.jsonl`: saved agent outputs that can be rejudged later without rerunning the agent, if a separate replay is intentionally planned and disclosed.
-- `run/case_XX/`: worker log, result and pre-judge checkpoint when available. The label in metadata is never an agent text input.
+- Allocation: `gpu-long`, A100 40 GB, four CPUs, 32 GB RAM, **8 hours maximum**,
+  excluding queue wait. This is a ceiling, not an expected runtime. Earlier
+  two-case timings suggest roughly 2–4 hours for 100 cases, with substantial
+  uncertainty from text length, retries and timeouts.
+- Whole-case deadline: **240 seconds**, including imports, classifier, all agent
+  and context calls, judge and validation correction. The judge request timeout
+  defaults to 120 seconds; the agent request timeout remains 60 seconds.
+- Evaluation ends by minute 470 (7h50m), reserving ten minutes for export/cleanup.
+  Startup and warm-up have an approximately five-minute budget.
+- Agent results are checkpointed before judging. A judge timeout can preserve the
+  completed agent/classifier result; earlier failures have no invented prediction.
+- Timeouts, failures and unstarted cases remain in the denominator of **100**.
+  Missing judge scores remain null, not zero. Score means carry eligible counts.
+- Only the job-owned server/processes are stopped. Port conflicts cause failure
+  rather than attaching to another job's Ollama instance.
+- Reports are written incrementally. There is **no automatic resume, retry or
+  replacement sampling**. Forced Slurm termination may interrupt the final write;
+  preserve existing checkpoints and disclose any separately planned follow-up.
 
-The CLI exits nonzero when agent/judge execution or hard checks are incomplete/failed, even if all 20 cases were attempted and the report was successfully saved. **Inspect the report before treating a Slurm FAILED status as a missing evaluation.** Low judge ratings alone do not fail the job.
+## Outputs and interpretation
 
-## How to report
+Outputs: `evaluator/outputs/balanced100_JOBID/`, including Ollama/environment logs
+and `run/` containing:
 
-Report all-case and class-specific completion/coverage, effective judge scores with denominators, unsupported-claim cases and timing. Do not average missing ratings as zero or drop failed cases from completion denominators. A judge that finishes after an agent fallback may still have some dimensions excluded by the existing eligibility rules.
+- `runtime_manifest.json`: model identities, source/rubric/package provenance,
+  ensemble checksums and saved threshold, excluding secrets.
+- `report.json`, `quality_summary.csv` and `.json`: overall and class-specific
+  completion, hard-check success, judge coverage, eligible judge-score means,
+  unsupported-claim case counts, failures/timeouts and latency.
+- `review_report.html`: readable posting, tools, evidence, answer and judge report.
+- `results.jsonl`, `cases.jsonl`, `case_XX/`: incremental results and checkpoints.
 
-The balanced dataset changes the base rate. It cannot support production precision, natural-distribution quality estimates or claims of overall fraud accuracy. `review_needed` is a recommendation, not a gold fraud decision. The same actor/judge model can reproduce shared mistakes. Twenty cases and one execution each are a limited audit, not statistical proof of deployment readiness. Finish the four-case human audit separately and label it as such.
+A nonzero job exit can mean incomplete agent/judge execution or failed hard
+checks even when the report was saved. Inspect the report before assuming an
+infrastructure failure. Low judge ratings alone do not fail the job.
 
-Suggested methods description:
-
-> We used a fixed-seed, class-balanced sample of 20 real postings from distinct near-duplicate groups (10 genuine, 10 fraudulent). One agent-and-judge evaluation was attempted per posting, with a 150-second whole-case deadline. Failures were retained and score coverage was reported. The sample audits workflow and explanation quality rather than population-level detection accuracy.
+Report all-case and per-class outcomes with denominators. Finish the 20-case
+human review separately. The same agent/judge model can share errors. A balanced,
+group-sampled audit does not estimate production precision or workload, and
+review-needed is not a gold fraud label. Use the separate full-test classifier
+results for its natural-distribution evaluation. One execution per case also
+does not measure variation across repeated LLM responses.

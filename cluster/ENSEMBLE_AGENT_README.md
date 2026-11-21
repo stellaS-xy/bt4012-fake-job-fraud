@@ -79,7 +79,7 @@ export EVAL_SAMPLE_DIR=/absolute/path/to/existing/locked_sample
 sbatch cluster/evaluator_balanced.slurm
 ```
 
-No sample is selected automatically. The 10+10 audit remains an agent-quality
+No sample is selected automatically. The 50+50 audit remains an agent-quality
 audit, not an estimate at the dataset's natural prevalence. Outputs use a new
 job-specific directory and record ensemble checksums, training identity,
 threshold and adapter source hashes; historical LightGBM reports stay unchanged.

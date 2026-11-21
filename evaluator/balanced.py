@@ -1,4 +1,4 @@
-"""Prepare a locked 10+10 sample and run a time-bounded agent-quality audit.
+"""Prepare a locked 50+50 sample and run a time-bounded agent-quality audit.
 
 No default dataset or automatic test access. Imports never invoke any model.
 The parent process enforces whole-case deadlines on isolated worker groups.
@@ -41,7 +41,7 @@ def atomic_json(path, value):
     temporary.replace(path)
 
 
-def balanced_sample(records, per_label=10, seed=2026):
+def balanced_sample(records, per_label=50, seed=2026):
     """Random groups, then random posting; no group repeats, including mixed groups.
 
     Each draw excludes choices that would make the other label quota impossible.
@@ -113,7 +113,7 @@ def prepare(data, output, *, split='development', frozen_version=None, training_
     audit_rng = random.Random(2027)
     manual_ids = []
     for label in (0, 1):
-        manual_ids.extend(audit_rng.sample([r['job_id'] for r in selected if r['fraudulent'] == label], 2))
+        manual_ids.extend(audit_rng.sample([r['job_id'] for r in selected if r['fraudulent'] == label], 10))
     output.mkdir(parents=True)
     sample = output / 'sample.jsonl'
     sample.write_text(''.join(json.dumps(r, ensure_ascii=False) + '\n' for r in selected), encoding='utf-8')
@@ -123,15 +123,15 @@ def prepare(data, output, *, split='development', frozen_version=None, training_
         metadata.append({'case_id': row['job_id'], 'group_id': row['group_id'],
                          'fraudulent': row['fraudulent'], 'text_words': words,
                          'manual_review_selected': row['job_id'] in manual_ids})
-    manifest = dict(protocol='balanced-agent-quality-v1', created_at=datetime.now(timezone.utc).isoformat(),
+    manifest = dict(protocol='balanced-agent-quality-v2', created_at=datetime.now(timezone.utc).isoformat(),
         source=str(data.resolve()), source_sha256=sha256(data), sample_sha256=sha256(sample),
         training_sha256=training_sha, split=split, frozen_version=frozen_version,
-        seed=2026, per_label=10, selected_cases=20, distinct_groups=20,
+        seed=2026, per_label=50, selected_cases=100, distinct_groups=100,
         sampling_unit='One group per draw, then one random posting of the requested label; mixed-label group feasibility constrained.',
         run_order='Alternating labels, random starting label.', length_policy='No length filtering or forced length quotas.',
         manual_review_seed=2027, manual_review_case_ids=manual_ids,
         manual_review_status='pending', source_records=len(records), cases=metadata,
-        limitations=[WARNING, '20 cases, one execution per case; no population-level or statistical-superiority claim.'])
+        limitations=[WARNING, '100 cases, one execution per case; no population-level or statistical-superiority claim.'])
     atomic_json(output / 'sample_manifest.json', manifest)
     with (output / 'manual_review.csv').open('w', newline='', encoding='utf-8') as stream:
         writer = csv.DictWriter(stream, fieldnames=['case_id', 'group_id', 'fraudulent', 'quote_support',
@@ -304,14 +304,14 @@ def runtime_manifest(sample_manifest):
                   ['langchain', 'langchain-core', 'langchain-openai', 'pydantic', 'openai']})
 
 
-def run(sample_dir, output_dir, *, max_seconds=3000, case_seconds=150):
+def run(sample_dir, output_dir, *, max_seconds=28200, case_seconds=240):
     from evaluator.data import load_examples
     from evaluator.report import summarize
     from evaluator.export_html import render
     sample_dir, output = Path(sample_dir).resolve(), Path(output_dir).resolve()
     if not (math.isfinite(max_seconds) and math.isfinite(case_seconds)
-            and 0 < max_seconds <= 3300 and 0 < case_seconds <= 150):
-        raise ValueError('Use a total evaluation budget <=3300 seconds and whole-case budget <=150 seconds.')
+            and 0 < max_seconds <= 28500 and 0 < case_seconds <= 240):
+        raise ValueError('Use a total evaluation budget <=28500 seconds and whole-case budget <=240 seconds.')
     started = time.monotonic()
     manifest = json.loads((sample_dir/'sample_manifest.json').read_text())
     sample = sample_dir/'sample.jsonl'
@@ -322,12 +322,18 @@ def run(sample_dir, output_dir, *, max_seconds=3000, case_seconds=150):
     raw_records = [json.loads(line) for line in sample.read_text(encoding='utf-8').splitlines() if line.strip()]
     if [str(r.get('group_id')) for r in raw_records] != [str(m['group_id']) for m in metadata]:
         raise ValueError('Sample groups differ from locked metadata.')
-    if (manifest.get('protocol') != 'balanced-agent-quality-v1' or len(examples) != 20 or len(metadata) != 20
-            or len({m['group_id'] for m in metadata}) != 20
+    # Existing locked v1 samples remain readable, but new preparation always uses v2.
+    per_label = {'balanced-agent-quality-v1': 10, 'balanced-agent-quality-v2': 50}.get(manifest.get('protocol'))
+    total = 2 * per_label if per_label else 0
+    if (not total or len(examples) != total or len(metadata) != total
+            or manifest.get('selected_cases') != total or manifest.get('per_label') != per_label
+            or manifest.get('distinct_groups') != total
+            or len({m['group_id'] for m in metadata}) != total
+            or len({e.case_id for e in examples}) != total
             or [e.case_id for e in examples] != [m['case_id'] for m in metadata]
             or any(e.fraudulent != m['fraudulent'] for e, m in zip(examples, metadata))
-            or sorted(e.fraudulent for e in examples) != [0]*10 + [1]*10):
-        raise ValueError('Expected the unchanged 20-case, 10+10, group-distinct protocol.')
+            or sorted(e.fraudulent for e in examples) != [0]*per_label + [1]*per_label):
+        raise ValueError('Expected the unchanged balanced, group-distinct protocol and matching case counts.')
     if manifest['split'] == 'heldout' and not manifest.get('frozen_version'):
         raise ValueError('Missing heldout frozen-version declaration.')
     if output.exists():
@@ -350,8 +356,8 @@ def run(sample_dir, output_dir, *, max_seconds=3000, case_seconds=150):
             source=str(sample.resolve()), split=manifest['split'], frozen_version=manifest.get('frozen_version'),
             protocol=manifest['protocol'], input_sha256=manifest['sample_sha256'],
             judge=runtime['judge'], rubric_version=runtime['rubric_version'],
-            rubric_sha256=runtime['rubric_sha256'], repeats=1, selected_cases=20,
-            limitations=[WARNING, 'A 20-case audit cannot establish production reliability.',
+            rubric_sha256=runtime['rubric_sha256'], repeats=1, selected_cases=total,
+            limitations=[WARNING, f'A {total}-case audit cannot establish production reliability.',
                          'The same actor/judge model may reproduce shared errors.',
                          'Quality means exclude unavailable ratings; read coverage and failure counts.'],
             summary=summarize(rows), quality_summary=summaries, rows=rows,
@@ -385,7 +391,7 @@ def run(sample_dir, output_dir, *, max_seconds=3000, case_seconds=150):
                 if stopped[0] or remaining < case_seconds + 5:
                     rows[index].update(evaluation_status='budget_not_started', agent_error='run_budget_or_signal')
                 else:
-                    print(f'Case {index+1}/20: {example.case_id}; whole-case limit {case_seconds:g}s', flush=True)
+                    print(f'Case {index+1}/{total}: {example.case_id}; whole-case limit {case_seconds:g}s', flush=True)
                     case_started = time.monotonic()
                     try:
                         row = execute_case(example, output/f'case_{index+1:02d}', case_seconds,
@@ -421,8 +427,8 @@ def main():
     audit = sub.add_parser('run', help='Run only an explicitly prepared sample.')
     audit.add_argument('--sample-dir', type=Path, required=True)
     audit.add_argument('--output-dir', type=Path, required=True)
-    audit.add_argument('--max-seconds', type=float, default=3000)
-    audit.add_argument('--case-seconds', type=float, default=150)
+    audit.add_argument('--max-seconds', type=float, default=28200)
+    audit.add_argument('--case-seconds', type=float, default=240)
     child = sub.add_parser('worker', help=argparse.SUPPRESS)
     child.add_argument('--result', type=Path, required=True)
     child.add_argument('--stage', type=Path, required=True)
@@ -438,7 +444,7 @@ def main():
         print('Saved:', args.output_dir/'report.json')
         print('Quality summary:', args.output_dir/'quality_summary.csv')
         q = report['quality_summary']['overall']
-        if (q['agent_completed'] != 20 or q['code_checks_passed'] != 20 or q['judge_completed'] != 20):
+        if (q['agent_completed'] != q['planned_cases'] or q['code_checks_passed'] != q['planned_cases'] or q['judge_completed'] != q['planned_cases']):
             raise SystemExit(1)  # report remains valid; never hide partial/failed evaluations
 
 

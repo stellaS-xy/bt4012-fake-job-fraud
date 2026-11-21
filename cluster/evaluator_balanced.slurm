@@ -1,10 +1,10 @@
 #!/bin/bash
-#SBATCH --job-name=agent-balanced20
-#SBATCH --partition=gpu
+#SBATCH --job-name=agent-balanced100
+#SBATCH --partition=gpu-long
 #SBATCH --gpus=a100-40:1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=32G
-#SBATCH --time=01:00:00
+#SBATCH --time=08:00:00
 #SBATCH --output=slurm-agent-balanced-%j.out
 
 set -euo pipefail
@@ -19,6 +19,13 @@ test -f evaluator/balanced.py
 : "${EVAL_SAMPLE_DIR:?Set EVAL_SAMPLE_DIR to an already locked sample directory. No dataset is selected automatically.}"
 test -f "$EVAL_SAMPLE_DIR/sample.jsonl"
 test -f "$EVAL_SAMPLE_DIR/sample_manifest.json"
+# Never accidentally run the old 20-case sample under the 100-case design.
+agent/.venv/bin/python - "$EVAL_SAMPLE_DIR/sample_manifest.json" <<'PYCODE'
+import json, sys
+manifest = json.load(open(sys.argv[1]))
+if (manifest.get('protocol'), manifest.get('selected_cases'), manifest.get('per_label')) != ('balanced-agent-quality-v2', 100, 50):
+    raise SystemExit('Prepare a new locked v2 sample: 100 cases, 50 per label. Existing samples are not expanded or overwritten.')
+PYCODE
 test -x "$HOME/ollama-local/bin/ollama"
 export PATH="$HOME/ollama-local/bin:$PATH"
 export OLLAMA_MODELS="${OLLAMA_MODELS:-$HOME/ollama-models}"
@@ -31,7 +38,7 @@ export AGENT_BACKEND=ollama_local
 export OLLAMA_MODEL="${OLLAMA_MODEL:-qwen2.5:14b-instruct}"
 export JUDGE_BACKEND=ollama_local
 export JUDGE_MODEL="$OLLAMA_MODEL"
-export JUDGE_TIMEOUT_SECONDS="${JUDGE_TIMEOUT_SECONDS:-90}"
+export JUDGE_TIMEOUT_SECONDS="${JUDGE_TIMEOUT_SECONDS:-120}"
 export CLASSIFIER_BACKEND=ensemble
 export CLASSIFIER_PYTHON="${CLASSIFIER_PYTHON:-$PROJECT_DIR/.venv-mlp/bin/python}"
 export CLASSIFIER_ARTIFACT="${CLASSIFIER_ARTIFACT:-$PROJECT_DIR/models/final_ensemble_v1}"
@@ -42,7 +49,7 @@ CUDA_VISIBLE_DEVICES=-1 "$CLASSIFIER_PYTHON" -m src.ensemble_inference --check -
 export PYTHONUNBUFFERED=1
 export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK:-4}"
 
-OUTPUT_DIR="evaluator/outputs/balanced20_${SLURM_JOB_ID}"
+OUTPUT_DIR="evaluator/outputs/balanced100_${SLURM_JOB_ID}"
 test ! -e "$OUTPUT_DIR"
 mkdir -p "$OUTPUT_DIR"
 echo "Node: $(hostname); job: $SLURM_JOB_ID; model: $OLLAMA_MODEL"
@@ -119,8 +126,8 @@ if not any(m.get('name') == os.environ['OLLAMA_MODEL'] and m.get('size_vram', 0)
 print('Model loaded on GPU; starting locked balanced quality audit.', flush=True)
 PY
 
-# Finish the evaluation loop by minute 55, reserving time for exports and cleanup.
-REMAINING=$((3300 - SECONDS))
+# Stop the loop by 7h50m, reserving ten minutes for exports and cleanup.
+REMAINING=$((28200 - SECONDS))
 if (( REMAINING <= 0 )); then
   echo 'No runtime budget remains; no cases started.' >&2
   exit 1
@@ -128,6 +135,6 @@ fi
 agent/.venv/bin/python -u -m evaluator.balanced run \
   --sample-dir "$EVAL_SAMPLE_DIR" \
   --output-dir "$OUTPUT_DIR/run" \
-  --max-seconds "$REMAINING" --case-seconds 150
+  --max-seconds "$REMAINING" --case-seconds 240
 echo "Finished. Quality summary: $OUTPUT_DIR/run/quality_summary.csv"
 echo "HTML report: $OUTPUT_DIR/run/review_report.html"

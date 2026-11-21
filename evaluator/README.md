@@ -289,11 +289,11 @@ report JSON can be rendered directly without changing its schema or results.
 
 ## Time-bounded balanced quality audit
 
-For the fixed-seed 10 genuine + 10 fraudulent, group-distinct audit, use the
+For the fixed-seed 50 genuine + 50 fraudulent, 100-group audit, use the
 separate `python -m evaluator.balanced prepare` and `run` commands. Preparation
 never chooses a dataset automatically; heldout input requires a frozen-version
-label and a training-group overlap check. The Slurm launcher enforces a one-hour
-job limit and 150-second whole-case deadlines, preserving agent outputs before
+label and a training-group overlap check. The Slurm launcher uses gpu-long with an eight-hour
+job limit and 240-second whole-case deadlines, preserving agent outputs before
 judging and counting failures in the planned denominator. See
 [balanced audit instructions](../cluster/BALANCED_EVALUATION_README.md).
 This does not change the existing evaluator CLI or recommendation policy.
