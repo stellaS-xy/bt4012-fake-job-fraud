@@ -32,3 +32,6 @@ Thumbs.db
 
 # Dedicated cluster MLP environment
 .venv-mlp/
+
+# Isolated final classifier environment
+.venv-final/
