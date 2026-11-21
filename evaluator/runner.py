@@ -13,7 +13,7 @@ from evaluator.scoring import scorecard
 
 def run_evaluation(examples, agent_settings, judge_settings=None, *, code_only=False,
                    repeats=1, agent_fn=run_review, judge_fn=judge_case,
-                   progress=None, on_result=None):
+                   progress=None, on_result=None, on_agent_result=None):
     if repeats < 1 or not examples:
         raise ValueError('Provide examples and a positive repeat count.')
     if not code_only and (judge_settings is None):
@@ -55,6 +55,9 @@ def run_evaluation(examples, agent_settings, judge_settings=None, *, code_only=F
                     # Evaluate the classifier tool independently of final-answer
                     # failures. Otherwise dropping failed LLM cases biases metrics.
                     row['classifier_prediction'] = score['flagged']
+                if on_agent_result:
+                    # Optional durable checkpoint before the slower judge call.
+                    on_agent_result(row.copy())
                 if not code_only:
                     if progress:
                         progress('  Running LLM judge...')

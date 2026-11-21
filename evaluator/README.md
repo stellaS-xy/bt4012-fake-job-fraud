@@ -285,3 +285,14 @@ classifier tool, lexicon tool, LLM answer and evaluation independently. Full JSO
 is available in additional dropdowns. CSS and JavaScript are embedded in the HTML;
 the finished file works locally without external assets or a server. Historical
 report JSON can be rendered directly without changing its schema or results.
+
+## Time-bounded balanced quality audit
+
+For the fixed-seed 10 genuine + 10 fraudulent, group-distinct audit, use the
+separate `python -m evaluator.balanced prepare` and `run` commands. Preparation
+never chooses a dataset automatically; heldout input requires a frozen-version
+label and a training-group overlap check. The Slurm launcher enforces a one-hour
+job limit and 150-second whole-case deadlines, preserving agent outputs before
+judging and counting failures in the planned denominator. See
+[balanced audit instructions](../cluster/BALANCED_EVALUATION_README.md).
+This does not change the existing evaluator CLI or recommendation policy.
