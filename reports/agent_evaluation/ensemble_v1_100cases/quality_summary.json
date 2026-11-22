@@ -1,0 +1,89 @@
+{
+  "overall": {
+    "planned_cases": 100,
+    "agent_completed": 100,
+    "agent_completion_rate": 1.0,
+    "code_checks_passed": 95,
+    "code_pass_rate": 0.95,
+    "judge_completed": 100,
+    "judge_coverage": 1.0,
+    "fallback_cases": 0,
+    "timeout_cases": 0,
+    "not_started_cases": 0,
+    "input_invalid_cases": 0,
+    "mean_effective_scores": {
+      "evidence_grounding": 3.8947368421052633,
+      "context_understanding": 3.8842105263157896,
+      "recommendation_consistency": 3.82,
+      "explanation_clarity": 3.863157894736842
+    },
+    "scored_count_by_dimension": {
+      "evidence_grounding": 95,
+      "context_understanding": 95,
+      "recommendation_consistency": 100,
+      "explanation_clarity": 95
+    },
+    "cases_with_judge_reported_unsupported_claims": 4,
+    "unsupported_claim_case_denominator": 100,
+    "median_seconds": 44.180486174533144,
+    "max_seconds": 70.33573056792375
+  },
+  "genuine": {
+    "planned_cases": 50,
+    "agent_completed": 50,
+    "agent_completion_rate": 1.0,
+    "code_checks_passed": 48,
+    "code_pass_rate": 0.96,
+    "judge_completed": 50,
+    "judge_coverage": 1.0,
+    "fallback_cases": 0,
+    "timeout_cases": 0,
+    "not_started_cases": 0,
+    "input_invalid_cases": 0,
+    "mean_effective_scores": {
+      "evidence_grounding": 3.9166666666666665,
+      "context_understanding": 3.9166666666666665,
+      "recommendation_consistency": 3.88,
+      "explanation_clarity": 3.9166666666666665
+    },
+    "scored_count_by_dimension": {
+      "evidence_grounding": 48,
+      "context_understanding": 48,
+      "recommendation_consistency": 50,
+      "explanation_clarity": 48
+    },
+    "cases_with_judge_reported_unsupported_claims": 2,
+    "unsupported_claim_case_denominator": 50,
+    "median_seconds": 42.82777493901085,
+    "max_seconds": 61.30516586592421
+  },
+  "fraudulent": {
+    "planned_cases": 50,
+    "agent_completed": 50,
+    "agent_completion_rate": 1.0,
+    "code_checks_passed": 47,
+    "code_pass_rate": 0.94,
+    "judge_completed": 50,
+    "judge_coverage": 1.0,
+    "fallback_cases": 0,
+    "timeout_cases": 0,
+    "not_started_cases": 0,
+    "input_invalid_cases": 0,
+    "mean_effective_scores": {
+      "evidence_grounding": 3.872340425531915,
+      "context_understanding": 3.851063829787234,
+      "recommendation_consistency": 3.76,
+      "explanation_clarity": 3.8085106382978724
+    },
+    "scored_count_by_dimension": {
+      "evidence_grounding": 47,
+      "context_understanding": 47,
+      "recommendation_consistency": 50,
+      "explanation_clarity": 47
+    },
+    "cases_with_judge_reported_unsupported_claims": 2,
+    "unsupported_claim_case_denominator": 50,
+    "median_seconds": 45.21485428098822,
+    "max_seconds": 70.33573056792375
+  }
+}

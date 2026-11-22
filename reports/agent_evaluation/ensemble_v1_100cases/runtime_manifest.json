@@ -1,0 +1,77 @@
+{
+  "protocol": "balanced-agent-quality-v2",
+  "sample_sha256": "56e735e95b615868b53a340fcadddc151722091c4b19e010ffdd4693ee4459e9",
+  "actor": {
+    "backend": "ollama_local",
+    "model": "qwen2.5:14b-instruct",
+    "timeout": 60.0
+  },
+  "judge": {
+    "backend": "ollama_local",
+    "model": "qwen2.5:14b-instruct",
+    "timeout": 120.0,
+    "same_model_as_agent": true
+  },
+  "classifier": {
+    "backend": "ensemble",
+    "artifact": "/home/e/e1155697/bt4012-fake-job-fraud/data/processed/final_ensemble_test/v1/artifact",
+    "file_hashes": {
+      "mlp_features.joblib": "6e05585e5c75512d73936cc1f76b478e21ae07b36f97f9c1b45733a6e601985a",
+      "mlp.keras": "cf394190c78b3140b3f4d105162041454b79957fc7855448180cd24e8dc04418",
+      "mlp_calibrator.joblib": "9f4583f75b9301893d1b78e4320b09ebc623e1e828fa6537a09ee32ace8305b8",
+      "trees_features.joblib": "6e05585e5c75512d73936cc1f76b478e21ae07b36f97f9c1b45733a6e601985a",
+      "trees.joblib": "4f9a79bcc85e989282ead965b564e3f2a5b4ef61c15c238cc39141a9c17c681e",
+      "trees_calibrator.joblib": "065cab48be6ba61a0ed0701597a170274ee3bf6dff7b740e5d0b54457544115d"
+    },
+    "threshold": 0.20923746948802296,
+    "model_version": "calibrated-mlp-extra-trees-v1",
+    "metadata_sha256": "9f8343766531d2561fca689d398bcef571e756e33549c65308a431528f3113c3",
+    "training_sha256": "61117d0309733e4dcf28d1f9836588ffaf72b7b44479113a742533134cad57ce"
+  },
+  "rubric_version": "job-review-judge-v4",
+  "rubric_sha256": "25162085a8439c66bb0d790e08ab0164fe355ec904fb0399356ed83a13ea02c0",
+  "source_sha256": {
+    "agent/core/__init__.py": "fd7751dfec394ec0d71b1dfc052e144e45aaef378ac9d1b6788a4e46bbe7152d",
+    "agent/core/assessment.py": "83a41a25acd0b000c02420e3af8831f09321e04a2b0a6e0a4fc9b3d3d8919183",
+    "agent/core/config.py": "aa3895ed546f5d14efa5251495ff70994d2e802f4afc497133806020a7da5386",
+    "agent/core/errors.py": "60bf44a9c9012149e1e806cd49d66fe95448424fd5e4ac3a155ad8c52a906c91",
+    "agent/core/middleware.py": "d10023db88316b6079b6299530881c3e3f368cb7605f71c8a51689ab28884fac",
+    "agent/core/models.py": "f73c685ea1b9097102609973a765e09678da2a10cd6c289f41655df5b9203f07",
+    "agent/core/policy.py": "dd95ce7feb6a9239837c9bdc7c62dea7830fa2304a2aa34b1d4a6401dd37dda6",
+    "agent/core/prompts.py": "788c4b0b59a194d6d88197b23b50e26ab248c1840a0118aaf05426aa2c5c4fad",
+    "agent/core/runner.py": "5c3f270f52ab33edf01c635e128d35ac46cc12dc39b5abf10950bdff08d02376",
+    "agent/core/schemas.py": "505050518101a345b85e597d43fe415217555d7a8dae89f0c3f5e5b1934dff57",
+    "agent/core/tracing.py": "ff1e90706088b19d0f8511dbb432cf452c079f1abf93d4d3f9aaf0d41a9caa2d",
+    "agent/core/validation.py": "22853da8b50fa51815849062263ac063d6c32c874cb5df182770d339c65a37c9",
+    "agent/tools/__init__.py": "7a244b64f3f3f9c70421160d6231804656f660d434d528cd0ad7873c6e7bfc92",
+    "agent/tools/classifier.py": "485e9406705fbbb6eb8464edeaedd4fe5bd45e827f4c87e6bc5b3bc893927ad6",
+    "agent/tools/context_review.py": "7b0fb74e6e644ede3fff9e319c93d28e41a3e2d30409dc633c84bd6b46d80e9c",
+    "agent/tools/lexicon.py": "153dc5cd7e0b16aca94fa6036f2f1978d6f8248c8cc11be993b3a2d9704de5fe",
+    "agent/tools/posting.py": "40cafb83983ee68a9660dec598f42ef4f7db4719a155f3e4bac3237969b05799",
+    "agent/tools/risk_rules.py": "c00ba04429d7d8cdbd5bd4fabc76f5a74ef6c0e22429bd645efd684540acda42",
+    "evaluator/__init__.py": "7c66018e5e9fc8d8954f7732d3465cb53a5608c53921240a009e789b641a2422",
+    "evaluator/__main__.py": "2e6ac976a76ca49bbb4268ea2975f367f3744c01663f1e377181d4160457aa83",
+    "evaluator/balanced.py": "53d36986935ada99f1cb89e4b46f87017e277d21883872ddcccbfa50d676e528",
+    "evaluator/checks.py": "d0824152f56ada6bbf1927c6760b252dc03db611e3428024625a0e98d9450d6d",
+    "evaluator/config.py": "17d9db97d44c9786a8a49dc1ffa95c065d1ba39d3a92b7a2b118bc6bf626e7db",
+    "evaluator/dashboard_metrics.py": "56fc582b9b313feddfc0f3ca29c67396c90ea9642d397d70c99701144b979ec0",
+    "evaluator/data.py": "699d5ec36441c5e14862e3277eeee726195c0642cf74d658acf8898626468d8f",
+    "evaluator/export_html.py": "653072aa59607f8fce6d40c43e54c2e9bc733dafcea41bc5cfc3c4fcf49fb1f3",
+    "evaluator/judge.py": "83247915351fabd04fe6629ae3183b886ffc85df34a208e09bcb9c09c5040429",
+    "evaluator/report.py": "37def8fadebbc141a442354baec9508cf7163d87012d6b513f78493e9f4ee85b",
+    "evaluator/runner.py": "d775f5ee4395523667b1c6d7e66cb8b5c1748bdf1a1e80b1fd253a17535123d4",
+    "evaluator/schemas.py": "27252d121f2854644900f4eb7f7f17df16dd3d40fff7e9889449a44f42959530",
+    "evaluator/scoring.py": "e4cc3069023b1481de0a6cb10cecb8e0bd5ff3a920d72cf61c80a2c1ba629d43",
+    "src/d1_final_ensemble.py": "9b0a4f1a6dda9369e2887ca8a8fab8bcc7b5be4cb0a441abe69e0c63eef5576b",
+    "src/ensemble_inference.py": "5e71c268c9c911241c078754e5fbeaefe7b77dd2da084b46e27c3f3efb687037",
+    "src/features.py": "090d1a2eacd7623ef8e8af81f79dc21771945abd4d0a6f79cd6222c7c057d340",
+    "src/final_ensemble_artifact.py": "15ba58d01caf021a118edfb8df2db929dd79bfa63038e26061582f6a8f0c2099"
+  },
+  "versions": {
+    "langchain": "1.5.2",
+    "langchain-core": "1.8.4",
+    "langchain-openai": "1.8.5",
+    "pydantic": "2.14.4",
+    "openai": "3.57.0"
+  }
+}
