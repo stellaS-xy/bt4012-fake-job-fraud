@@ -40,7 +40,7 @@ cd ~/bt4012-fake-job-fraud
 sbatch cluster/final_ensemble_test.slurm
 ```
 
-Default allocation: one A100 40 GB, four allocated CPUs (estimator thread settings remain two), 32 GB RAM, maximum three hours. The workflow has three training-side threshold stages and one final fit, rather than 25 outer folds. Runtime is not yet measured. Do not launch concurrent copies. A worker lock prevents writing the same result directory concurrently.
+Default allocation: one A100 40 GB, four allocated CPUs (estimator thread settings remain two), 32 GB RAM, maximum three hours. The workflow has three training-side threshold stages and one final fit, rather than 25 outer folds. The completed v1 job 1177635 took 6m31s; this is one observed run, not a guarantee for other allocations. Do not launch concurrent copies. A worker lock prevents writing the same result directory concurrently.
 
 An optional different interpreter can be selected using `FINAL_ENSEMBLE_PYTHON`. `requirements-final-ensemble.txt` records the original selected numerical/neural versions for a separately prepared environment; Linux GPU use also requires compatible CUDA dependencies. Do not reinstall packages in `.venv-mlp` during other jobs.
 
@@ -126,7 +126,7 @@ from src.d1_final_ensemble import predict_artifact
 scores = predict_artifact('models/final_ensemble_v1', posting_dataframe)
 ```
 
-It expects the same raw posting fields used by the selected A2 pipeline. It is **not yet wired into the agent**: the agent's classifier tool still supports its existing LightGBM artifact. Do not call an agent evaluation "ensemble-based" until that adapter is changed and tested. The inference export itself can be reused without training.
+It expects the same raw posting fields used by the selected A2 pipeline. The agent now defaults to this ensemble through `src.ensemble_inference`; see [deployment](../docs/DEPLOYMENT.md). The completed 100-case ensemble audit and remaining explanation/context issues are recorded in [the final agent report](../reports/agent_evaluation/ensemble_v1_100cases/README.md). The export is reused without training.
 
 ## 5. Put the trained model on GitHub
 

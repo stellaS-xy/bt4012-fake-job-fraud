@@ -6,6 +6,10 @@ execution per case. It audits workflow and explanation quality, not performance
 at natural fraud prevalence. Preparation makes no model calls. Existing locked
 20-case v1 samples and their reports are never expanded or overwritten.
 
+The completed run is job **1177902** (1h16m14s). Read the
+[aggregate results and error analysis](../reports/agent_evaluation/ensemble_v1_100cases/README.md)
+without submitting another job. The commands below document deliberate reproduction.
+
 ## Deployment and freeze
 
 Use the [ensemble deployment guide](ENSEMBLE_AGENT_README.md) first. The launcher

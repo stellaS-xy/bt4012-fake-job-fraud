@@ -1,0 +1,148 @@
+{
+  "job_id": "1177902",
+  "review_type": "Post-run review of saved tool traces; not independent human annotation or a rescore",
+  "original_report_sha256": "4cb3b105e0834543227727a426e3a24f625ff6d584acde4d6fc67da024c32533",
+  "original_scores_unchanged": true,
+  "manual_review_status": "pending",
+  "cases": [
+    {
+      "case_id": "17572",
+      "fraudulent": 1,
+      "failed_checks": [
+        "context_review_completed"
+      ],
+      "classifier_flagged": true,
+      "context_status": "failed",
+      "context_error": "review_incomplete",
+      "lexicon_passed": false,
+      "recommendation": "review_needed",
+      "judge_reported_unsupported_claims": false,
+      "evidence_contexts": [],
+      "analyst_interpretation": "Context review incomplete; classifier flagged. Saved generic error does not establish the exception cause."
+    },
+    {
+      "case_id": "15110",
+      "fraudulent": 0,
+      "failed_checks": [
+        "context_review_completed"
+      ],
+      "classifier_flagged": false,
+      "context_status": "failed",
+      "context_error": "review_incomplete",
+      "lexicon_passed": false,
+      "recommendation": "review_needed",
+      "judge_reported_unsupported_claims": false,
+      "evidence_contexts": [],
+      "analyst_interpretation": "Context review incomplete; classifier below cutoff. Agent attributes failure to missing profile/salary, but the tool records no such cause. Additional analyst concern, not a judge flag."
+    },
+    {
+      "case_id": "8596",
+      "fraudulent": 1,
+      "failed_checks": [],
+      "classifier_flagged": true,
+      "context_status": "completed",
+      "context_error": null,
+      "lexicon_passed": true,
+      "recommendation": "review_needed",
+      "judge_reported_unsupported_claims": true,
+      "evidence_contexts": [
+        "warning"
+      ],
+      "analyst_interpretation": "Agent statement matches completed/passed lexicon state and empty review reasons. Judge criticism is not supported by that operational state; broader semantic correctness remains subject to manual review."
+    },
+    {
+      "case_id": "17695",
+      "fraudulent": 1,
+      "failed_checks": [
+        "context_review_completed"
+      ],
+      "classifier_flagged": true,
+      "context_status": "failed",
+      "context_error": "review_incomplete",
+      "lexicon_passed": false,
+      "recommendation": "review_needed",
+      "judge_reported_unsupported_claims": false,
+      "evidence_contexts": [],
+      "analyst_interpretation": "Context review incomplete; classifier flagged. Saved generic error does not establish the exception cause."
+    },
+    {
+      "case_id": "17750",
+      "fraudulent": 1,
+      "failed_checks": [],
+      "classifier_flagged": false,
+      "context_status": "completed",
+      "context_error": null,
+      "lexicon_passed": false,
+      "recommendation": "review_needed",
+      "judge_reported_unsupported_claims": true,
+      "evidence_contexts": [
+        "uncertain",
+        "uncertain",
+        "uncertain",
+        "uncertain"
+      ],
+      "analyst_interpretation": "Agent matches four uncertain findings and failed lexicon check. Judge says no unresolved findings, contradicting tool state. Tool observations call wording normal while assigning uncertain labels; this is an upstream interpretation inconsistency."
+    },
+    {
+      "case_id": "12126",
+      "fraudulent": 0,
+      "failed_checks": [],
+      "classifier_flagged": false,
+      "context_status": "completed",
+      "context_error": null,
+      "lexicon_passed": true,
+      "recommendation": "pass_no_review_needed",
+      "judge_reported_unsupported_claims": true,
+      "evidence_contexts": [
+        "warning"
+      ],
+      "analyst_interpretation": "Tool labels warning, not negated. Agent wording conflates these categories; recommendation still follows tool policy."
+    },
+    {
+      "case_id": "3050",
+      "fraudulent": 0,
+      "failed_checks": [],
+      "classifier_flagged": false,
+      "context_status": "completed",
+      "context_error": null,
+      "lexicon_passed": true,
+      "recommendation": "pass_no_review_needed",
+      "judge_reported_unsupported_claims": true,
+      "evidence_contexts": [
+        "warning",
+        "warning"
+      ],
+      "analyst_interpretation": "Tool observations do mention job/responsibility mismatch warnings. Agent additionally calls them negated/background, which the warning labels do not establish. The mismatch itself was not invented by the final answer."
+    },
+    {
+      "case_id": "17822",
+      "fraudulent": 1,
+      "failed_checks": [
+        "context_review_completed"
+      ],
+      "classifier_flagged": false,
+      "context_status": "failed",
+      "context_error": "review_incomplete",
+      "lexicon_passed": false,
+      "recommendation": "review_needed",
+      "judge_reported_unsupported_claims": false,
+      "evidence_contexts": [],
+      "analyst_interpretation": "Context review incomplete; classifier flagged. Saved generic error does not establish the exception cause."
+    },
+    {
+      "case_id": "33",
+      "fraudulent": 0,
+      "failed_checks": [
+        "context_review_completed"
+      ],
+      "classifier_flagged": false,
+      "context_status": "failed",
+      "context_error": "review_incomplete",
+      "lexicon_passed": false,
+      "recommendation": "review_needed",
+      "judge_reported_unsupported_claims": false,
+      "evidence_contexts": [],
+      "analyst_interpretation": "Context review incomplete; classifier below cutoff. Background terms and missing salary were not themselves policy failures."
+    }
+  ]
+}

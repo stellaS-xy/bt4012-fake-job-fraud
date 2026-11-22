@@ -6,6 +6,11 @@ Ollama serves the agent/judge on the allocated GPU; classifier inference runs
 on CPU in a separate `.venv-mlp` subprocess. The agent uses `agent/.venv`.
 Do not run TensorFlow or Ollama on a login node.
 
+For a single current entry point, use [deployment](../docs/DEPLOYMENT.md),
+[dependencies](../docs/DEPENDENCIES.md) and [configuration](../docs/CONFIGURATION.md).
+The [completed 100-case report](../reports/agent_evaluation/ensemble_v1_100cases/README.md)
+is available without another run.
+
 ## 1. Prepare the model files once
 
 After committing/pushing the integration code locally, run `git pull --ff-only`

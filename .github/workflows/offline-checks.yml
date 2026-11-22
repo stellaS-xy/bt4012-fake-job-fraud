@@ -1,0 +1,42 @@
+name: Offline software checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      LANGCHAIN_TRACING_V2: 'false'
+      CUDA_VISIBLE_DEVICES: '-1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: tests/requirements-offline.txt
+      - name: Install offline test dependencies
+        run: python -m pip install -r tests/requirements-offline.txt
+      - name: Check Python and Slurm syntax
+        run: |
+          python -m compileall -q src agent evaluator frontend cluster tests
+          for script in cluster/*.slurm; do
+            bash -n "$script"
+          done
+      - name: Check final protocol, adapters and evaluation accounting
+        run: |
+          python -m unittest -v \
+            tests.test_final_ensemble \
+            tests.test_ensemble_inference \
+            tests.test_classifier_inference \
+            evaluator.tests.test_balanced \
+            agent.tests.test_runtime_config

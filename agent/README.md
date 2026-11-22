@@ -4,6 +4,8 @@ A real Ollama model, running locally or in the cloud, uses LangChain to call
 tools and write a review. This folder sits beside `notebooks/` and has its own
 Python environment.
 
+For the final completed run, see the [100-case evaluation and error analysis](../reports/agent_evaluation/ensemble_v1_100cases/README.md). Environment selection and supported variables are documented in [dependencies](../docs/DEPENDENCIES.md) and [configuration](../docs/CONFIGURATION.md).
+
 The Streamlit frontend is in the sibling `frontend/` folder. See the
 [frontend instructions](../frontend/README.md) for interface setup and the
 [project README](../README.md) for the completed ML work. This folder contains

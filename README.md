@@ -1,277 +1,114 @@
-# Fake Job Posting Fraud Detection — BT4012
+# Fake Job Posting Fraud Detection
 
-This project detects potentially fraudulent job advertisements and helps a human
-reviewer understand suspicious wording. One dataset row represents one posting.
-The classifier scores an ad; the LLM agent investigates its text and explains
-returned evidence. It recommends pass - no review needed when both checks pass,
-or review needed with reasons when either does not. It takes no business action.
+BT4012 research prototype for screening job advertisements. A saved classifier
+scores the posting; an LLM agent calls that classifier and a lexicon tool, then
+explains the returned evidence. The system recommends `pass_no_review_needed`
+only when both checks pass; otherwise it recommends `review_needed`. It does
+not approve, reject, contact employers or execute business actions.
 
-## Current status
+The final classifier is **Ensemble v1**, a fixed 50/50 average of sigmoid-calibrated
+MLP and Extra Trees scores using A2 features and up to 30,000 word TF-IDF terms.
+Its development-selected threshold is **0.20923746948802296**. The classifier,
+lexicon and agent roles are distinct: a classifier flag is not an explanation,
+and a review recommendation is not a fraud label.
 
-| Component | Implemented | Remaining work |
-|---|---|---|
-| D1 data exploration | Missingness, duplicate grouping, frozen train/test split, training-only statistical analysis and phrase discovery | Further error analysis and sensitivity to grouping |
-| Feature engineering | Raw fields, missingness/contact/salary features, text style, TF-IDF and a learned phrase-score option | Validate which signals generalize to new employers and job types |
-| Fair model evaluation | Shared grouped folds; inner unseen-row predictions select settings and the flagging cutoff | Choose and freeze a final model and cutoff |
-| Model comparison | Text-only logistic regression, A2 logistic regression, LightGBM and XGBoost; saved reports | Final held-out test evaluation after selection |
-| Agent backend | Saved MLP + Extra Trees v1 ensemble + lexicon/context tools, local/cloud Ollama, evidence validation and local review records | Validate classifier calibration and robustness on representative postings |
-| Risk lexicon | Real payment/secret-credential patterns, LLM context checks, exact quotes and conservative warning/negation checks | Evaluate on representative human-annotated development ads |
-| Frontend | Separate Streamlit application in `frontend/` | Further usability evaluation |
-| Agent evaluator | Separate `evaluator/` package with code checks, configurable LLM judge, dataset-row input, saved-case replay and local reports | Representative development evaluation and calibration |
-| D2 / explanations | D2 is a planned supplementary fraud-only source; the agent explains quoted evidence | D2 analysis if required; classifier-specific explanations such as SHAP |
+## Start here
 
-The reserved D1 test set has not been used for the saved model-comparison run.
-Agent development results use invented examples and must not be presented as
-fraud-detection accuracy. The agent defaults to the saved calibrated MLP + Extra Trees v1 ensemble,
-with its frozen development-selected threshold. See
-[cluster deployment](cluster/ENSEMBLE_AGENT_README.md) to run it without local
-TensorFlow installation or retraining.
-
-## Start the agent and frontend locally
-
-Run these PowerShell commands from the repository root. Use Python 3.10+ and
-keep the agent environment separate from the modelling `.venv`. If `python` is
-not recognized, use the full path to your installed Python executable.
-
-```powershell
-python -m venv agent/.venv
-.\agent\.venv\Scripts\python.exe -m pip install -r frontend/requirements.txt
-```
-
-Install the [Ollama Windows application](https://ollama.com/download/windows),
-keep it running, and download the local model:
-
-```powershell
-ollama pull qwen3:4b-instruct
-```
-
-Create `agent/.env` with:
-
-```dotenv
-AGENT_BACKEND=ollama_local
-OLLAMA_MODEL=qwen3:4b-instruct
-```
-
-No real API key is needed in local mode. The default classifier loads the
-released calibrated MLP + Extra Trees v1 from `models/final_ensemble_v1` through
-`.venv-mlp`, separately from the agent environment. Unpack the verified ZIP and
-use its pinned runtime dependencies wherever the classifier runs. The ZIP
-eliminates retraining, not inference dependencies. For the recommended cluster
-setup, reuse the working environments and follow
-[`cluster/ENSEMBLE_AGENT_README.md`](cluster/ENSEMBLE_AGENT_README.md).
-No training/test datasets are needed for inference. Missing artifacts produce
-an error, never a synthetic replacement score. Start the interface:
-
-```powershell
-.\agent\.venv\Scripts\python.exe -m streamlit run frontend/app.py
-```
-
-Open the local address printed by Streamlit. Enter a posting's title,
-description and any supplied company profile, salary, requirements and benefits.
-Click **Review posting**. Opening the interface alone does not call the model.
-The current input form is manual; it does not automatically import dataset rows.
-Never include the known `fraudulent` label in the LLM input.
-
-In real mode, the example selector fills a posting; the saved classifier computes its score
-from the submitted fields. Example selection never fixes the classifier score. The live model and risk checks analyse the submitted text. Results include a
-written rationale, quoted findings, context interpretations, limitations and a
-recommendation: **pass - no review needed** when both tools pass, or **review
-needed** with reasons otherwise. Download a JSON report from the interface; there
-are no rejection, human-escalation or confirmation controls.
-
-Local mode uses `http://localhost:11434/v1` without Ollama cloud API charges.
-Optional `AGENT_BACKEND=ollama` uses Ollama cloud and requires an Ollama key and
-account credits. Direct DeepSeek API integration is **not implemented**; changing
-an API key alone does not switch providers. See [agent setup](agent/README.md)
-and [frontend instructions](frontend/README.md) for details.
-
-## Which lexicon is used?
-
-| Item | Location | Role |
-|---|---|---|
-| Historical phrase discovery | Notebook 00 → `reports/tables/lexicon_confirmed.csv` | Finds dataset associations using separate training-group discovery and confirmation samples |
-| Agent background vocabulary | `agent/resources/dataset_terms.csv` | Frozen copy of 33 historical terms, displayed as background only |
-| Risk candidates | `agent/tools/risk_rules.py` | Versioned English payment and secret-credential patterns |
-| Context interpretation | `agent/tools/context_review.py` | LLM distinguishes requests, negations, warnings and uncertainty, and can find additional quoted wording |
-| Registered agent tool | `agent/tools/lexicon.py`, registered in `agent/tools/__init__.py` | Combines candidates, validated context and background vocabulary |
-
-Notebook 00's discovery code was not replaced by the agent changes. Its exported
-terms, such as `data entry` and `oil`, are background and do not fail the check
-on their own. The agent reads a **snapshot**, not the report CSV directly; rerunning
-Notebook 00 does not automatically refresh `agent/resources/dataset_terms.csv`.
-See the [resource notes](agent/resources/README.md) before refreshing that copy.
-
-The classifier passes when its real, valid score is below the cutoff. The
-lexicon passes when its context review completes without risky requests or
-unresolved findings. Both must pass for `pass_no_review_needed`; otherwise the
-recommendation is `review_needed`, with reasons. Missing optional fields and
-background terms alone do not fail the checks. Conflicting warning/negation
-interpretations remain uncertain and require review. These checks do not verify
-employer legitimacy or market salaries. `agent/core/policy.py` enforces this rule.
-
-Automated tests use `agent/tests/chat_model_fixture.py` and
-`agent/tests/runtime_fixtures.py` to mock external calls. These files are imported
-only by tests. Normal use supports real local/cloud Ollama models and the real
-saved classifier; no simulated backend or fixed classifier score is offered.
-Saved cases require actual backend/model metadata. Earlier reports remain
-unchanged historical snapshots; current schema 5 uses explicit test-fixture
-provenance names instead of the former ambiguous fields.
-
-## Reproduce the ML work
-
-D1 is the labelled EMSCAD dataset from Kaggle:
-`shivamb/real-or-fake-fake-jobposting-prediction` (about 17.9k ads, 4.8% fraud).
-Download and extract `fake_job_postings.csv` directly into `data/raw/`.
-Notebook 00 currently reads CSV files at that level, not inside `data/raw/d1/`.
-Raw and processed data are ignored by Git.
-
-D2, `srisaisuhassanisetty/fake-job-postings`, is a supplementary fraud-only
-source. Its analysis is not part of the completed D1 pipeline. Keep any D2 files
-separate from the top-level D1 CSV so Notebook 00 does not load the wrong file.
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe -m pip install statsmodels
-.\.venv\Scripts\python.exe -m jupyterlab
-```
-
-Select the modelling environment as the notebook kernel and follow this order:
-
-| Notebook | Work completed |
+| Goal | Guide |
 |---|---|
-| [00: data understanding](notebooks/00_d1_data_understanding_clean.ipynb) | Data checks, related-posting groups, frozen split, training-only exploration and lexicon discovery |
-| [01: feature engineering](notebooks/01_d1_feature_engineering_v2.ipynb) | Feature blocks, grouped comparisons and ablations; reusable code in `src/features.py` |
-| [02: evaluation setup](notebooks/02_d1_modelling_setup.ipynb) | Shared grouped tests; model settings and cutoffs chosen from inner unseen-row predictions |
-| [03: model comparison](notebooks/03_d1_model_comparison.ipynb) | Reads and explains the completed four-model comparison |
+| Understand completed results | [Results index](reports/README.md) |
+| Run the saved system on the cluster without training | [Deployment guide](docs/DEPLOYMENT.md) |
+| Choose the correct Python environment | [Dependencies](docs/DEPENDENCIES.md) |
+| Configure agent, judge and model paths | [Configuration reference](docs/CONFIGURATION.md) |
+| Understand each experiment and its split | [Notebook index](notebooks/README.md) |
+| Inspect the final agent evaluation and errors | [100-case report](reports/agent_evaluation/ensemble_v1_100cases/README.md) |
+| Run software checks without models or LLMs | [Offline checks](docs/OFFLINE_CHECKS.md) |
 
-Every model uses the same scoring examples across five repeats of five grouped
-folds. Three inner grouped folds select settings and a cutoff, using only the
-training portion of each outer round. Related ads stay together. Features are
-refitted inside each split. The cutoff maximizes F1 on the selected setting's
-inner out-of-fold predictions; the scoring rows do not choose it.
+## Completed evaluation
 
-The text-only logistic reference uses up to 30,000 TF-IDF terms. A2 logistic
-regression, LightGBM and XGBoost share A2 inputs with a 2,000-term limit. Balancing
-weights use each fit's training rows. Outer scoring data is not used for early
-stopping. The saved comparison reads no reserved test data.
+| Evaluation | Result | Interpretation |
+|---|---|---|
+| Notebook 13 development comparison | Ensemble mean AP **0.6891**, fold SD **0.0566**, 25 grouped outer folds | Repeated folds share observations. The corrected paired interval against the fresh LightGBM replay includes zero; superiority is not established |
+| Fixed existing test split | AP **0.7848**, ROC-AUC **0.9503**, precision **0.6772**, recall **0.7399**, F1 **0.7072** | 3,441 postings, 173 frauds, 885 groups; threshold fixed from development data |
+| Top 5% classifier review budget | 124 frauds among 172 postings; precision **0.7209**, recall **0.7168** | A ranking budget, separate from the saved classification threshold |
+| Final agent quality audit | **100/100** agent and judge completions; **95/100** pass all code checks | 50 genuine and 50 fraudulent postings from 100 groups; five incomplete context reviews and four cases flagged by the judge for unsupported claims |
 
-Read the [model report](reports/model_comparison/report.html) without retraining.
-Its counts, averaged over repeats, include:
+The test AP group-bootstrap 95% interval is **0.6236–0.8962**. Current train/test
+posting and group separation passed audit, but historical project-wide test
+exposure remains unverified. These results describe the audited existing split,
+not a proven never-accessed test. The balanced agent audit is not representative
+of natural fraud prevalence. Agent and judge both used Qwen2.5 14B, so judge
+ratings are automated opinions with possible shared errors. See the linked
+reports for denominators, sources and limitations.
 
-| Model | Fake ads caught / 693 | Genuine ads wrongly flagged / 13,746 | Fake ads found in the 5% review budget | Mean PR-AUC |
-|---|---:|---:|---:|---:|
-| Text-only logistic regression | 352.0 | 308.4 | 377.6 | 0.595 |
-| A2 logistic regression | 376.8 | 443.2 | 370.8 | 0.555 |
-| LightGBM A2 | 383.6 | 414.4 | 389.0 | 0.631 |
-| XGBoost A2 | 336.6 | 398.0 | 344.8 | 0.566 |
+## System components
 
-The 5% budget ranks ads by score separately from the learned flagging cutoff.
-The report includes per-round results and approximate paired uncertainty
-intervals. Higher averages alone do not establish a reliable improvement.
-Repeats reuse the same ads and are not independent new datasets.
-
-```powershell
-# Rebuild the report from saved completed results; no model training.
-.\.venv\Scripts\python.exe -m src.model_comparison --report-only
-
-# Full comparison; can take substantial time.
-.\.venv\Scripts\python.exe -u -m src.model_comparison
+```text
+Posting → LLM agent → score_posting → saved Ensemble v1 score and threshold
+                    → match_lexicon → rules + internal LLM context review
+                                    + historical background observations
+        → code-enforced recommendation policy → explanation and evidence
 ```
 
-Run plans, settings, scores and fingerprints are in `reports/model_comparison/`.
-Row assignments and predictions are under ignored
-`data/processed/model_comparison/`. Choose and freeze the final model and cutoff
-before enabling the reserved-test section in Notebook 02.
+The context review distinguishes employer requests, warnings, negations and
+uncertain wording. Historical dataset phrases are background associations, not
+standalone fraud rules. Missing optional text alone does not fail the lexicon.
+The final MLP requires explicit 0/1 values for `telecommuting`,
+`has_company_logo` and `has_questions`; unknown values are not imputed as zero.
+Incomplete checks require review. Employer legitimacy and market salary are not
+verified.
 
-## Agent comparison and checks
-
-For full recommendation/explanation evaluation, use the separate
-[`evaluator/`](evaluator/README.md) package. It combines exact quote/citation and
-decision-policy checks with a real local LLM judge. No manual reviewer step is
-required. It accepts dataset CSV/JSONL rows or saved frontend JSON cases; labels
-stay outside agent/judge inputs. The judge rates grounding, context,
-recommendation consistency and clarity. Failures are reported with null scores. Safe fallback handling is reported
-separately from completed-answer quality; incomplete reviews cannot earn full
-explanation scores merely because a fallback recommended review.
-
-```powershell
-# Evaluate a saved agent review without rerunning the agent.
-.\agent\.venv\Scripts\python.exe -m evaluator --cases path/to/review.json
-
-# Run the agent and judge on a small development subset.
-.\agent\.venv\Scripts\python.exe -m evaluator --data path/to/development.csv --limit 10
-```
-
-The judge defaults to local `qwen3:4b-instruct`; configure it independently in
-`evaluator/.env` or choose `--judge-model`. Reports flag matching agent/judge
-model identifiers. Automatic judgments are not verified truth. Fraud-label metrics use valid real classifier tool predictions independently
-of final-answer success. Recommendations are not treated as fraud predictions. See the evaluator guide
-for code-only mode, repeats, output files and frozen held-out runs.
-
-The [saved evidence comparison](reports/agent_evaluation/development_comparison.json)
-uses 12 synthetic development examples, evaluated twice with local
-`qwen3:4b-instruct`. Across each method's 24 evaluations, there were 12 actual
-risky-request occurrences and 12 negatives:
-
-| Method | Requests found / 12 | False alarms | Findings with wrong field/category |
-|---|---:|---:|---:|
-| Rules | 10 | 0 | 0 |
-| LLM without rule candidates | 12 | 0 | 4 |
-| Rules + LLM | 12 | 0 | 0 |
-
-These examples were used during development, so they are regression checks,
-not unseen validation data. The paired improvement interval includes zero.
-Both LLM methods use exact-quote validation and the same contradiction guard.
-More human-annotated development ads are needed before claiming an improvement.
-
-```powershell
-# Software checks; no live model calls or API credits.
-.\.venv\Scripts\python.exe -m unittest discover -s tests -v
-.\agent\.venv\Scripts\python.exe -m unittest discover -s agent/tests -v
-.\agent\.venv\Scripts\python.exe -m unittest discover -s frontend/tests -v
-.\agent\.venv\Scripts\python.exe -m unittest discover -s evaluator/tests -v
-
-# Evidence baseline without an LLM.
-.\agent\.venv\Scripts\python.exe -m agent.tests.evaluate_lexicon --mode rules
-
-# Live comparison using the configured model; may take several minutes locally.
-.\agent\.venv\Scripts\python.exe -m agent.tests.evaluate_lexicon --mode all --repeats 2
-```
-
-The last verified agent/frontend suites contained 49 passing tests. That count
-excludes the separate ML and evaluator tests. The evaluator has 17 additional
-no-network tests. Neither count is a measure of fraud-detection accuracy.
-Evaluation options, custom JSONL annotations and result locations are documented
-in [agent/README.md](agent/README.md).
+Exactly two tools are exposed to the agent. The context-review LLM call is
+internal to `match_lexicon`. The separate evaluator applies deterministic checks
+and an LLM judge; gold fraud labels do not enter agent or judge inputs.
 
 ## Repository layout
 
-```text
-notebooks/                    D1 exploration, features, evaluation and comparison
-src/                          Reusable ML features and evaluation code
-tests/                        ML evaluation and comparison checks
-agent/core/                   Workflow, model setup, config, schemas and validation
-agent/tools/                  Classifier, lexicon, posting checks, rules and context
-agent/resources/              Historical vocabulary and synthetic demo examples
-agent/tests/                  Agent tests, test-only fixtures and evidence comparison CLI
-frontend/                     Streamlit UI, UI dependencies and interface checks
-evaluator/                    Code checks, LLM judging, dataset/replay CLI and tests
-evaluator/outputs/            Local per-case reports and saved cases (ignored)
-reports/tables/               Saved statistical and feature-analysis tables
-reports/model_comparison/     Completed ML comparison reports and scores
-reports/agent_evaluation/     Synthetic evidence-extraction comparison
-agent/runtime/                Local decisions and ad-hoc reports (ignored)
-data/raw/, data/processed/    Original and derived data (ignored)
-```
+| Path | Contents |
+|---|---|
+| `notebooks/` | Experiment interfaces and saved-results viewer; historical filenames preserved |
+| `src/` | Feature construction, experiment helpers, training/export and inference adapters |
+| `agent/core/` | LLM orchestration, schemas, validation and recommendation policy |
+| `agent/tools/` | Classifier subprocess adapter, risk rules, lexicon and context review |
+| `agent/resources/` | Frozen historical vocabulary and synthetic examples |
+| `evaluator/` | Input loading, code checks, judge, scoring, reports and bounded audit runner |
+| `frontend/` | Optional Streamlit interface |
+| `cluster/` | Slurm launchers and detailed experiment/deployment instructions |
+| `tests/` and component test folders | Offline software checks and test fixtures |
+| `reports/` | Curated aggregate results, provenance and interpretation |
+| `data/`, `models/`, `evaluator/outputs/` | Local datasets, weights and detailed run records; generally ignored by Git |
 
-## Team workflow and acknowledgement
+Model ZIPs belong in a GitHub Release; source and aggregate results belong in
+Git. [Deployment instructions](docs/DEPLOYMENT.md) explain asset names, checksum
+verification and the existing cluster artifact. A ZIP avoids retraining but
+still needs the inference dependencies wherever predictions run. No Mac model
+installation is needed when the complete system runs on the cluster.
 
-Work on a branch, commit small changes and have a teammate review before merging
-into `main`. Keep data, API keys, `.env`, virtual environments and large model
-artifacts out of Git. The ML seed is 42; model-provider responses need not be
-identical between runs, even with temperature zero.
+## Research and reproduction
 
-OpenAI Codex assisted with evaluation code, agent/frontend implementation,
-tests and documentation. The team should review this work and complete the
-course's AI/external-code declaration with any additional tools and sources used.
+D1 is EMSCAD from Kaggle, `shivamb/real-or-fake-fake-jobposting-prediction`.
+Notebook 00 expects `fake_job_postings.csv` directly under `data/raw/`.
+Original and derived datasets are not distributed here. D2 is a supplementary
+fraud-only source and is not part of the completed D1 evaluation.
+
+The [notebook index](notebooks/README.md) distinguishes original, revised and
+recovered split protocols. Do not treat different experiment directories as a
+single matched leaderboard or compare a single fold to a 25-fold average.
+Saved reports can be read without rerunning experiments. Reproduction commands
+are documented for provenance; no further training or LLM evaluation is needed
+to inspect the completed project.
+
+## Software checks and team workflow
+
+[GitHub Actions](.github/workflows/offline-checks.yml) runs a selected offline
+suite and syntax checks without TensorFlow, model weights, datasets or live LLM
+calls. It does not certify real cluster inference. Local commands and coverage
+boundaries are in the [offline checks guide](docs/OFFLINE_CHECKS.md).
+
+Keep `.env`, credentials, datasets, virtual environments and model binaries out
+of commits. Preserve frozen experiment sources and manifests: changing paths or
+code can invalidate their fingerprint checks. The numerical ML seed is normally
+42; provider responses need not be identical even with temperature zero.
+
+OpenAI Codex assisted with implementation, tests and documentation. The team
+should review the work and complete the course's AI/external-code declaration.

@@ -5,6 +5,11 @@ This package lives beside `agent/` and `frontend/`. It evaluates the agent with
 or confirmation. It does not execute business decisions or save reviewer audit
 records. A judge's rating is an automated assessment, not verified ground truth.
 
+The completed 100-case ensemble run, score denominators and case review are in
+[the final audit report](../reports/agent_evaluation/ensemble_v1_100cases/README.md).
+See [configuration](../docs/CONFIGURATION.md) for judge settings and
+[offline checks](../docs/OFFLINE_CHECKS.md) for software-only verification.
+
 ## What is evaluated
 
 | Part | Evaluation |

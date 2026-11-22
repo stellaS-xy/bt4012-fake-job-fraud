@@ -1,0 +1,68 @@
+{
+  "model": "Calibrated MLP + Extra Trees (50/50)",
+  "evaluation": "fixed existing split; historical caveat disclosed",
+  "rows": 3441,
+  "fraudulent": 173,
+  "groups": 885,
+  "metrics": {
+    "pr_auc": 0.7847700056465867,
+    "roc_auc": 0.950306351306415,
+    "precision_at_budget": 0.7209302325581395,
+    "recall_at_budget": 0.7167630057803468,
+    "review_share": 0.05,
+    "review_count": 172,
+    "review_fraud_caught": 124,
+    "review_genuine_flagged": 48,
+    "precision_top5pct": 0.7209302325581395,
+    "recall_top5pct": 0.7167630057803468,
+    "threshold": 0.20923746948802296,
+    "precision": 0.6772486772486772,
+    "recall": 0.7398843930635838,
+    "f1": 0.7071823204419889,
+    "share_flagged": 0.05492589363557106,
+    "fraud_caught": 128,
+    "fraud_missed": 45,
+    "genuine_flagged": 61,
+    "genuine_passed": 3207,
+    "false_positive_rate": 0.018665850673194616
+  },
+  "bootstrap": {
+    "requested": 1000,
+    "valid": 1000,
+    "seed": 2026,
+    "method": "percentile 95% cluster bootstrap; groups resampled with replacement",
+    "intervals": {
+      "pr_auc": {
+        "low": 0.6235945524025948,
+        "high": 0.8961998446515299
+      },
+      "roc_auc": {
+        "low": 0.9079393752891881,
+        "high": 0.9798716818024923
+      },
+      "precision": {
+        "low": 0.537385388938184,
+        "high": 0.7809663865546218
+      },
+      "recall": {
+        "low": 0.5686841425619834,
+        "high": 0.8760693215339233
+      },
+      "f1": {
+        "low": 0.5738075243533759,
+        "high": 0.8097716761598754
+      },
+      "false_positive_rate": {
+        "low": 0.012108891008873355,
+        "high": 0.02806163772204346
+      }
+    }
+  },
+  "elapsed_minutes": 6.322735996350335,
+  "created_utc": "2026-11-21T17:14:49.653085+00:00",
+  "history_note": "Current posting/group separation passed the audit. Earlier project-wide test exposure remains unverified. This evaluation uses the audited current fixed split. Do not describe this as a proven never-accessed project-wide test.",
+  "test_predictions_sha256": "3b409d406d2b506b4ab3d6f08894d2e819156cd61c8b1ba538835966190b8583",
+  "artifact_archive_sha256": "81d5bcef760008a1145d99038aee6e3fa2bd6442a483cffef526510528b39320",
+  "frozen_plan_sha256": "4c8cce302cf4d884a560d2c55a3dec3d0b4ed5651cba921fb52e8e827e50db16",
+  "source_test_metrics_sha256": "4cb42bc1431e530bb9a055bc7a14803d13b5f15a2ac27721339456ea45fcda11"
+}

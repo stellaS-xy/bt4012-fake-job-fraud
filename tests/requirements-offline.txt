@@ -1,0 +1,10 @@
+# Selected CPU-only offline suite; separate from the final inference environment.
+# Versions match the locally verified scientific/configuration test environment.
+numpy==2.4.6
+pandas==3.1.1
+scipy==1.17.1
+scikit-learn==1.9.1
+joblib==1.6.0
+threadpoolctl==3.8.0
+pydantic==2.14.4
+python-dotenv==1.2.4
