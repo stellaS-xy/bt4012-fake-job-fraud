@@ -66,7 +66,7 @@ and an LLM judge; gold fraud labels do not enter agent or judge inputs.
 
 | Path | Contents |
 |---|---|
-| `notebooks/` | Experiment interfaces and saved-results viewer; historical filenames preserved |
+| `notebooks/` | Experiment interfaces and saved-results viewer; unique sequence 00–15; historical experiment IDs preserved |
 | `src/` | Feature construction, experiment helpers, training/export and inference adapters |
 | `agent/core/` | LLM orchestration, schemas, validation and recommendation policy |
 | `agent/tools/` | Classifier subprocess adapter, risk rules, lexicon and context review |

@@ -1,10 +1,14 @@
-# Run notebook 09 MLP on the SoC cluster
+# Run notebook 10 MLP on the SoC cluster
+
+The source notebook was renumbered from 09 to 10. `requirements-09.txt`,
+`src/d1_a2_mlp.py`, saved source labels and `reports/09_mlp_runs/` retain their
+historical names; they do not indicate a second notebook 09.
 
 No local notebook execution or model training is needed. Submit all training through Slurm.
 
 ## 1. Upload the code and agreed inputs
 
-Commit/push the changes and pull on the cluster, or copy the code files together. Required code includes `notebooks/09_MLP_model.ipynb`, `requirements-09.txt`, the complete `src/` directory and `cluster/`.
+Commit/push the changes and pull on the cluster, or copy the code files together. Required code includes `notebooks/10_mlp_model.ipynb`, `requirements-09.txt`, the complete `src/` directory and `cluster/`.
 
 Data are ignored by Git. From your **Mac terminal**, upload the saved development folds (the training CSV was already uploaded; copy again only if needed):
 

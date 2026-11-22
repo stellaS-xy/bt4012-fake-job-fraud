@@ -16,9 +16,9 @@ root so paths and repository imports resolve consistently.
 | Optional Streamlit frontend | [`frontend/requirements.txt`](../frontend/requirements.txt) | Includes agent requirements plus Streamlit |
 | Selected offline CI suite | [`tests/requirements-offline.txt`](../tests/requirements-offline.txt) | Small test environment; no TensorFlow, Torch, LangChain, datasets or model weights |
 | Earlier exploration and classical experiments | [`requirements.txt`](../requirements.txt) | Broad historical research/UI dependency set; not a lockfile or a complete final-model deployment recipe |
-| Notebook 09 MLP cluster experiment | [`requirements-09.txt`](../requirements-09.txt) | Dedicated Linux NVIDIA environment; includes TensorFlow CUDA extra |
-| Notebook 10 local diagnostic | [`requirements-10.txt`](../requirements-10.txt) | Optional Torch/Transformers dependencies added to a prepared notebook environment |
-| Notebook 10 cluster experiment | [`requirements-10-cluster.txt`](../requirements-10-cluster.txt) | Dedicated environment; see the [DistilBERT guide](../cluster/DISTILBERT_README.md) for the Torch wheel |
+| Notebook 10 MLP (historical 09) | [`requirements-09.txt`](../requirements-09.txt) | Dedicated Linux NVIDIA environment; includes TensorFlow CUDA extra |
+| Notebook 12 DistilBERT diagnostic (historical 10) | [`requirements-10.txt`](../requirements-10.txt) | Optional Torch/Transformers dependencies added to a prepared notebook environment |
+| Notebook 12 DistilBERT cluster experiment (historical 10) | [`requirements-10-cluster.txt`](../requirements-10-cluster.txt) | Dedicated environment; see the [DistilBERT guide](../cluster/DISTILBERT_README.md) for the Torch wheel |
 | Notebook 13 reference comparison | [`requirements-13.txt`](../requirements-13.txt) | Historical selected experiment environment; Python 3.11.9 in its original instructions |
 | Notebook 14 development trials | [`requirements-14.txt`](../requirements-14.txt) | Separate historical development environment; Python 3.11.9 |
 

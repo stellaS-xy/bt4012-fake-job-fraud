@@ -35,6 +35,8 @@ jobs:
       - name: Check final protocol, adapters and evaluation accounting
         run: |
           python -m unittest -v \
+            tests.test_distilbert_launcher \
+            tests.test_mlp_cluster \
             tests.test_final_ensemble \
             tests.test_ensemble_inference \
             tests.test_classifier_inference \

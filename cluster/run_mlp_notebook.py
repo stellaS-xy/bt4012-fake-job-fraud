@@ -10,9 +10,10 @@ def main():
     root = Path(__file__).resolve().parents[1]
     if not os.environ.get('SLURM_JOB_ID'):
         raise SystemExit('Launch through cluster/mlp_model.slurm on a compute node.')
+    # Keep historical output directory/experiment IDs compatible with saved runs.
     output = root / 'reports/09_mlp_runs' / os.environ['SLURM_JOB_ID']
     output.mkdir(parents=True, exist_ok=True)
-    notebook = nbformat.read(root / 'notebooks/09_MLP_model.ipynb', as_version=4)
+    notebook = nbformat.read(root / 'notebooks/10_mlp_model.ipynb', as_version=4)
     client = NotebookClient(notebook, timeout=None, kernel_name='python3',
                             resources={'metadata': {'path': str(root)}})
     try:

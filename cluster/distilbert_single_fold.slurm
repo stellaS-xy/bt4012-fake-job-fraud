@@ -15,7 +15,7 @@ fi
 cd "${SLURM_SUBMIT_DIR:?}"
 DISTILBERT_PYTHON="${DISTILBERT_PYTHON:-$HOME/venvs/bt4012-distilbert/bin/python}"
 test -x "$DISTILBERT_PYTHON"
-test -f notebooks/10_distilbert_finetuning.ipynb
+test -f notebooks/12_distilbert_finetuning.ipynb
 test -f src/d1_distilbert.py
 test -f data/processed/d1_train.csv
 test -f data/processed/model_cv_assignments.csv

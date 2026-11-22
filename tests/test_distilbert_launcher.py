@@ -13,7 +13,7 @@ spec.loader.exec_module(launcher)
 
 class DistilbertLaunchTests(unittest.TestCase):
     def setUp(self):
-        self.original = json.loads((ROOT / 'notebooks/10_distilbert_finetuning.ipynb').read_text())
+        self.original = json.loads((ROOT / 'notebooks/12_distilbert_finetuning.ipynb').read_text())
 
     def test_copy_enforces_single_cuda_fold_and_safe_flags(self):
         original_text = json.dumps(self.original)

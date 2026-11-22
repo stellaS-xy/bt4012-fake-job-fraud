@@ -28,6 +28,8 @@ environment just to run CI tests:
 python3 -m venv /tmp/bt4012-offline-checks
 /tmp/bt4012-offline-checks/bin/python -m pip install -r tests/requirements-offline.txt
 /tmp/bt4012-offline-checks/bin/python -m unittest -v \
+  tests.test_distilbert_launcher \
+  tests.test_mlp_cluster \
   tests.test_final_ensemble \
   tests.test_ensemble_inference \
   tests.test_classifier_inference \

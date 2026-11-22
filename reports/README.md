@@ -28,7 +28,7 @@ to inspect these files.
 | `agent_evaluation/development_comparison.json` | Historical synthetic evidence-extraction development checks |
 | `agent_evaluation/lightgbm_two_tools.*` | Historical LightGBM demonstration, not the final ensemble audit |
 
-Notebook 09 MLP and single-fold DistilBERT runs also produced cluster/cache
+Notebook 10 MLP (historical 09) and notebook 12 DistilBERT (historical 10) runs also produced cluster/cache
 outputs; use the [notebook index](../notebooks/README.md) and manifests rather
 than assuming every complete report is committed here. A single-fold score
 must not be compared to a 25-fold mean as evidence of improvement.

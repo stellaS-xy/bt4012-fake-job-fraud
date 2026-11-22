@@ -1,4 +1,4 @@
-"""Run a copy of notebook 10 for ONE outer fold on a Slurm CUDA node.
+"""Run a copy of notebook 12 (historical experiment 10) for ONE outer fold on a Slurm CUDA node.
 
 Only the executed copy is changed: installation off, tokens/training on,
 resource diagnostic off, outer_limit=1, device=cuda. Never writes the source
@@ -64,7 +64,7 @@ def main():
     root = Path(__file__).resolve().parents[1]
     output = root / 'reports/10_distilbert_runs' / job
     output.mkdir(parents=True, exist_ok=True)
-    source = root / 'notebooks/10_distilbert_finetuning.ipynb'
+    source = root / 'notebooks/12_distilbert_finetuning.ipynb'
     notebook = prepare_notebook(nbformat.read(source, as_version=4))
     # Tee kernel output to a file for live tail -f, while retaining notebook output.
     prelude = '''import sys

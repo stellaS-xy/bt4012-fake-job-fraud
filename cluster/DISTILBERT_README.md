@@ -1,4 +1,8 @@
-# Notebook 10: one complete outer fold on the cluster
+# Notebook 12 DistilBERT on the cluster
+
+The source notebook was renumbered from 10 to 12. `requirements-10*.txt`,
+`data/processed/10_distilbert/` and `reports/10_distilbert_runs/` keep historical
+experiment identifiers. The original launch notes below describe the earlier run.
 
 Keep MLP job 1173687 and its `.venv-mlp`, source files, notebook, kernels and caches unchanged. This launch adds new files and uses a separate environment outside the repository. Do not pull or copy all of `src/` while that MLP job is running. No cluster connection, installation, download or submission is performed by preparing these files locally.
 
@@ -16,7 +20,7 @@ scp -o ProxyJump=e1155697@sjump.comp.nus.edu.sg \
   e1155697@xlogin1.comp.nus.edu.sg:~/bt4012-fake-job-fraud/src/
 
 scp -o ProxyJump=e1155697@sjump.comp.nus.edu.sg \
-  notebooks/10_distilbert_finetuning.ipynb \
+  notebooks/12_distilbert_finetuning.ipynb \
   e1155697@xlogin1.comp.nus.edu.sg:~/bt4012-fake-job-fraud/notebooks/
 
 scp -o ProxyJump=e1155697@sjump.comp.nus.edu.sg \
